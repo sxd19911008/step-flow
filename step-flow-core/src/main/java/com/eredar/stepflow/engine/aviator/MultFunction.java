@@ -1,0 +1,56 @@
+package com.eredar.stepflow.engine.aviator;
+
+import com.googlecode.aviator.runtime.function.AbstractFunction;
+import com.googlecode.aviator.runtime.type.AviatorLong;
+import com.googlecode.aviator.runtime.type.AviatorObject;
+import com.googlecode.aviator.runtime.type.AviatorRuntimeJavaType;
+
+import java.util.Map;
+
+/**
+ * 自定义乘法函数
+ */
+public class MultFunction extends AbstractFunction {
+
+    @Override
+    public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
+        Object v1 = arg1.getValue(env);
+        Object v2 = arg2.getValue(env);
+
+        if (v1 instanceof OraDecimal && v2 instanceof OraDecimal) {
+            OraDecimal a = (OraDecimal) v1;
+            OraDecimal b = (OraDecimal) v2;
+            return AviatorRuntimeJavaType.valueOf(a.multiply(b));
+        }
+        if (v1 instanceof OraDecimal && CalcUtils.isSupportedInteger(v2)) {
+            OraDecimal a = (OraDecimal) v1;
+            return AviatorRuntimeJavaType.valueOf(a.multiply(new OraDecimal(String.valueOf(v2))));
+        }
+        if (CalcUtils.isSupportedInteger(v1) && v2 instanceof OraDecimal) {
+            OraDecimal b = (OraDecimal) v2;
+            return AviatorRuntimeJavaType.valueOf(new OraDecimal(String.valueOf(v1)).multiply(b));
+        }
+
+        if (CalcUtils.isSupportedInteger(v1) && CalcUtils.isSupportedInteger(v2)) {
+            long res = ((Number) v1).longValue() * ((Number) v2).longValue();
+            if (res >= Integer.MIN_VALUE && res <= Integer.MAX_VALUE) {
+                return AviatorRuntimeJavaType.valueOf((int) res);
+            }
+            return AviatorLong.valueOf(res);
+        }
+
+        throw new IllegalArgumentException(String.format(
+                "不支持的类型: %s (%s) 和 %s (%s). 仅支持 Integer, Long 和 OraDecimal。",
+                v1,
+                v1 != null ? v1.getClass().getSimpleName() : "null",
+                v2,
+                v2 != null ? v2.getClass().getSimpleName() : "null"
+        ));
+    }
+
+    @Override
+    public String getName() {
+        return "mult";
+    }
+}
+
