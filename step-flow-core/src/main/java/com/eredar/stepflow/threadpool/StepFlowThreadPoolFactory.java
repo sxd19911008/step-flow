@@ -2,7 +2,6 @@ package com.eredar.stepflow.threadpool;
 
 import com.eredar.stepflow.config.StepFlowConfigProperties;
 import com.eredar.stepflow.utils.StepFlowUtils;
-import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -26,7 +25,7 @@ public class StepFlowThreadPoolFactory {
      */
     public ExecutorService getStepFlowParallelThreadPool() {
         /* 线程工厂 */
-        CustomizableThreadFactory threadFactory = new CustomizableThreadFactory("pool-stepFlowParallelThreadPool-thread-");
+        StepFlowThreadFactory threadFactory = new StepFlowThreadFactory("pool-stepFlowParallelThreadPool-thread-");
         // 设为非守护线程，主线程完成后子线程会继续完成自己的任务，而不会因为主线程结束而中断。
         threadFactory.setDaemon(false);
         // 线程会继承父线程的优先级。为了防止线程池里的线程因为“出身”问题导致执行过慢或抢占过多资源，显式重置为“正常优先级”
