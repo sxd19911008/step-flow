@@ -19,12 +19,7 @@
             <groupId>com.eredar</groupId>
             <artifactId>step-flow-core</artifactId>
         </dependency>
-        <!-- Spring Context：@Component、ApplicationContext 等 -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!-- Spring Boot 自动装配 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>

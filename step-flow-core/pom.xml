@@ -20,27 +20,6 @@
             <artifactId>aviator</artifactId>
         </dependency>
 
-        <!-- Spring Context：@Component、ApplicationContext 等 -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-context</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-
-        <!-- 自动装配与配置属性支持：@ConfigurationProperties 等 -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-autoconfigure</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-
-        <!-- 日志框架 -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -55,6 +34,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- 日志框架 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -62,14 +48,6 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-
-        <!-- 让 IDE 识别 @ConfigurationProperties 元数据 -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-configuration-processor</artifactId>-->
-<!--            &lt;!&ndash; Spring 官方推荐 optional=true，是编译时生成元数据的工具 &ndash;&gt;-->
-<!--            <optional>true</optional>-->
-<!--        </dependency>-->
 
         <!-- 测试依赖 -->
         <dependency>
