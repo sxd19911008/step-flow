@@ -1,6 +1,6 @@
 package com.eredar.stepflow.flow.intf;
 
-import com.eredar.stepflow.flow.Flow;
+import com.eredar.stepflow.flow.dto.InputFlow;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ public interface FlowProvider {
      *
      * @return 已拼装完成的 Flow 列表
      */
-    List<Flow> loadFlowList();
+    List<InputFlow> loadFlowList();
 }

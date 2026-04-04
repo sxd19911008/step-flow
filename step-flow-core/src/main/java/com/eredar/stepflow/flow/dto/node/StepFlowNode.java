@@ -1,4 +1,4 @@
-package com.eredar.stepflow.flow.dto;
+package com.eredar.stepflow.flow.dto.node;
 
 
 import com.eredar.stepflow.dto.ExecutorsContext;

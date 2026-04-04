@@ -2,6 +2,10 @@ package com.eredar.stepflow.engine.impl;
 
 import com.eredar.stepflow.engine.ConditionExpressionEngine;
 import com.eredar.stepflow.engine.aviator.*;
+import com.eredar.stepflow.engine.aviator.function.AddFunction;
+import com.eredar.stepflow.engine.aviator.function.DivFunction;
+import com.eredar.stepflow.engine.aviator.function.MultFunction;
+import com.eredar.stepflow.engine.aviator.function.SubFunction;
 import com.eredar.stepflow.exception.StepFlowException;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.AviatorEvaluatorInstance;

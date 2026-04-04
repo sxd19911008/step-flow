@@ -2,6 +2,10 @@ package com.eredar.stepflow.engine.impl;
 
 import com.eredar.stepflow.engine.BusinessExpressionEngine;
 import com.eredar.stepflow.engine.aviator.*;
+import com.eredar.stepflow.engine.aviator.function.AddFunction;
+import com.eredar.stepflow.engine.aviator.function.DivFunction;
+import com.eredar.stepflow.engine.aviator.function.MultFunction;
+import com.eredar.stepflow.engine.aviator.function.SubFunction;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.AviatorEvaluatorInstance;
 import com.googlecode.aviator.Options;
@@ -53,6 +57,8 @@ public class AviatorBusinessExpressionEngine implements BusinessExpressionEngine
         aviator.addOpFunction(OperatorType.SUB, new SubFunction());
         aviator.addOpFunction(OperatorType.MULT, new MultFunction());
         aviator.addOpFunction(OperatorType.DIV, new DivFunction());
+
+        // 自定义转换器
 
         // 调试日志
         // instance.setOption(Options.TRACE_EVAL, true);

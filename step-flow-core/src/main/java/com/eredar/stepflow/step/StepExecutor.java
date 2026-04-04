@@ -9,7 +9,7 @@ import com.eredar.stepflow.step.dto.Step;
 import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.step.intf.StepDataProvider;
 import com.eredar.stepflow.step.intf.StepHandler;
-import com.eredar.stepflow.utils.JsonUtils;
+import com.eredar.stepflow.utils.StepFlowJsonUtils;
 import com.eredar.stepflow.utils.StepFlowUtils;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public class StepExecutor {
      */
     private void validateStepData(StepData stepData) {
         if (StepContentTypeEnum.isStepDataIllegal(stepData)) {
-            throw new StepFlowException("stepData 对象不合法：" + JsonUtils.writeValueAsString(stepData));
+            throw new StepFlowException("stepData 对象不合法：" + StepFlowJsonUtils.writeValueAsString(stepData));
         }
     }
 

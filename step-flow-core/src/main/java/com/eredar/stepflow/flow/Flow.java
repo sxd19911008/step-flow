@@ -2,7 +2,7 @@ package com.eredar.stepflow.flow;
 
 import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.StepFlowContext;
-import com.eredar.stepflow.flow.dto.FlowNode;
+import com.eredar.stepflow.flow.dto.node.FlowNode;
 import com.eredar.stepflow.utils.StepFlowUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

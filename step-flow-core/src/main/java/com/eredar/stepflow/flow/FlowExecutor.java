@@ -3,8 +3,12 @@ package com.eredar.stepflow.flow;
 import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.StepFlowContext;
 import com.eredar.stepflow.exception.StepFlowException;
+import com.eredar.stepflow.flow.dto.node.FlowNode;
+import com.eredar.stepflow.flow.dto.InputFlow;
 import com.eredar.stepflow.flow.intf.FlowProvider;
+import com.eredar.stepflow.utils.StepFlowJsonUtils;
 import com.eredar.stepflow.utils.StepFlowUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
 import java.util.Map;
@@ -19,18 +23,28 @@ public class FlowExecutor {
 
     public FlowExecutor(FlowProvider flowProvider) {
         flowMap = new ConcurrentHashMap<>();
-        List<Flow> flowList = null;
+        List<InputFlow> inputFlowList = null;
         if (flowProvider != null) {
-            flowList = flowProvider.loadFlowList();
+            inputFlowList = flowProvider.loadFlowList();
         }
         /* 组装 flow 对象 */
-        if (StepFlowUtils.isNotEmpty(flowList)) {
+        if (StepFlowUtils.isNotEmpty(inputFlowList)) {
             // 组装 flow
-            for (Flow flow : flowList) {
+            for (InputFlow inputFlow : inputFlowList) {
                 // 校验流程信息是否合法
+                FlowNode flowNode = StepFlowJsonUtils.readValue(inputFlow.getContent(), new TypeReference<FlowNode>() {});
                 // TODO 校验流程信息是否合法
                 // 放入 flowMap
-                flowMap.put(flow.getFlowCode(), flow);
+                flowMap.put(
+                        inputFlow.getFlowCode(),
+                        Flow.builder()
+                                .flowCode(inputFlow.getFlowCode())
+                                .flowName(inputFlow.getFlowName())
+                                .flowType(inputFlow.getFlowType())
+                                .content(flowNode)
+                                .returnFieldList(inputFlow.getReturnFieldList())
+                                .build()
+                );
             }
         }
     }
