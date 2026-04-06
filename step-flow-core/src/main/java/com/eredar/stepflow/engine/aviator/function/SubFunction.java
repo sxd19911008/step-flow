@@ -7,7 +7,7 @@ import com.googlecode.aviator.runtime.type.AviatorLong;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.googlecode.aviator.runtime.type.AviatorRuntimeJavaType;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -46,9 +46,9 @@ public class SubFunction extends AbstractFunction {
         }
 
         // 2个日期相减，得到间隔天数，可以为负值。
-        if (v1 instanceof LocalDateTime && v2 instanceof LocalDateTime) {
-            LocalDateTime a = (LocalDateTime) v1;
-            LocalDateTime b = (LocalDateTime) v2;
+        if (v1 instanceof Instant && v2 instanceof Instant) {
+            Instant a = (Instant) v1;
+            Instant b = (Instant) v2;
             return AviatorRuntimeJavaType.valueOf(CalcUtils.oracleDaysBetween(a, b));
         }
 

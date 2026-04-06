@@ -27,7 +27,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- 支持 LocalDateTime -->
+        <!-- 支持 java.time 包 -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>

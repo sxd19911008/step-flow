@@ -1,31 +1,28 @@
 package com.eredar.stepflow.engine.aviator;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public class CalcUtils {
 
-    // 1天的秒数
-    private static final OraDecimal DAY_SECONDS = new OraDecimal("86400");
-
     /**
-     * 计算两个 LocalDateTime 之间的天数差 (date2 - date1)
+     * 计算两个 Instant 之间的天数差 (date2 - date1)
      *
-     * @param date1 减数 (起始时间)
-     * @param date2 被减数 (结束时间)
+     * @param beginDate 减数 (起始时间)
+     * @param endDate 被减数 (结束时间)
      * @return 差值天数 (OraDecimal)
      */
-    public static OraDecimal oracleDaysBetween(LocalDateTime date1, LocalDateTime date2) {
+    public static OraDecimal oracleDaysBetween(Instant beginDate, Instant endDate) {
         // 校验参数，为 null 直接报错
-        if (date1 == null || date2 == null) {
+        if (beginDate == null || endDate == null) {
             throw new IllegalArgumentException("Date parameters cannot be null");
         }
         // 计算持续时间 (Duration 自动处理了正负逻辑)
-        Duration duration = Duration.between(date1, date2);
+        long beginSeconds = beginDate.getEpochSecond();
+        long endSeconds = endDate.getEpochSecond();
         // 获取总秒数差
-        OraDecimal secondsDiff = OraDecimal.valueOf(duration.getSeconds());
+        OraDecimal secondsDiff = OraDecimal.valueOf(endSeconds - beginSeconds);
         // 计算天数
-        return secondsDiff.divide(DAY_SECONDS);
+        return secondsDiff.divide(AviatorConstants.SECOND_OF_DAY);
     }
 
     /**
