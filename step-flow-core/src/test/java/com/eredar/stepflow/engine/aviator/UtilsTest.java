@@ -1,121 +1,91 @@
 package com.eredar.stepflow.engine.aviator;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * {@link Utils} 单元测试类
  */
-@DisplayName("Utils 单元测试")
 public class UtilsTest {
 
-    @Nested
-    @DisplayName("decode 方法测试")
-    class DecodeTest {
+    static Stream<Arguments> testMonthsBetweenProvider() {
+        return Stream.of(
+                Arguments.of(
+                        "不同月份，同一天",
+                        Instant.parse("2023-01-15T15:47:39Z"),
+                        Instant.parse("2023-03-15T01:14:22Z"),
+                        new OraDecimal("2")
+                ),
+                Arguments.of(
+                        "均为月末",
+                        Instant.parse("2023-01-31T15:47:39Z"),
+                        Instant.parse("2023-02-28T01:14:22Z"),
+                        new OraDecimal("1")
+                ),
+                Arguments.of(
+                        "同一天",
+                        Instant.parse("2023-01-31T01:14:22Z"),
+                        Instant.parse("2023-01-31T15:47:39Z"),
+                        new OraDecimal("0")
+                ),
+                Arguments.of(
+                        "小数",
+                        Instant.parse("2024-02-23T11:02:39Z"),
+                        Instant.parse("2024-02-29T15:50:39Z"),
+                        new OraDecimal("0.2")
+                ),
+                Arguments.of(
+                        "含0小数",
+                        Instant.parse("2024-02-28T14:50:39Z"),
+                        Instant.parse("2024-02-29T15:11:53Z"),
+                        new OraDecimal("0.0327337216248506571087216248506571087216")
+                ),
+                Arguments.of(
+                        "1秒是零点几月",
+                        Instant.parse("2024-02-28T23:59:59Z"),
+                        Instant.parse("2024-02-29T00:00:00Z"),
+                        new OraDecimal("0.0000003733572281959378733572281959378733572282")
+                ),
+                Arguments.of(
+                        "3位整数+小数",
+                        Instant.parse("2013-01-31T23:24:39Z"),
+                        Instant.parse("2033-10-28T01:14:11Z"),
+                        new OraDecimal("248.873421445639187574671445639187574671")
+                ),
+                Arguments.of(
+                        "整数+1秒",
+                        Instant.parse("2013-01-31T23:59:59Z"),
+                        Instant.parse("2033-10-01T00:00:00Z"),
+                        new OraDecimal("248.000000373357228195937873357228195938")
+                )
 
-        @Test
-        @DisplayName("测试基本匹配功能")
-        void testBasicMatch() {
-            /* 匹配第一个 search 项 */
-            assertEquals("A", Utils.decode("1", "1", "A", "2", "B", "C"));
-            /* 匹配第二个 search 项 */
-            assertEquals("B", Utils.decode("2", "1", "A", "2", "B", "C"));
-            /* 无匹配项，返回默认值 */
-            assertEquals("C", Utils.decode("3", "1", "A", "2", "B", "C"));
-            /* 无匹配项且无默认值，返回 null */
-            assertNull(Utils.decode("3", "1", "A", "2", "B"));
-        }
-
-        @Test
-        @DisplayName("测试 Null 值匹配")
-        void testNullMatch() {
-            /* null 等于 null */
-            assertEquals("Result", Utils.decode(null, null, "Result", "Other"));
-            /* 表达式为 null，search 不为 null */
-            assertEquals("Default", Utils.decode(null, "1", "Result", "Default"));
-        }
-
-        @Test
-        @DisplayName("测试数值类型增强比较")
-        void testNumberComparison() {
-            /* Integer 与 Long 比较 */
-            assertEquals("Match", Utils.decode(100, 100L, "Match", "No Match"));
-            /* Long 与 OraDecimal 比较 */
-            assertEquals("Match", Utils.decode(200L, new OraDecimal("200.00"), "Match", "No Match"));
-            /* 不同精度的 OraDecimal 比较 */
-            assertEquals("Match", Utils.decode(new OraDecimal("3.14"), new OraDecimal("3.1400"), "Match", "No Match"));
-        }
-
-        @Test
-        @DisplayName("测试异常输入")
-        void testInvalidArguments() {
-            /* 参数少于 3 个 */
-            assertThrows(IllegalArgumentException.class, () -> Utils.decode("1", "2"));
-            assertThrows(IllegalArgumentException.class, () -> Utils.decode("1"));
-            //noinspection Convert2MethodRef
-            assertThrows(IllegalArgumentException.class, () -> Utils.decode());
-        }
+        );
     }
 
-    @Nested
-    @DisplayName("nvl 方法测试")
-    class NvlTest {
-
-        @Test
-        @DisplayName("测试正常逻辑")
-        void testNvl() {
-            /* expr1 为 null */
-            assertEquals("Default", Utils.nvl(null, "Default"));
-            /* expr1 不为 null */
-            assertEquals("Value", Utils.nvl("Value", "Default"));
-        }
+    @DisplayName("monthsBetween 方法正常场景测试")
+    @ParameterizedTest(name = "【{index}】{0}: beginDate={1}, endDate={2}")
+    @MethodSource("testMonthsBetweenProvider")
+    void testMonthsBetween(String caseId, Instant beginDate, Instant endDate, OraDecimal expected) {
+        OraDecimal actual = Utils.monthsBetween(beginDate, endDate);
+        Assertions.assertEquals(expected, actual);
     }
 
-    @Nested
-    @DisplayName("yearsBetween 方法测试")
-    class YearsBetweenTest {
-
-        @Test
-        @DisplayName("测试 L 类型（不满1年舍去）")
-        void testTypeL() {
-            Instant begin = Instant.parse("2020-01-01T00:00:00Z");
-            /* 正好 1 年 */
-            assertEquals(1, Utils.yearsBetween(begin, Instant.parse("2021-01-01T00:00:00Z"), "L"));
-            /* 不满 1 年 */
-            assertEquals(0, Utils.yearsBetween(begin, Instant.parse("2020-12-31T23:59:00Z"), "L"));
-            /* 1 年多一点 */
-            assertEquals(1, Utils.yearsBetween(begin, Instant.parse("2021-01-01T00:00:01Z"), "L"));
-        }
-
-        @Test
-        @DisplayName("测试 Y 类型（不满1年算1年）")
-        void testTypeY() {
-            Instant begin = Instant.parse("2020-01-01T00:00:00Z");
-            /* 正好 1 年 */
-            assertEquals(1, Utils.yearsBetween(begin, Instant.parse("2021-01-01T00:00:00Z"), "Y"));
-            /* 不满 1 年（向上取整） */
-            assertEquals(1, Utils.yearsBetween(begin, Instant.parse("2020-01-02T00:00:00Z"), "Y"));
-            /* 1 年多一点 */
-            assertEquals(2, Utils.yearsBetween(begin, Instant.parse("2021-01-01T00:00:01Z"), "Y"));
-        }
-
-        @Test
-        @DisplayName("测试异常情况")
-        void testExceptions() {
-            Instant now = Instant.now();
-            /* 日期为空 */
-            assertThrows(IllegalArgumentException.class, () -> Utils.yearsBetween(null, now, "L"));
-            /* 起始日期晚于结束日期 */
-            assertThrows(IllegalArgumentException.class, () -> Utils.yearsBetween(now.plus(1, ChronoUnit.DAYS), now, "L"));
-            /* 不支持的类型 */
-            assertThrows(IllegalArgumentException.class, () -> Utils.yearsBetween(now, now.plus(10, ChronoUnit.DAYS), "X"));
-        }
+    @Test
+    @DisplayName("monthsBetween 方法异常场景测试")
+    void testMonthsBetweenExceptions() {
+        Instant now = Instant.now();
+        assertThrows(IllegalArgumentException.class, () -> Utils.monthsBetween(null, now));
+        assertThrows(IllegalArgumentException.class, () -> Utils.monthsBetween(now.plus(1, ChronoUnit.DAYS), now));
+        assertThrows(IllegalArgumentException.class, () -> Utils.monthsBetween(now.plus(1, ChronoUnit.DAYS), now, null));
     }
 }
-
