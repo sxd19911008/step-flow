@@ -23,6 +23,7 @@ public class Utils {
     private static final List<String> YEARS_BETWEEN_LIST = new ArrayList<>(Arrays.asList(YEARS_BETWEEN_Y, YEARS_BETWEEN_L));
     private static final OraDecimal SECOND_OF_DAY = new OraDecimal("86400");
     private static final OraDecimal SECOND_OF_MONTH = new OraDecimal("2678400");
+    private static final OraDecimal NEG = new OraDecimal("-1");
 
 
     /**
@@ -168,11 +169,16 @@ public class Utils {
         if (beginDate == null || endDate == null) {
             throw new IllegalArgumentException("日期参数不能为空");
         }
-        if (beginDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("起始日期晚于结束日期");
-        }
         if (zoneId == null) {
             throw new IllegalArgumentException("时区zoneId不能为空");
+        }
+        // 支持负数计算
+        OraDecimal sign = OraDecimal.ONE; // 正负号
+        if (beginDate.isAfter(endDate)) {
+            Instant tempDate = beginDate;
+            beginDate = endDate;
+            endDate = tempDate;
+            sign = NEG; // 设置为 -1
         }
 
         /* 转换为 ZonedDateTime */
@@ -191,6 +197,8 @@ public class Utils {
         // 判断是否“均为月末”，比如1月31日与2月28日属于“均为月末”
         boolean bothLastDayOfMonth = isLastDayOfMonth(begin) && isLastDayOfMonth(end);
         if (sameDayOfMonth || bothLastDayOfMonth) {
+            // 乘以正负号
+            months = months.multiply(sign);
             return months;
         }
 
@@ -216,7 +224,8 @@ public class Utils {
         OraDecimal monthsFraction = seconds.divide(SECOND_OF_MONTH);
 
         /* 汇总计算结果并返回 */
-        months = months.add(monthsFraction);
+        // 汇总相加后乘以正负号
+        months = months.add(monthsFraction).multiply(sign);
         return months;
     }
 
