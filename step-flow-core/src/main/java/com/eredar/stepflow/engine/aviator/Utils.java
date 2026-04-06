@@ -1,7 +1,6 @@
 package com.eredar.stepflow.engine.aviator;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +21,8 @@ public class Utils {
     public static final String YEARS_BETWEEN_Y = "Y";
     public static final String YEARS_BETWEEN_L = "L";
     private static final List<String> YEARS_BETWEEN_LIST = new ArrayList<>(Arrays.asList(YEARS_BETWEEN_Y, YEARS_BETWEEN_L));
-    private static final OraDecimal DAYS_OF_MONTH = new OraDecimal("31.0");
+    private static final OraDecimal DAYS_OF_MONTH = new OraDecimal("31");
+    private static final OraDecimal SECOND_OF_DAY = new OraDecimal("86400");
 
 
     /**
@@ -110,15 +110,20 @@ public class Utils {
         return expr1 == null ? replace_with : expr1;
     }
 
+    public static Long yearsBetween(Instant beginDate, Instant endDate, String type) {
+        return yearsBetween(beginDate, endDate, type, null);
+    }
+
     /**
      * 2个日期之间间隔的年份
      *
      * @param beginDate 起始日期
      * @param endDate   结束日期
      * @param type      类型：Y-不满1年算1年；L-不满1年舍去。
+     * @param zoneId    时区（若为 null 则默认使用 UTC）
      * @return 间隔年份
      */
-    public static Long yearsBetween(LocalDateTime beginDate, LocalDateTime endDate, String type) {
+    public static Long yearsBetween(Instant beginDate, Instant endDate, String type, ZoneId zoneId) {
         if (beginDate == null || endDate == null) {
             throw new IllegalArgumentException("日期参数不能为空");
         }
@@ -129,22 +134,26 @@ public class Utils {
             throw new IllegalArgumentException("不支持该类型：" + type);
         }
 
-        /*
-         * 在保险业务逻辑中，通常建议忽略时分秒，只比较日期部分。
-         * 这样可以确保在生日当天的 00:00:00 即被认定为满岁。
-         *
-         * 如果使用 ChronoUnit.YEARS.between(birthDate, calcDate)，
-         * 则需要 calcDate 的时分秒也达到 birthDate 的时分秒才算满一岁。
-         */
-        LocalDate begin = beginDate.toLocalDate();
-        LocalDate end = endDate.toLocalDate();
-        long years = ChronoUnit.YEARS.between(begin, endDate);
+        // 如果未传入时区，默认使用 UTC
+        if (zoneId == null) {
+            zoneId = ZoneOffset.UTC;
+        }
+
+        // 转换为 ZonedDateTime
+        ZonedDateTime begin = beginDate.atZone(zoneId);
+        ZonedDateTime end = endDate.atZone(zoneId);
+
+        long years = ChronoUnit.YEARS.between(begin, end);
         // 如果 type 为 Y，则不满1年的部分算做1年
         if (YEARS_BETWEEN_Y.equals(type) && end.isAfter(begin.plusYears(years))) {
             years++;
         }
 
         return years;
+    }
+
+    public static OraDecimal monthsBetween(Instant beginDate, Instant endDate) {
+        return monthsBetween(beginDate, endDate, ZoneOffset.UTC);
     }
 
     /**
@@ -154,28 +163,60 @@ public class Utils {
      * @param endDate   结束日期
      * @return 间隔月份
      */
-    public static OraDecimal monthsBetween(LocalDateTime beginDate, LocalDateTime endDate) {
+    public static OraDecimal monthsBetween(Instant beginDate, Instant endDate, ZoneId zoneId) {
+        /* 入参校验 */
         if (beginDate == null || endDate == null) {
             throw new IllegalArgumentException("日期参数不能为空");
         }
         if (beginDate.isAfter(endDate)) {
             throw new IllegalArgumentException("起始日期晚于结束日期");
         }
-        // 计算完整的月份差
-        int months = (endDate.getYear() - beginDate.getYear()) * 12 + (endDate.getMonthValue() - beginDate.getMonthValue());
-        OraDecimal monthsDecimal = OraDecimal.valueOf(months);
-
-        // 判断是否为“同日”或“均为月末”
-        boolean sameDayOfMonth = beginDate.getDayOfMonth() == endDate.getDayOfMonth();
-        boolean bothLastDayOfMonth = isLastDayOfMonth(beginDate) && isLastDayOfMonth(endDate);
-        if (sameDayOfMonth || bothLastDayOfMonth) {
-            return monthsDecimal;
+        if (zoneId == null) {
+            throw new IllegalArgumentException("时区zoneId不能为空");
         }
 
-        // 如果不满足上述条件，计算分数部分
-        OraDecimal dayDiff = OraDecimal.valueOf(endDate.getDayOfMonth() - beginDate.getDayOfMonth());
-        monthsDecimal = monthsDecimal.add(dayDiff.divide(DAYS_OF_MONTH));
-        return monthsDecimal;
+        /* 转换为 ZonedDateTime */
+        ZonedDateTime begin = beginDate.atZone(zoneId);
+        ZonedDateTime end = endDate.atZone(zoneId);
+
+        /* 计算基础月份差 (年差 * 12 + 月差) */
+        int yearsDiff = end.getYear() - begin.getYear();
+        int monthsDiff = end.getMonthValue() - begin.getMonthValue();
+        int totalMonths = yearsDiff * 12 + monthsDiff;
+        OraDecimal months = OraDecimal.valueOf(totalMonths);
+
+        /* 判断是否“同日”或“均为月末” */
+        // 判断是否“同日”，比如1月12日与2月12日属于“同日”
+        boolean sameDayOfMonth = begin.getDayOfMonth() == end.getDayOfMonth();
+        // 判断是否“均为月末”，比如1月31日与2月28日属于“均为月末”
+        boolean bothLastDayOfMonth = isLastDayOfMonth(begin) && isLastDayOfMonth(end);
+        if (sameDayOfMonth || bothLastDayOfMonth) {
+            return months;
+        }
+
+        // 如果不满足上述条件，计算小数部分
+
+        /* 计算秒数，除以一天的秒数换算成以day为单位的天数 */
+        long secondOfBegin = begin.toLocalTime().toSecondOfDay();
+        long secondOfEnd = end.toLocalTime().toSecondOfDay();
+        long seconds = secondOfEnd - secondOfBegin;
+        // 换算成天数
+        OraDecimal dayFraction = OraDecimal.valueOf(seconds).divide(SECOND_OF_DAY);
+
+        /* 计算天数 */
+        long dayOfBegin = begin.getDayOfMonth();
+        long dayOfEnd = end.getDayOfMonth();
+        // 相差天数整数部分
+        long days = dayOfEnd - dayOfBegin;
+        // 加上小数部分
+        OraDecimal dayDiff = OraDecimal.valueOf(days).add(dayFraction);
+
+        /* 根据Oracle数据库规则，一个月强行视为31天，除以一个月的天数31 */
+        OraDecimal monthsFraction = dayDiff.divide(DAYS_OF_MONTH);
+
+        /* 汇总计算结果并返回 */
+        months = months.add(monthsFraction);
+        return months;
     }
 
     /**
@@ -221,7 +262,7 @@ public class Utils {
      * @return 对应的 OraDecimal 对象
      */
     private static OraDecimal toOraDecimal(Number n) {
-        if (n instanceof OraDecimal ) {
+        if (n instanceof OraDecimal) {
             return (OraDecimal) n;
         }
         // 对于 Integer 和 Long，通过字符串构造以最大程度保证精度准确性。
@@ -231,11 +272,10 @@ public class Utils {
         throw new IllegalArgumentException("不支持的数字类型: " + n.getClass().getName() + "，仅支持 Integer, Long 和 OraDecimal");
     }
 
-
     /**
      * 是否是所在月份的最后1填
      */
-    private static boolean isLastDayOfMonth(LocalDateTime date) {
+    private static boolean isLastDayOfMonth(ZonedDateTime date) {
         return date.getDayOfMonth() == date.toLocalDate().lengthOfMonth();
     }
 }
