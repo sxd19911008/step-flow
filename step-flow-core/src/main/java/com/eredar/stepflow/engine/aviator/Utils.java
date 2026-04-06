@@ -21,8 +21,8 @@ public class Utils {
     public static final String YEARS_BETWEEN_Y = "Y";
     public static final String YEARS_BETWEEN_L = "L";
     private static final List<String> YEARS_BETWEEN_LIST = new ArrayList<>(Arrays.asList(YEARS_BETWEEN_Y, YEARS_BETWEEN_L));
-    private static final OraDecimal DAYS_OF_MONTH = new OraDecimal("31");
     private static final OraDecimal SECOND_OF_DAY = new OraDecimal("86400");
+    private static final OraDecimal SECOND_OF_MONTH = new OraDecimal("2678400");
 
 
     /**
@@ -196,23 +196,24 @@ public class Utils {
 
         // 如果不满足上述条件，计算小数部分
 
-        /* 计算秒数，除以一天的秒数换算成以day为单位的天数 */
+        /* 计算秒数 */
         long secondOfBegin = begin.toLocalTime().toSecondOfDay();
         long secondOfEnd = end.toLocalTime().toSecondOfDay();
-        long seconds = secondOfEnd - secondOfBegin;
-        // 换算成天数
-        OraDecimal dayFraction = OraDecimal.valueOf(seconds).divide(SECOND_OF_DAY);
+        long secondsByHours = secondOfEnd - secondOfBegin;
 
-        /* 计算天数 */
+        /* 计算天数，然后换算成秒 */
         long dayOfBegin = begin.getDayOfMonth();
         long dayOfEnd = end.getDayOfMonth();
         // 相差天数整数部分
         long days = dayOfEnd - dayOfBegin;
-        // 加上小数部分
-        OraDecimal dayDiff = OraDecimal.valueOf(days).add(dayFraction);
+        // 换算成秒
+        OraDecimal secondsByDays = OraDecimal.valueOf(days).multiply(SECOND_OF_DAY);
+        // 汇总
+        OraDecimal seconds = OraDecimal.valueOf(secondsByHours).add(secondsByDays);
 
-        /* 根据Oracle数据库规则，一个月强行视为31天，除以一个月的天数31 */
-        OraDecimal monthsFraction = dayDiff.divide(DAYS_OF_MONTH);
+        /* 根据Oracle数据库规则，一个月强行视为31天。这里用剩余时间的总秒数，除以一个月的总秒数 */
+        // 非整数部分的月份数
+        OraDecimal monthsFraction = seconds.divide(SECOND_OF_MONTH);
 
         /* 汇总计算结果并返回 */
         months = months.add(monthsFraction);

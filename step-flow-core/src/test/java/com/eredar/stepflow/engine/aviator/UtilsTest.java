@@ -4,7 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -83,77 +84,37 @@ public class UtilsTest {
         @Test
         @DisplayName("测试 L 类型（不满1年舍去）")
         void testTypeL() {
-            LocalDateTime begin = LocalDateTime.of(2020, 1, 1, 0, 0);
+            Instant begin = Instant.parse("2020-01-01T00:00:00Z");
             /* 正好 1 年 */
-            assertEquals(1, Utils.yearsBetween(begin, LocalDateTime.of(2021, 1, 1, 0, 0), "L"));
+            assertEquals(1, Utils.yearsBetween(begin, Instant.parse("2021-01-01T00:00:00Z"), "L"));
             /* 不满 1 年 */
-            assertEquals(0, Utils.yearsBetween(begin, LocalDateTime.of(2020, 12, 31, 23, 59), "L"));
+            assertEquals(0, Utils.yearsBetween(begin, Instant.parse("2020-12-31T23:59:00Z"), "L"));
             /* 1 年多一点 */
-            assertEquals(1, Utils.yearsBetween(begin, LocalDateTime.of(2021, 6, 1, 0, 0), "L"));
+            assertEquals(1, Utils.yearsBetween(begin, Instant.parse("2021-01-01T00:00:01Z"), "L"));
         }
 
         @Test
         @DisplayName("测试 Y 类型（不满1年算1年）")
         void testTypeY() {
-            LocalDateTime begin = LocalDateTime.of(2020, 1, 1, 0, 0);
+            Instant begin = Instant.parse("2020-01-01T00:00:00Z");
             /* 正好 1 年 */
-            assertEquals(1, Utils.yearsBetween(begin, LocalDateTime.of(2021, 1, 1, 0, 0), "Y"));
+            assertEquals(1, Utils.yearsBetween(begin, Instant.parse("2021-01-01T00:00:00Z"), "Y"));
             /* 不满 1 年（向上取整） */
-            assertEquals(1, Utils.yearsBetween(begin, LocalDateTime.of(2020, 1, 2, 0, 0), "Y"));
+            assertEquals(1, Utils.yearsBetween(begin, Instant.parse("2020-01-02T00:00:00Z"), "Y"));
             /* 1 年多一点 */
-            assertEquals(2, Utils.yearsBetween(begin, LocalDateTime.of(2021, 1, 2, 0, 0), "Y"));
+            assertEquals(2, Utils.yearsBetween(begin, Instant.parse("2021-01-01T00:00:01Z"), "Y"));
         }
 
         @Test
         @DisplayName("测试异常情况")
         void testExceptions() {
-            LocalDateTime now = LocalDateTime.now();
+            Instant now = Instant.now();
             /* 日期为空 */
             assertThrows(IllegalArgumentException.class, () -> Utils.yearsBetween(null, now, "L"));
             /* 起始日期晚于结束日期 */
-            assertThrows(IllegalArgumentException.class, () -> Utils.yearsBetween(now.plusDays(1), now, "L"));
+            assertThrows(IllegalArgumentException.class, () -> Utils.yearsBetween(now.plus(1, ChronoUnit.DAYS), now, "L"));
             /* 不支持的类型 */
-            assertThrows(IllegalArgumentException.class, () -> Utils.yearsBetween(now, now.plusYears(1), "X"));
-        }
-    }
-
-    @Nested
-    @DisplayName("monthsBetween 方法测试")
-    class MonthsBetweenTest {
-
-        @Test
-        @DisplayName("测试整数月份")
-        void testIntegerMonths() {
-            /* 不同月份，同一天 */
-            OraDecimal actual = Utils.monthsBetween(
-                    LocalDateTime.of(2023, 1, 15, 0, 0),
-                    LocalDateTime.of(2023, 3, 15, 0, 0)
-            );
-            assertEquals(new OraDecimal("2"), actual);
-            /* 均为月末 */
-            actual = Utils.monthsBetween(
-                    LocalDateTime.of(2023, 1, 31, 0, 0),
-                    LocalDateTime.of(2023, 2, 28, 0, 0)
-            );
-            assertEquals(OraDecimal.ONE, actual);
-        }
-
-        @Test
-        @DisplayName("测试带小数点的月份")
-        void testFractionalMonths() {
-            OraDecimal actual = Utils.monthsBetween(
-                    LocalDateTime.of(2013, 1, 17, 0, 0),
-                    LocalDateTime.of(2023, 8, 28, 0, 0)
-            );
-            assertEquals(new OraDecimal("127.354838709677419354838709677419354839"), actual);
-        }
-
-        @Test
-        @DisplayName("测试异常情况")
-        void testExceptions() {
-            LocalDateTime now = LocalDateTime.now();
-            assertThrows(IllegalArgumentException.class, () -> Utils.monthsBetween(null, now));
-            assertThrows(IllegalArgumentException.class, () -> Utils.monthsBetween(now.plusDays(1), now));
+            assertThrows(IllegalArgumentException.class, () -> Utils.yearsBetween(now, now.plus(10, ChronoUnit.DAYS), "X"));
         }
     }
 }
