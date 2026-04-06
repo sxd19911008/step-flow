@@ -21,8 +21,8 @@ public class CalcUtils {
         long endSeconds = endDate.getEpochSecond();
         // 获取总秒数差
         OraDecimal secondsDiff = OraDecimal.valueOf(endSeconds - beginSeconds);
-        // 计算天数
-        return secondsDiff.divide(AviatorConstants.SECOND_OF_DAY);
+        // 计算天数，Oracle日期相减场景违反正常的精度逻辑，强行保留40位小数
+        return secondsDiff.divide(AviatorConstants.SECOND_OF_DAY, 40);
     }
 
     /**
