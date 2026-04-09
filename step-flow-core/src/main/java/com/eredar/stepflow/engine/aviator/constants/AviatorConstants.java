@@ -1,4 +1,6 @@
-package com.eredar.stepflow.engine.aviator;
+package com.eredar.stepflow.engine.aviator.constants;
+
+import com.eredar.stepflow.engine.aviator.number.OraDecimal;
 
 public class AviatorConstants {
 

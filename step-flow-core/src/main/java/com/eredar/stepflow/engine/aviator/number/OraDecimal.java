@@ -1,4 +1,4 @@
-package com.eredar.stepflow.engine.aviator;
+package com.eredar.stepflow.engine.aviator.number;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,8 +14,23 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
         this.decimal = this.oracleDecimal(decimal);
     }
 
-    public OraDecimal(String decimalString) {
-        this(new BigDecimal(decimalString));
+    public OraDecimal(String val) {
+        this(new BigDecimal(val));
+    }
+
+    public static OraDecimal valueOf(long unscaledVal, int scale) {
+        BigDecimal bigDecimal = BigDecimal.valueOf(unscaledVal, scale);
+        return new OraDecimal(bigDecimal);
+    }
+
+    public static OraDecimal valueOf(long val) {
+        BigDecimal bigDecimal = BigDecimal.valueOf(val);
+        return new OraDecimal(bigDecimal);
+    }
+
+    public static OraDecimal valueOf(double val) {
+        BigDecimal bigDecimal = BigDecimal.valueOf(val);
+        return new OraDecimal(bigDecimal);
     }
 
     public OraDecimal add(OraDecimal augend) {
@@ -51,6 +66,29 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
         return new OraDecimal(result);
     }
 
+    /**
+     * 取余数
+     * <p>this % divisor
+     */
+    public OraDecimal remainder(OraDecimal divisor) {
+        return new OraDecimal(this.decimal.remainder(divisor.getDecimal()));
+
+    }
+
+    /**
+     * 取绝对值
+     */
+    public OraDecimal abs() {
+        return new OraDecimal(this.decimal.abs());
+    }
+
+    /**
+     * 返回其数值乘以 -1 的结果
+     */
+    public OraDecimal negate() {
+        return new OraDecimal(this.decimal.negate());
+    }
+
     @Override
     public int compareTo(OraDecimal o) {
         return this.decimal.compareTo(o.getDecimal());
@@ -79,21 +117,6 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
     @Override
     public String toString() {
         return this.decimal.stripTrailingZeros().toPlainString();
-    }
-
-    public static OraDecimal valueOf(long unscaledVal, int scale) {
-        BigDecimal bigDecimal = BigDecimal.valueOf(unscaledVal, scale);
-        return new OraDecimal(bigDecimal);
-    }
-
-    public static OraDecimal valueOf(long val) {
-        BigDecimal bigDecimal = BigDecimal.valueOf(val);
-        return new OraDecimal(bigDecimal);
-    }
-
-    public static OraDecimal valueOf(double val) {
-        BigDecimal bigDecimal = BigDecimal.valueOf(val);
-        return new OraDecimal(bigDecimal);
     }
 
     /**

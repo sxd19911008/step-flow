@@ -1,13 +1,13 @@
 package com.eredar.stepflow.engine.aviator.function;
 
-import com.eredar.stepflow.engine.aviator.CalcUtils;
-import com.eredar.stepflow.engine.aviator.OraDecimal;
+import com.eredar.stepflow.engine.aviator.object.SFAviatorJavaType;
+import com.eredar.stepflow.engine.aviator.object.SFAviatorNumber;
+import com.googlecode.aviator.lexer.token.OperatorType;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
-import com.googlecode.aviator.runtime.type.AviatorLong;
+import com.googlecode.aviator.runtime.type.AviatorJavaType;
+import com.googlecode.aviator.runtime.type.AviatorNumber;
 import com.googlecode.aviator.runtime.type.AviatorObject;
-import com.googlecode.aviator.runtime.type.AviatorRuntimeJavaType;
 
-import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -15,55 +15,30 @@ import java.util.Map;
  */
 public class SubFunction extends AbstractFunction {
 
-    @Override
-    public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
-        Object v1 = arg1.getValue(env);
-        Object v2 = arg2.getValue(env);
-
-        if (v1 instanceof OraDecimal && v2 instanceof OraDecimal) {
-            OraDecimal a = (OraDecimal) v1;
-            OraDecimal b = (OraDecimal) v2;
-            return AviatorRuntimeJavaType.valueOf(a.subtract(b));
-        }
-        if (v1 instanceof OraDecimal && CalcUtils.isSupportedInteger(v2)) {
-            OraDecimal a = (OraDecimal) v1;
-            return AviatorRuntimeJavaType.valueOf(a.subtract(new OraDecimal(String.valueOf(v2))));
-        }
-        if (CalcUtils.isSupportedInteger(v1) && v2 instanceof OraDecimal) {
-            OraDecimal b = (OraDecimal) v2;
-            return AviatorRuntimeJavaType.valueOf(new OraDecimal(String.valueOf(v1)).subtract(b));
-        }
-
-        if (CalcUtils.isSupportedInteger(v1) && CalcUtils.isSupportedInteger(v2)) {
-            // 统一转为 long 进行运算，防止溢出
-            long res = ((Number) v1).longValue() - ((Number) v2).longValue();
-            // 如果结果在 Integer 范围内，返回 Integer
-            if (res >= Integer.MIN_VALUE && res <= Integer.MAX_VALUE) {
-                return AviatorRuntimeJavaType.valueOf((int) res);
-            }
-            // 返回 Long 类型
-            return AviatorLong.valueOf(res);
-        }
-
-        // 2个日期相减，得到间隔天数，可以为负值。
-        if (v1 instanceof Instant && v2 instanceof Instant) {
-            Instant a = (Instant) v1;
-            Instant b = (Instant) v2;
-            return AviatorRuntimeJavaType.valueOf(CalcUtils.oracleDaysBetween(a, b));
-        }
-
-        throw new IllegalArgumentException(String.format(
-                "不支持的类型: %s (%s) 和 %s (%s). 仅支持 Integer, Long 和 OraDecimal。",
-                v1,
-                v1 != null ? v1.getClass().getSimpleName() : "null",
-                v2,
-                v2 != null ? v2.getClass().getSimpleName() : "null"
-        ));
-    }
+    private static final long serialVersionUID = -5555693700627703384L;
 
     @Override
     public String getName() {
-        return "sub";
+        return OperatorType.SUB.token;
+    }
+
+    @Override
+    public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
+        // AviatorJavaType 代表从上下文map获取数据后，刚刚进入计算
+        if (arg1.getClass() == AviatorJavaType.class) {
+            // 类型转换
+            SFAviatorJavaType sfAviatorJavaType = new SFAviatorJavaType(((AviatorJavaType) arg1).getName());
+            // 计算
+            return sfAviatorJavaType.sub(arg2, env);
+        } else {
+            // AviatorNumber 需要转换成自定义的 SFAviatorNumber 计算
+            if (arg1 instanceof AviatorNumber) {
+                SFAviatorNumber sfArg1 = SFAviatorNumber.toSFAviatorNumber(arg1, env);
+                return sfArg1.sub(arg2, env);
+            } else { // 其他场景直接计算
+                return arg1.sub(arg2, env);
+            }
+        }
     }
 }
 

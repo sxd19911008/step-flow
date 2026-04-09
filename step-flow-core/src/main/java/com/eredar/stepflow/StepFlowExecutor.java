@@ -142,17 +142,17 @@ public class StepFlowExecutor {
 
             // 如果用户不传入，则使用默认实现
             if (this.paramExpressionEngine == null) {
-                this.paramExpressionEngine = new AviatorParamExpressionEngine();
+                this.paramExpressionEngine = new AviatorParamExpressionEngine(configProperties.getParamExpressionEngine());
             }
 
             // 如果用户不传入，则使用默认实现
             if (this.conditionExpressionEngine == null) {
-                this.conditionExpressionEngine = new AviatorConditionExpressionEngine();
+                this.conditionExpressionEngine = new AviatorConditionExpressionEngine(configProperties.getConditionExpressionEngine());
             }
 
             // 如果用户不传入，则使用默认实现
             if (this.businessExpressionEngine == null) {
-                this.businessExpressionEngine = new AviatorBusinessExpressionEngine();
+                this.businessExpressionEngine = new AviatorBusinessExpressionEngine(configProperties.getBusinessExpressionEngine());
             }
 
             // 防止空指针

@@ -1,17 +1,20 @@
 package com.eredar.stepflow;
 
 import com.eredar.stepflow.dto.CalcDTO;
-import com.eredar.stepflow.engine.aviator.OraDecimal;
+import com.eredar.stepflow.engine.aviator.number.OraDecimal;
 import com.eredar.stepflow.flow.dto.InputFlow;
 import com.eredar.stepflow.flow.intf.FlowProvider;
+import com.eredar.stepflow.javaMethod.ChooseRes;
 import com.eredar.stepflow.step.constants.StepConstantTypeEnum;
 import com.eredar.stepflow.step.constants.StepContentTypeEnum;
 import com.eredar.stepflow.step.dto.StepData;
+import com.eredar.stepflow.step.intf.JavaStep;
 import com.eredar.stepflow.step.intf.StepDataProvider;
 import com.eredar.stepflow.utils.StepFlowJsonUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -87,7 +90,11 @@ public class StepFlowExecutorTestTest {
                 );
             }
         };
+
+        Map<String, JavaStep> javaStepMap = new HashMap<>();
+        javaStepMap.put("chooseRes", new ChooseRes());
         StepFlowExecutor stepFlowExecutor = StepFlowExecutor.builder(stepDataProvider, flowProvider)
+                .javaStepMap(javaStepMap)
                 .build();
 
         Map<String, Object> contextMap = new ConcurrentHashMap<>();

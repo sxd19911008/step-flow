@@ -1,5 +1,6 @@
 package com.eredar.stepflow.config;
 
+import com.eredar.stepflow.engine.aviator.dto.StepFlowAviatorConfigProperties;
 import lombok.Data;
 
 import java.util.concurrent.RejectedExecutionHandler;
@@ -11,6 +12,12 @@ public class StepFlowConfigProperties {
 
     // 异步执行 FLowNode 的线程池
     private ThreadPoolProperty parallelThreadPool;
+    // 业务表达式引擎
+    private StepFlowAviatorConfigProperties businessExpressionEngine;
+    // 条件表达式引擎
+    private StepFlowAviatorConfigProperties ConditionExpressionEngine;
+    // 参数获取引擎
+    private StepFlowAviatorConfigProperties paramExpressionEngine;
 
     @Data
     public static class ThreadPoolProperty {

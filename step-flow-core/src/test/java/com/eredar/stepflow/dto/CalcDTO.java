@@ -1,6 +1,6 @@
 package com.eredar.stepflow.dto;
 
-import com.eredar.stepflow.engine.aviator.OraDecimal;
+import com.eredar.stepflow.engine.aviator.number.OraDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

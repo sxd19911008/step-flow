@@ -48,8 +48,8 @@ public class StepFlowAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(value = BusinessExpressionEngine.class)
-    public BusinessExpressionEngine businessExpressionEngine() {
-        return new AviatorBusinessExpressionEngine();
+    public BusinessExpressionEngine businessExpressionEngine(StepFlowConfigProperties stepFlowConfigProperties) {
+        return new AviatorBusinessExpressionEngine(stepFlowConfigProperties.getBusinessExpressionEngine());
     }
 
     /**
@@ -57,8 +57,8 @@ public class StepFlowAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(value = ConditionExpressionEngine.class)
-    public ConditionExpressionEngine conditionExpressionEngine() {
-        return new AviatorConditionExpressionEngine();
+    public ConditionExpressionEngine conditionExpressionEngine(StepFlowConfigProperties stepFlowConfigProperties) {
+        return new AviatorConditionExpressionEngine(stepFlowConfigProperties.getConditionExpressionEngine());
     }
 
     /**
@@ -66,8 +66,8 @@ public class StepFlowAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(value = ParamExpressionEngine.class)
-    public ParamExpressionEngine paramExpressionEngine() {
-        return new AviatorParamExpressionEngine();
+    public ParamExpressionEngine paramExpressionEngine(StepFlowConfigProperties stepFlowConfigProperties) {
+        return new AviatorParamExpressionEngine(stepFlowConfigProperties.getParamExpressionEngine());
     }
 
     @Bean

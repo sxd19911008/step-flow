@@ -11,32 +11,32 @@ import com.googlecode.aviator.runtime.type.AviatorObject;
 import java.util.Map;
 
 /**
- * 自定义乘法函数
+ * 自定义取反函数，数字乘以 -1
  */
-public class MultFunction extends AbstractFunction {
+public class NegFunction extends AbstractFunction {
 
-    private static final long serialVersionUID = -942454058434637187L;
+    private static final long serialVersionUID = -9218530510112178479L;
 
     @Override
     public String getName() {
-        return OperatorType.MULT.token;
+        return OperatorType.NEG.token;
     }
 
     @Override
-    public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
+    public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         // AviatorJavaType 代表从上下文map获取数据后，刚刚进入计算
         if (arg1.getClass() == AviatorJavaType.class) {
             // 类型转换
             SFAviatorJavaType sfAviatorJavaType = new SFAviatorJavaType(((AviatorJavaType) arg1).getName());
             // 计算
-            return sfAviatorJavaType.mult(arg2, env);
+            return sfAviatorJavaType.neg(env);
         } else {
             // AviatorNumber 需要转换成自定义的 SFAviatorNumber 计算
             if (arg1 instanceof AviatorNumber) {
                 SFAviatorNumber sfArg1 = SFAviatorNumber.toSFAviatorNumber(arg1, env);
-                return sfArg1.mult(arg2, env);
+                return sfArg1.neg(env);
             } else { // 其他场景直接计算
-                return arg1.mult(arg2, env);
+                return arg1.neg(env);
             }
         }
     }
