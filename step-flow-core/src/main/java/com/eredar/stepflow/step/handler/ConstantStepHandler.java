@@ -1,7 +1,7 @@
 package com.eredar.stepflow.step.handler;
 
 import com.eredar.stepflow.dto.ExecutorsContext;
-import com.eredar.stepflow.step.constants.StepConstantTypeEnum;
+import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
 import com.eredar.stepflow.dto.OneOffParams;
 import com.eredar.stepflow.dto.StepFlowContext;
 import com.eredar.stepflow.step.dto.StepData;
@@ -19,13 +19,13 @@ public class ConstantStepHandler implements StepHandler {
         String constant = stepData.getContent();
         String returnType = stepData.getReturnType();
 
-        if (StepConstantTypeEnum.DECIMAL.getTypeCode().equals(returnType)) {
+        if (StepReturnTypeEnum.DECIMAL.getTypeCode().equals(returnType)) {
             return new OraDecimal(constant);
-        } else if (StepConstantTypeEnum.STRING.getTypeCode().equals(returnType)) {
+        } else if (StepReturnTypeEnum.STRING.getTypeCode().equals(returnType)) {
             return constant;
-        } else if (StepConstantTypeEnum.BOOLEAN.getTypeCode().equals(returnType)) {
+        } else if (StepReturnTypeEnum.BOOLEAN.getTypeCode().equals(returnType)) {
             return Boolean.valueOf(constant);
-        } else if (StepConstantTypeEnum.DATE.getTypeCode().equals(returnType)) {
+        } else if (StepReturnTypeEnum.DATE.getTypeCode().equals(returnType)) {
             // TODO 修正 Date 类型后再实现，要求用 ISO-8601 日期字符串格式
             throw new RuntimeException("暂不支持DATE类型");
         }

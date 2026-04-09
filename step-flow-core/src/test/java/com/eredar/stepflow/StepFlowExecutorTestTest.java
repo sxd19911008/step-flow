@@ -5,7 +5,7 @@ import com.eredar.stepflow.engine.aviator.number.OraDecimal;
 import com.eredar.stepflow.flow.dto.InputFlow;
 import com.eredar.stepflow.flow.intf.FlowProvider;
 import com.eredar.stepflow.javaMethod.ChooseRes;
-import com.eredar.stepflow.step.constants.StepConstantTypeEnum;
+import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
 import com.eredar.stepflow.step.constants.StepContentTypeEnum;
 import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.step.intf.JavaStep;
@@ -33,7 +33,7 @@ public class StepFlowExecutorTestTest {
                                 .stepType("COMMON")
                                 .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
                                 .content("a + b")
-                                .returnType(StepConstantTypeEnum.DECIMAL.getTypeCode())
+                                .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                                 .paramNameList(Arrays.asList("a", "b"))
                                 .build(),
                         StepData.builder()
@@ -42,7 +42,7 @@ public class StepFlowExecutorTestTest {
                                 .stepType("COMMON")
                                 .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
                                 .content("a - b")
-                                .returnType(StepConstantTypeEnum.DECIMAL.getTypeCode())
+                                .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                                 .paramNameList(Arrays.asList("a", "b"))
                                 .build(),
                         StepData.builder()
@@ -51,7 +51,7 @@ public class StepFlowExecutorTestTest {
                                 .stepType("COMMON")
                                 .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
                                 .content("a * b")
-                                .returnType(StepConstantTypeEnum.DECIMAL.getTypeCode())
+                                .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                                 .paramNameList(Arrays.asList("a", "b"))
                                 .build(),
                         StepData.builder()
@@ -60,7 +60,7 @@ public class StepFlowExecutorTestTest {
                                 .stepType("COMMON")
                                 .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
                                 .content("a / b")
-                                .returnType(StepConstantTypeEnum.DECIMAL.getTypeCode())
+                                .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                                 .paramNameList(Arrays.asList("a", "b"))
                                 .build(),
                         StepData.builder()
@@ -69,7 +69,7 @@ public class StepFlowExecutorTestTest {
                                 .stepType("JAVA")
                                 .contentType(StepContentTypeEnum.JAVA.getTypeCode())
                                 .content("chooseRes")
-                                .returnType(StepConstantTypeEnum.DECIMAL.getTypeCode())
+                                .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                                 .paramNameList(Arrays.asList("calc_multiply", "calc_divide"))
                                 .build()
                 );

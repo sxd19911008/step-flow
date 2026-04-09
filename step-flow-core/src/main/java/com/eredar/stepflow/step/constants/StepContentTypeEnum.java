@@ -39,6 +39,6 @@ public enum StepContentTypeEnum {
      * @return true: 不合法; false: 合法
      */
     private static boolean constantValidation(StepData stepData) {
-        return StepFlowUtils.isBlank(stepData.getContent()) || StepConstantTypeEnum.isConstantTypeIllegal(stepData.getReturnType());
+        return StepFlowUtils.isBlank(stepData.getContent()) || StepReturnTypeEnum.isConstantTypeIllegal(stepData.getReturnType());
     }
 }
