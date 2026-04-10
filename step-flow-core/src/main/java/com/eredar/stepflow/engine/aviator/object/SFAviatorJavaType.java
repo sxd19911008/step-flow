@@ -13,6 +13,7 @@ import com.googlecode.aviator.runtime.type.*;
 import com.googlecode.aviator.runtime.type.AviatorRuntimeJavaElementType.ContainerType;
 import com.googlecode.aviator.utils.*;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
 /**
  * Aviator 框架计算过程总入口
  */
+@Slf4j
 public class SFAviatorJavaType extends AviatorObject {
 
     private static final long serialVersionUID = 4742012682922854365L;
@@ -368,9 +370,9 @@ public class SFAviatorJavaType extends AviatorObject {
                 Reflector.setProperty(env, this.name, value.getValue(env));
             } catch (Throwable t) {
                 if (RuntimeUtils.getInstance(env).getOptionValue(Options.TRACE_EVAL).bool) {
-                    // TODO 更换日志框架
-                    t.printStackTrace();
+                    log.error("Aviator Reflector exception", t);
                 }
+                //noinspection DataFlowIssue
                 throw Reflector.sneakyThrow(t);
             }
             return AviatorRuntimeJavaType.valueOf(v);
@@ -391,8 +393,7 @@ public class SFAviatorJavaType extends AviatorObject {
 
         } catch (Throwable t) {
             if (RuntimeUtils.getInstance(env).getOptionValue(Options.TRACE_EVAL).bool) {
-                // TODO 更换日志框架
-                t.printStackTrace();
+                log.error("Aviator Reflector exception", t);
             }
             if (RuntimeUtils.getInstance(env).getOptionValue(Options.NIL_WHEN_PROPERTY_NOT_FOUND).bool) {
                 return null;
