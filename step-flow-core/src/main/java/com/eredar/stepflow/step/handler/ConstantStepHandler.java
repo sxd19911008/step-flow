@@ -1,12 +1,15 @@
 package com.eredar.stepflow.step.handler;
 
 import com.eredar.stepflow.dto.ExecutorsContext;
-import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
 import com.eredar.stepflow.dto.OneOffParams;
 import com.eredar.stepflow.dto.StepFlowContext;
-import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.engine.aviator.number.OraDecimal;
+import com.eredar.stepflow.exception.StepFlowException;
+import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
+import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.step.intf.StepHandler;
+
+import java.time.ZonedDateTime;
 
 /**
  * 常量步骤处理器
@@ -26,9 +29,11 @@ public class ConstantStepHandler implements StepHandler {
         } else if (StepReturnTypeEnum.BOOLEAN.getTypeCode().equals(returnType)) {
             return Boolean.valueOf(constant);
         } else if (StepReturnTypeEnum.DATE.getTypeCode().equals(returnType)) {
-            // TODO 修正 Date 类型后再实现，要求用 ISO-8601 日期字符串格式
-            throw new RuntimeException("暂不支持DATE类型");
+            // 必须是 ISO-8601 日期字符串，如：2026-04-10T10:57:30+08:00  或者  2026-04-10T10:57:30+08:00[Asia/Shanghai]
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(constant);
+            return zonedDateTime.toInstant();
         }
-        return null;
+
+        throw new StepFlowException("未知的returnType类型：" + returnType);
     }
 }
