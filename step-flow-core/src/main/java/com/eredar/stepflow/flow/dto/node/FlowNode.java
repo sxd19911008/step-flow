@@ -2,8 +2,11 @@ package com.eredar.stepflow.flow.dto.node;
 
 import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.StepFlowContext;
+import com.eredar.stepflow.flow.dto.FlowNodeValidateContext;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.Nulls;
 import lombok.Getter;
 
 /**
@@ -26,6 +29,7 @@ import lombok.Getter;
 public abstract class FlowNode {
 
     // 节点类型
+    @JsonSetter(nulls = Nulls.FAIL)
     @Getter
     protected final String type;
 
@@ -35,4 +39,9 @@ public abstract class FlowNode {
     }
 
     public abstract void execute(StepFlowContext stepFlowContext, ExecutorsContext executorsContext);
+
+    /**
+     * 递归校验节点合法性
+     */
+    public abstract void validate(FlowNodeValidateContext context, String globalFlowCode);
 }

@@ -69,4 +69,13 @@ public class StepExecutor {
         }
         return step.execute(stepFlowContext, oneOffParams, executorsContext);
     }
+
+    /**
+     * 校验：是否存在指定的 stepCode
+     *
+     * @return true-存在; false-不存在
+     */
+    public boolean hasStepCode(String stepCode) {
+        return stepMap.containsKey(stepCode);
+    }
 }

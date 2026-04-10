@@ -2,8 +2,11 @@ package com.eredar.stepflow.flow.dto.node;
 
 import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.StepFlowContext;
+import com.eredar.stepflow.flow.dto.FlowNodeValidateContext;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import lombok.Getter;
 
 /**
@@ -12,12 +15,15 @@ import lombok.Getter;
  */
 public class IfElseFlowNode extends FlowNode {
 
+    @JsonSetter(nulls = Nulls.FAIL)
     @Getter
     private final String condition;
 
+    @JsonSetter(nulls = Nulls.FAIL)
     @Getter
     private final FlowNode trueFlowNode;
 
+    @JsonSetter(nulls = Nulls.FAIL)
     @Getter
     private final FlowNode falseFlowNode;
 
@@ -40,5 +46,12 @@ public class IfElseFlowNode extends FlowNode {
         } else {
             falseFlowNode.execute(stepFlowContext, executorsContext);
         }
+    }
+
+    @Override
+    public void validate(FlowNodeValidateContext context, String globalFlowCode) {
+        // 校验2个子节点
+        trueFlowNode.validate(context, globalFlowCode);
+        falseFlowNode.validate(context, globalFlowCode);
     }
 }

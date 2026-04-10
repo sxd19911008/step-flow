@@ -4,9 +4,12 @@ package com.eredar.stepflow.flow.dto.node;
 import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.OneOffParams;
 import com.eredar.stepflow.dto.StepFlowContext;
+import com.eredar.stepflow.flow.dto.FlowNodeValidateContext;
 import com.eredar.stepflow.utils.StepFlowUtils;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import lombok.Getter;
 
 import java.util.Map;
@@ -16,6 +19,7 @@ import java.util.Map;
  */
 public class StepFlowNode extends FlowNode {
 
+    @JsonSetter(nulls = Nulls.FAIL)
     @Getter
     private final String stepCode;
     // 调用该步骤需要映射的参数，解决当前 contextMap 中的参数名与步骤需要的参数名对不上的问题。
@@ -63,6 +67,14 @@ public class StepFlowNode extends FlowNode {
             }
             // 将所有默认字段名的字段放入上下文
             stepFlowContext.putAll(resMap);
+        }
+    }
+
+    @Override
+    public void validate(FlowNodeValidateContext context, String globalFlowCode) {
+        // 校验 stepCode 是否存在
+        if (context.stepCodeNotExist(this.stepCode)) {
+            context.saveErrMsg(globalFlowCode, String.format("stepCode[%s] not exist", this.stepCode));
         }
     }
 }

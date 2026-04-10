@@ -110,7 +110,7 @@ public class StepFlowExecutor {
             // 构建 step 执行器
             StepExecutor stepExecutor = this.buildStepExecutor();
             // 构建 flow 执行器
-            FlowExecutor flowExecutor = new FlowExecutor(flowProvider);
+            FlowExecutor flowExecutor = new FlowExecutor(flowProvider, stepExecutor);
 
             return new StepFlowExecutor(ExecutorsContext.builder()
                     .configProperties(configProperties)
