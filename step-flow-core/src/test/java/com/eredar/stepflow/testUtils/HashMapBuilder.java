@@ -11,7 +11,7 @@ public class HashMapBuilder<K, V> {
         this.map = map;
     }
 
-    public HashMapBuilder<K, V> builder() {
+    public static <K, V> HashMapBuilder<K, V> builder() {
         return new HashMapBuilder<>(new HashMap<>());
     }
 

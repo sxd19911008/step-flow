@@ -1,7 +1,7 @@
 package com.eredar.stepflow.engine.impl;
 
 import com.eredar.stepflow.engine.aviator.number.OraDecimal;
-import com.eredar.stepflow.testUtils.ConcurrentHashMapBuilder;
+import com.eredar.stepflow.testUtils.HashMapBuilder;
 import com.googlecode.aviator.exception.ExpressionRuntimeException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -40,56 +40,48 @@ public class AviatorAddTest {
                 // a(Long) + b(Long) → Long
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2L).put("b", 10L).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", 10L).build(),
                         12L
                 ),
                 // a(Long) + b(Integer) → Long（Aviator 内部将 Integer 提升为 Long）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2L).put("b", 10).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", 10).build(),
                         12L),
                 // a(Long) + b(BigInteger) → BigInteger（BigInteger 优先级高于 Long）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2L).put("b", new BigInteger("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", new BigInteger("10")).build(),
                         new BigInteger("12")
                 ),
                 // a(Long) + b(Double) → Double（Double 优先级高于 Long）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2L).put("b", 0.4836065573770491803278688524590163934426).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", 0.4836065573770491803278688524590163934426).build(),
                         new OraDecimal("2.48360655737704916")
                 ),
                 // a(Long) + b(BigDecimal) → BigDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2L).put("b", new BigDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", new BigDecimal("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(Long) + b(OraDecimal) → OraDecimal（最高优先级）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2L).put("b", new OraDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", new OraDecimal("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(Long) + b(String) → String（字符串拼接）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2L).put("b", "10").build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", "10").build(),
                         "210"
                 ),
                 // a(Long) + b(Instant) → String（Instant.toString() + 数字字符串）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2L).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
                         ExpressionRuntimeException.class
                 )
         );
@@ -119,57 +111,49 @@ public class AviatorAddTest {
                 // a(Integer) + b(Long) → Long
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2).put("b", 10L).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2).put("b", 10L).build(),
                         12L
                 ),
                 // a(Integer) + b(Integer) → Long（Aviator 将两个 Integer 统一存储为 Long）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2).put("b", 10).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2).put("b", 10).build(),
                         12L
                 ),
                 // a(Integer) + b(BigInteger) → BigInteger
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2).put("b", new BigInteger("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2).put("b", new BigInteger("10")).build(),
                         new BigInteger("12")
                 ),
                 // a(Integer) + b(Double) → Double
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2).put("b", 0.4836065573770491803278688524590163934426).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2).put("b", 0.4836065573770491803278688524590163934426).build(),
                         new OraDecimal("2.48360655737704916")
                 ),
                 // a(Integer) + b(BigDecimal) → BigDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2).put("b", new BigDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2).put("b", new BigDecimal("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(Integer) + b(OraDecimal) → OraDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2).put("b", new OraDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2).put("b", new OraDecimal("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(Integer) + b(String) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2).put("b", "10").build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2).put("b", "10").build(),
                         "210"
                 ),
                 // a(Integer) + b(Instant) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
                         ExpressionRuntimeException.class
                 )
         );
@@ -199,57 +183,49 @@ public class AviatorAddTest {
                 // a(BigInteger) + b(Long) → BigInteger
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("2")).put("b", 10L).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).put("b", 10L).build(),
                         new BigInteger("12")
                 ),
                 // a(BigInteger) + b(Integer) → BigInteger
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("2")).put("b", 10).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).put("b", 10).build(),
                         new BigInteger("12")
                 ),
                 // a(BigInteger) + b(BigInteger) → BigInteger
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("2")).put("b", new BigInteger("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).put("b", new BigInteger("10")).build(),
                         new BigInteger("12")
                 ),
                 // a(BigInteger) + b(Double) → Double（Double 优先级高于 BigInteger）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("2")).put("b", 0.4836065573770491803278688524590163934426).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).put("b", 0.4836065573770491803278688524590163934426).build(),
                         new OraDecimal("2.48360655737704916")
                 ),
                 // a(BigInteger) + b(BigDecimal) → BigDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("2")).put("b", new BigDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).put("b", new BigDecimal("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(BigInteger) + b(OraDecimal) → OraDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("2")).put("b", new OraDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).put("b", new OraDecimal("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(BigInteger) + b(String) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("2")).put("b", "10").build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).put("b", "10").build(),
                         "210"
                 ),
                 // a(BigInteger) + b(Instant) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("2")).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
                         ExpressionRuntimeException.class
                 )
         );
@@ -279,57 +255,49 @@ public class AviatorAddTest {
                 // a(Double) + b(Long) → Double
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 0.4836065573770491803278688524590163934426).put("b", 2L).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", 2L).build(),
                         new OraDecimal("2.48360655737704916")
                 ),
                 // a(Double) + b(Integer) → Double
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 0.4836065573770491803278688524590163934426).put("b", 2).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", 2).build(),
                         new OraDecimal("2.48360655737704916")
                 ),
                 // a(Double) + b(BigInteger) → Double
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 0.4836065573770491803278688524590163934426).put("b", new BigInteger("2")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", new BigInteger("2")).build(),
                         new OraDecimal("2.48360655737704916")
                 ),
                 // a(Double) + b(Double) → Double
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 0.4836065573770491803278688524590163934426).put("b", 0.4836065573770491803278688524590163934426).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", 0.4836065573770491803278688524590163934426).build(),
                         new OraDecimal("0.96721311475409832")
                 ),
                 // a(Double) + b(BigDecimal) → BigDecimal（BigDecimal 优先级高于 Double）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 0.4836065573770491803278688524590163934426).put("b", new BigDecimal("2")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", new BigDecimal("2")).build(),
                         new OraDecimal("2.48360655737704916")
                 ),
                 // a(Double) + b(OraDecimal) → OraDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 0.4836065573770491803278688524590163934426).put("b", new OraDecimal("2")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", new OraDecimal("2")).build(),
                         new OraDecimal("2.48360655737704916")
                 ),
                 // a(Double) + b(String) → String（Double.toString() = "2.0"）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 0.4836065573770491803278688524590163934426).put("b", "2").build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", "2").build(),
                         "0.483606557377049162"
                 ),
                 // a(Double) + b(Instant) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", 2.0d).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 2.0d).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
                         ExpressionRuntimeException.class
                 )
         );
@@ -359,57 +327,49 @@ public class AviatorAddTest {
                 // a(BigDecimal) + b(Long) → BigDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigDecimal("2")).put("b", 10L).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("2")).put("b", 10L).build(),
                         new OraDecimal("12")
                 ),
                 // a(BigDecimal) + b(Integer) → BigDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigDecimal("2")).put("b", 10).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("2")).put("b", 10).build(),
                         new OraDecimal("12")
                 ),
                 // a(BigDecimal) + b(BigInteger) → BigDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigDecimal("2")).put("b", new BigInteger("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("2")).put("b", new BigInteger("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(BigDecimal) + b(Double) → BigDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigDecimal("2")).put("b", 0.4836065573770491803278688524590163934426).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("2")).put("b", 0.4836065573770491803278688524590163934426).build(),
                         new OraDecimal("2.48360655737704916")
                 ),
                 // a(BigDecimal) + b(BigDecimal) → BigDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigDecimal("2")).put("b", new BigDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("2")).put("b", new BigDecimal("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(BigDecimal) + b(OraDecimal) → OraDecimal（OraDecimal 优先级最高）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigDecimal("2")).put("b", new OraDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("2")).put("b", new OraDecimal("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(BigDecimal) + b(String) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigDecimal("2")).put("b", "10").build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("2")).put("b", "10").build(),
                         "210"
                 ),
                 // a(BigDecimal) + b(Instant) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new BigDecimal("2")).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("2")).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
                         ExpressionRuntimeException.class
                 )
         );
@@ -439,57 +399,49 @@ public class AviatorAddTest {
                 // a(OraDecimal) + b(Long) → OraDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new OraDecimal("2")).put("b", 10L).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("2")).put("b", 10L).build(),
                         new OraDecimal("12")
                 ),
                 // a(OraDecimal) + b(Integer) → OraDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new OraDecimal("2")).put("b", 10).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("2")).put("b", 10).build(),
                         new OraDecimal("12")
                 ),
                 // a(OraDecimal) + b(BigInteger) → OraDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new OraDecimal("2")).put("b", new BigInteger("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("2")).put("b", new BigInteger("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(OraDecimal) + b(Double) → OraDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new OraDecimal("2")).put("b", 0.4836065573770491803278688524590163934426).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("2")).put("b", 0.4836065573770491803278688524590163934426).build(),
                         new OraDecimal("2.48360655737704916")
                 ),
                 // a(OraDecimal) + b(BigDecimal) → OraDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new OraDecimal("2")).put("b", new BigDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("2")).put("b", new BigDecimal("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(OraDecimal) + b(OraDecimal) → OraDecimal
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new OraDecimal("2")).put("b", new OraDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("2")).put("b", new OraDecimal("10")).build(),
                         new OraDecimal("12")
                 ),
                 // a(OraDecimal) + b(String) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new OraDecimal("2")).put("b", "10").build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("2")).put("b", "10").build(),
                         "210"
                 ),
                 // a(OraDecimal) + b(Instant) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", new OraDecimal("2")).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("2")).put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
                         ExpressionRuntimeException.class
                 )
         );
@@ -520,57 +472,49 @@ public class AviatorAddTest {
                 // a(String) + b(Long) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", "2").put("b", 10L).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", "2").put("b", 10L).build(),
                         "210"
                 ),
                 // a(String) + b(Integer) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", "2").put("b", 10).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", "2").put("b", 10).build(),
                         "210"
                 ),
                 // a(String) + b(BigInteger) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", "2").put("b", new BigInteger("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", "2").put("b", new BigInteger("10")).build(),
                         "210"
                 ),
                 // a(String) + b(Double) → String（Double.toString() = "10.0"）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", "2").put("b", 0.4836065573770491803278688524590163934426).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", "2").put("b", 0.4836065573770491803278688524590163934426).build(),
                         "20.48360655737704916"
                 ),
                 // a(String) + b(BigDecimal) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", "2").put("b", new BigDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", "2").put("b", new BigDecimal("10")).build(),
                         "210"
                 ),
                 // a(String) + b(OraDecimal) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", "2").put("b", new OraDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", "2").put("b", new OraDecimal("10")).build(),
                         "210"
                 ),
                 // a(String) + b(String) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", "2").put("b", "10").build(),
+                        HashMapBuilder.<String, Object>builder().put("a", "2").put("b", "10").build(),
                         "210"
                 ),
                 // a(String) + b(Instant) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", "2").put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", "2").put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
                         "2" + Instant.parse("2024-01-01T00:00:10Z")
                 )
         );
@@ -604,57 +548,49 @@ public class AviatorAddTest {
                 // a(Instant) + b(Long) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", aInstant).put("b", 10L).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", 10L).build(),
                         ExpressionRuntimeException.class
                 ),
                 // a(Instant) + b(Integer) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", aInstant).put("b", 10).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", 10).build(),
                         ExpressionRuntimeException.class
                 ),
                 // a(Instant) + b(BigInteger) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", aInstant).put("b", new BigInteger("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", new BigInteger("10")).build(),
                         ExpressionRuntimeException.class
                 ),
                 // a(Instant) + b(Double) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", aInstant).put("b", 0.4836065573770491803278688524590163934426).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", 0.4836065573770491803278688524590163934426).build(),
                         ExpressionRuntimeException.class
                 ),
                 // a(Instant) + b(BigDecimal) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", aInstant).put("b", new BigDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", new BigDecimal("10")).build(),
                         ExpressionRuntimeException.class
                 ),
                 // a(Instant) + b(OraDecimal) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", aInstant).put("b", new OraDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", new OraDecimal("10")).build(),
                         ExpressionRuntimeException.class
                 ),
                 // a(Instant) + b(String) → String
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", aInstant).put("b", "10").build(),
+                        HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", "10").build(),
                         ExpressionRuntimeException.class
                 ),
                 // a(Instant) + b(Instant) → String（两个 Instant 的 toString 拼接）
                 Arguments.of(
                         "a + b",
-                        ConcurrentHashMapBuilder.<String, Object>builder()
-                                .put("a", aInstant).put("b", bInstant).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", bInstant).build(),
                         ExpressionRuntimeException.class
                 )
         );
