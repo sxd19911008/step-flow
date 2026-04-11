@@ -1,7 +1,7 @@
 package com.eredar.stepflow.engine.aviator.number;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.util.Assert;
 
 public class OraDecimalTest {
 
@@ -15,7 +15,7 @@ public class OraDecimalTest {
 
     private void runDivideOneCase(String decimal1, String decimal2, String excepted) {
         OraDecimal actual = divide(decimal1, decimal2);
-        Assert.isTrue(actual.compareTo(new OraDecimal(excepted)) == 0, actual + " / " + excepted);
+        Assertions.assertEquals(0, actual.compareTo(new OraDecimal(excepted)), actual + " / " + excepted);
     }
 
     private OraDecimal divide(String decimal1, String decimal2) {
