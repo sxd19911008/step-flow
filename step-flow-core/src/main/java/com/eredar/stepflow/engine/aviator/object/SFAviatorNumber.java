@@ -43,7 +43,7 @@ public abstract class SFAviatorNumber extends AviatorObject {
 
     public static SFAviatorNumber valueOf(final Object value) {
         if (TypeUtils.isLong(value)) {
-            return SFAviatorLong.valueOf(((SFAviatorNumber) value).longValue());
+            return SFAviatorLong.valueOf(((Number) value).longValue());
         } else if (TypeUtils.isDouble(value)) {
             return new SFAviatorDecimal(new OraDecimal(String.valueOf(value)));
         } else if (TypeUtils.isBigInt(value)) {

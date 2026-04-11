@@ -1,6 +1,5 @@
 package com.eredar.stepflow.engine.aviator.object;
 
-import com.googlecode.aviator.runtime.type.AviatorDecimal;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.googlecode.aviator.runtime.type.AviatorType;
 
@@ -76,7 +75,7 @@ public class SFAviatorBigInt extends SFAviatorLong {
         switch (other.getAviatorType()) {
             case Decimal:
             case Double:
-                return AviatorDecimal.valueOf(this.toDecimal().subtract(other.toDecimal()));
+                return SFAviatorDecimal.valueOf(this.toDecimal().subtract(other.toDecimal()));
             default:
                 return SFAviatorBigInt.valueOf(this.toBigInt().subtract(other.toBigInt()));
         }
@@ -88,7 +87,7 @@ public class SFAviatorBigInt extends SFAviatorLong {
         switch (other.getAviatorType()) {
             case Decimal:
             case Double:
-                return AviatorDecimal.valueOf(this.toDecimal().multiply(other.toDecimal()));
+                return SFAviatorDecimal.valueOf(this.toDecimal().multiply(other.toDecimal()));
             default:
                 return SFAviatorBigInt.valueOf(this.toBigInt().multiply(other.toBigInt()));
         }
@@ -100,7 +99,7 @@ public class SFAviatorBigInt extends SFAviatorLong {
         switch (other.getAviatorType()) {
             case Decimal:
             case Double:
-                return AviatorDecimal.valueOf(this.toDecimal().remainder(other.toDecimal()));
+                return SFAviatorDecimal.valueOf(this.toDecimal().remainder(other.toDecimal()));
             default:
                 return SFAviatorBigInt.valueOf(this.toBigInt().mod(other.toBigInt()));
         }
@@ -112,7 +111,7 @@ public class SFAviatorBigInt extends SFAviatorLong {
         switch (other.getAviatorType()) {
             case Decimal:
             case Double:
-                return AviatorDecimal.valueOf(this.toDecimal().divide(other.toDecimal()));
+                return SFAviatorDecimal.valueOf(this.toDecimal().divide(other.toDecimal()));
             default:
                 return SFAviatorBigInt.valueOf(this.toBigInt().divide(other.toBigInt()));
         }

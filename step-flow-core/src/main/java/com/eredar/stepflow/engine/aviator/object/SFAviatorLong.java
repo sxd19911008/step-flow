@@ -101,7 +101,7 @@ public class SFAviatorLong extends SFAviatorNumber {
                 return SFAviatorLong.valueOf(this.longValue / other.longValue());
 //            case Decimal:
             default:
-                return AviatorDecimal.valueOf(toDecimal().divide(other.toDecimal()));
+                return SFAviatorDecimal.valueOf(toDecimal().divide(other.toDecimal()));
         }
     }
 
@@ -115,7 +115,7 @@ public class SFAviatorLong extends SFAviatorNumber {
                 return SFAviatorLong.valueOf(this.longValue + other.longValue());
 //            case Decimal:
             default:
-                return AviatorDecimal.valueOf(toDecimal().add(other.toDecimal()));
+                return SFAviatorDecimal.valueOf(toDecimal().add(other.toDecimal()));
         }
     }
 
@@ -129,7 +129,7 @@ public class SFAviatorLong extends SFAviatorNumber {
                 return SFAviatorLong.valueOf(this.longValue % other.longValue());
 //            case Decimal:
             default:
-                return AviatorDecimal.valueOf(toDecimal().remainder(other.toDecimal()));
+                return SFAviatorDecimal.valueOf(toDecimal().remainder(other.toDecimal()));
         }
     }
 
@@ -143,7 +143,7 @@ public class SFAviatorLong extends SFAviatorNumber {
                 return SFAviatorLong.valueOf(this.longValue * other.longValue());
 //            case Decimal:
             default:
-                return AviatorDecimal.valueOf(toDecimal().multiply(other.toDecimal()));
+                return SFAviatorDecimal.valueOf(toDecimal().multiply(other.toDecimal()));
         }
     }
 
@@ -358,7 +358,7 @@ public class SFAviatorLong extends SFAviatorNumber {
                 return SFAviatorLong.valueOf(this.longValue - other.longValue());
 //            case Decimal:
             default:
-                return AviatorDecimal.valueOf(toDecimal().subtract(other.toDecimal()));
+                return SFAviatorDecimal.valueOf(toDecimal().subtract(other.toDecimal()));
         }
     }
 
