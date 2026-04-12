@@ -111,7 +111,7 @@ public class Utils {
     }
 
     public static Long yearsBetween(Instant beginDate, Instant endDate, String type) {
-        return yearsBetween(beginDate, endDate, type, null);
+        return yearsBetween(beginDate, endDate, type, ZoneOffset.UTC);
     }
 
     /**
@@ -132,11 +132,6 @@ public class Utils {
         }
         if (!YEARS_BETWEEN_LIST.contains(type)) {
             throw new IllegalArgumentException("不支持该类型：" + type);
-        }
-
-        // 如果未传入时区，默认使用 UTC
-        if (zoneId == null) {
-            zoneId = ZoneOffset.UTC;
         }
 
         // 转换为 ZonedDateTime
