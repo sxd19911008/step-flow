@@ -62,8 +62,7 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
      * 示例：number(12,2)，保留2位小数。
      */
     public OraDecimal divide(OraDecimal divisor, int scale) {
-        BigDecimal result = this.decimal.divide(divisor.getDecimal(), scale, RoundingMode.HALF_UP);
-        return new OraDecimal(result);
+        return this.divide(divisor).setScale(scale);
     }
 
     /**
@@ -87,6 +86,32 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
      */
     public OraDecimal negate() {
         return new OraDecimal(this.decimal.negate());
+    }
+
+    public OraDecimal[] divideAndRemainder(OraDecimal divisor) {
+        BigDecimal[] decimals = this.decimal.divideAndRemainder(divisor.getDecimal());
+        return new OraDecimal[]{new OraDecimal(decimals[0]), new OraDecimal(decimals[1])};
+    }
+
+    /**
+     * 设置精度，默认四舍五入
+     *
+     * @param newScale 新精度
+     * @return 新的OraDecimal对象
+     */
+    public OraDecimal setScale(int newScale) {
+        return this.setScale(newScale, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * 设置精度
+     *
+     * @param newScale 新精度
+     * @param roundingMode 舍弃规则
+     * @return 新的OraDecimal对象
+     */
+    public OraDecimal setScale(int newScale, RoundingMode roundingMode) {
+        return new OraDecimal(this.decimal.setScale(newScale, roundingMode));
     }
 
     @Override
@@ -117,6 +142,21 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
     @Override
     public String toString() {
         return this.decimal.stripTrailingZeros().toPlainString();
+    }
+
+    /**
+     * Converts this {@code OraDecimal} to a {@code long}, checking
+     * for lost information.  If this {@code OraDecimal} has a
+     * nonzero fractional part or is out of the possible range for a
+     * {@code long} result then an {@code ArithmeticException} is
+     * thrown.
+     *
+     * @return this {@code OraDecimal} converted to a {@code long}.
+     * @throws ArithmeticException if {@code this} has a nonzero
+     *         fractional part, or will not fit in a {@code long}.
+     */
+    public long longValueExact() {
+        return this.decimal.longValueExact();
     }
 
     /**

@@ -1,10 +1,10 @@
 package com.eredar.stepflow.engine.aviator.function;
 
+import com.eredar.stepflow.engine.aviator.object.SFAviatorRuntimeJavaType;
 import com.eredar.stepflow.engine.aviator.utils.SFDateFormatCache;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
 import com.googlecode.aviator.runtime.function.FunctionUtils;
 import com.googlecode.aviator.runtime.type.AviatorObject;
-import com.googlecode.aviator.runtime.type.AviatorRuntimeJavaType;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -34,6 +34,6 @@ public class SFString2DateFunction extends AbstractFunction {
         // 解析日期字符串
         Instant from = Instant.from(dtf.parse(source));
         // 返回结果
-        return AviatorRuntimeJavaType.valueOf(from);
+        return SFAviatorRuntimeJavaType.valueOf(from);
     }
 }

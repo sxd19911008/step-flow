@@ -10,9 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.time.Instant;
 import java.util.stream.Stream;
 
-/**
- * {@link CalcUtils} 单元测试类
- */
+@DisplayName("AviatorObject 工具方法测试")
 public class CalcUtilsTest {
 
     // -------------------------------------------------------------------------
@@ -47,16 +45,27 @@ public class CalcUtilsTest {
                         Instant.parse("2025-10-21T00:00:00Z"),
                         Instant.parse("2025-10-20T23:59:59Z"),
                         new OraDecimal("-0.0000115740740740740740740740740740740741")
+                ),
+                Arguments.of(
+                        "结果为正，2位整数",
+                        Instant.parse("2025-10-10T00:00:37Z"),
+                        Instant.parse("2025-10-22T00:00:00Z"),
+                        new OraDecimal("11.99957175925925925925925925925925925926")
+                ),
+                Arguments.of(
+                        "结果为正，3位整数",
+                        Instant.parse("2025-07-10T00:00:37Z"),
+                        Instant.parse("2025-10-22T00:00:00Z"),
+                        new OraDecimal("103.999571759259259259259259259259259259")
                 )
         );
     }
 
     @DisplayName("oracleDaysBetween 方法测试")
-    @ParameterizedTest(name = "【{index}】{0}: date1={1}, date2={2}")
+    @ParameterizedTest(name = "【{index}】{0}: beginDate={1}, endDate={2}")
     @MethodSource("testOracleDaysBetweenProvider")
-    void testOracleDaysBetween(String caseId, Instant date1, Instant date2, OraDecimal expected) {
-        // 与 UtilsTest 一致：直接比较 OraDecimal，避免字符串手写与数值语义脱节
-        OraDecimal actual = CalcUtils.oracleDaysBetween(date1, date2);
+    void testOracleDaysBetween(String caseId, Instant beginDate, Instant endDate, OraDecimal expected) {
+        OraDecimal actual = CalcUtils.oracleDaysBetween(beginDate, endDate);
         Assertions.assertEquals(expected, actual);
     }
 }

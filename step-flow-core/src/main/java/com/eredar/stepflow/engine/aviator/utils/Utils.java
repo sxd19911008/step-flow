@@ -214,13 +214,13 @@ public class Utils {
         // 相差天数整数部分
         long days = dayOfEnd - dayOfBegin;
         // 换算成秒
-        OraDecimal secondsByDays = OraDecimal.valueOf(days).multiply(AviatorConstants.SECOND_OF_DAY);
+        OraDecimal secondsByDays = OraDecimal.valueOf(days).multiply(AviatorConstants.SECONDS_OF_DAY_ORA_DECIMAL);
         // 汇总
         OraDecimal seconds = OraDecimal.valueOf(secondsByHours).add(secondsByDays);
 
         /* 根据Oracle数据库规则，一个月强行视为31天。这里用剩余时间的总秒数，除以一个月的总秒数 */
         // 非整数部分的月份数
-        OraDecimal monthsFraction = seconds.divide(AviatorConstants.SECOND_OF_MONTH);
+        OraDecimal monthsFraction = seconds.divide(AviatorConstants.SECONDS_OF_MONTH);
 
         /* 汇总计算结果并返回 */
         // 汇总相加后乘以正负号

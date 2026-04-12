@@ -105,7 +105,7 @@ public class SFAviatorJavaType extends AviatorObject {
 
     @Override
     public AviatorObject deref(final Map<String, Object> env) {
-        return AviatorRuntimeJavaType.valueOf(getValue(env));
+        return SFAviatorRuntimeJavaType.valueOf(getValue(env));
     }
 
     @Override
@@ -323,7 +323,7 @@ public class SFAviatorJavaType extends AviatorObject {
             if (existsFn instanceof DispatchFunction) {
                 // It's already an overload function, install the new branch.
                 ((DispatchFunction) existsFn).install((LambdaFunction) v);
-                return AviatorRuntimeJavaType.valueOf(existsFn);
+                return SFAviatorRuntimeJavaType.valueOf(existsFn);
             } else if (existsFn instanceof LambdaFunction) {
                 // cast it to an overload function
                 DispatchFunction newFn = new DispatchFunction(this.name);
@@ -341,7 +341,7 @@ public class SFAviatorJavaType extends AviatorObject {
         }
 
         ((Env) env).override(this.name, v);
-        return AviatorRuntimeJavaType.valueOf(v);
+        return SFAviatorRuntimeJavaType.valueOf(v);
     }
 
     private Object getAssignedValue(final AviatorObject value, final Map<String, Object> env) {
@@ -360,7 +360,7 @@ public class SFAviatorJavaType extends AviatorObject {
 
         Object v = getAssignedValue(value, env);
         env.put(this.name, v);
-        return AviatorRuntimeJavaType.valueOf(v);
+        return SFAviatorRuntimeJavaType.valueOf(v);
     }
 
     private AviatorObject setProperty(final AviatorObject value, final Map<String, Object> env) {
@@ -375,7 +375,7 @@ public class SFAviatorJavaType extends AviatorObject {
                 //noinspection DataFlowIssue
                 throw Reflector.sneakyThrow(t);
             }
-            return AviatorRuntimeJavaType.valueOf(v);
+            return SFAviatorRuntimeJavaType.valueOf(v);
         } else {
             throw new ExpressionRuntimeException("Can't assign value to " + this.name
                     + ", Options.ENABLE_PROPERTY_SYNTAX_SUGAR is disabled.");
@@ -446,13 +446,14 @@ public class SFAviatorJavaType extends AviatorObject {
                     SFAviatorNumber aviatorNumber = SFAviatorNumber.valueOf(value);
                     return aviatorNumber.sub(other, env);
                 } else if (value instanceof Instant) {
-                    // 日期类型，支持2个日期相减，得到间隔天数，可以为负值。
                     Object otherValue = other.getValue(env);
-                    if (otherValue instanceof Instant) {
+                    if (otherValue instanceof Instant) { // 2个日期相减得到间隔天数
                         // a - b，a 作为 endDate
                         Instant endDate = (Instant) value;
                         Instant beginDate = (Instant) otherValue;
                         return SFAviatorDecimal.valueOf(CalcUtils.oracleDaysBetween(beginDate, endDate));
+                    } else if (otherValue instanceof Number) { // 日期减数字，减去对应的天数，得到新的日期
+                        return SFAviatorRuntimeJavaType.valueOf(CalcUtils.oracleMinusDays((Instant) value, (Number) otherValue));
                     } else {
                         // 类型错误，抛出异常
                         super.sub(other, env);
@@ -476,7 +477,7 @@ public class SFAviatorJavaType extends AviatorObject {
             case Decimal:
             case Long:
             case Double:
-                SFAviatorNumber aviatorNumber = SFAviatorNumber.toSFAviatorNumber(other, env) ;
+                SFAviatorNumber aviatorNumber = SFAviatorNumber.toSFAviatorNumber(other, env);
                 return -aviatorNumber.innerCompare(this, env);
             case String:
                 AviatorString aviatorString = (AviatorString) other;
@@ -598,6 +599,14 @@ public class SFAviatorJavaType extends AviatorObject {
         if (value instanceof Number) {
             SFAviatorNumber aviatorNumber = SFAviatorNumber.valueOf(value);
             return aviatorNumber.add(other, env);
+        } else if (value instanceof Instant) {
+            otherValue = other.getValue(env);
+            if (otherValue instanceof Number) { // 日期加数字，加上对应的天数，得到新的日期
+                return SFAviatorRuntimeJavaType.valueOf(CalcUtils.oraclePlusDays((Instant) value, (Number) otherValue));
+            } else {
+                // 类型错误，抛出异常
+                return super.sub(other, env);
+            }
         } else if (TypeUtils.isString(value)) {
             AviatorString aviatorString = new AviatorString(String.valueOf(value));
             return aviatorString.add(other, env);

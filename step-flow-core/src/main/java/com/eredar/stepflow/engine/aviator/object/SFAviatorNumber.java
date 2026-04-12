@@ -1,6 +1,7 @@
 package com.eredar.stepflow.engine.aviator.object;
 
 import com.eredar.stepflow.engine.aviator.number.OraDecimal;
+import com.eredar.stepflow.engine.aviator.utils.CalcUtils;
 import com.googlecode.aviator.exception.CompareNotSupportedException;
 import com.googlecode.aviator.exception.ExpressionRuntimeException;
 import com.googlecode.aviator.runtime.type.*;
@@ -8,6 +9,7 @@ import com.googlecode.aviator.utils.TypeUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Map;
 
 public abstract class SFAviatorNumber extends AviatorObject {
@@ -74,6 +76,12 @@ public abstract class SFAviatorNumber extends AviatorObject {
                     return innerAdd(env, SFAviatorNumber.valueOf(otherValue));
                 } else if (TypeUtils.isString(otherValue)) {
                     return new AviatorString(getValue(env).toString() + otherValue);
+                } else if (otherValue instanceof Instant) {
+                    Number thisValue = this.number;
+                    if (thisValue == null) {
+                        thisValue = this.longValue;
+                    }
+                    return SFAviatorRuntimeJavaType.valueOf(CalcUtils.oraclePlusDays((Instant) otherValue, thisValue));
                 } else {
                     return super.add(other, env);
                 }
@@ -96,6 +104,12 @@ public abstract class SFAviatorNumber extends AviatorObject {
                 final Object otherValue = other.getValue(env);
                 if (otherValue instanceof Number) {
                     return innerSub(env, SFAviatorNumber.valueOf(otherValue));
+                } else if (otherValue instanceof Instant) {
+                    Number thisValue = this.number;
+                    if (thisValue == null) {
+                        thisValue = this.longValue;
+                    }
+                    return SFAviatorRuntimeJavaType.valueOf(CalcUtils.oracleMinusDays((Instant) otherValue, thisValue));
                 } else {
                     return super.sub(other, env);
                 }
