@@ -18,14 +18,6 @@ import java.util.stream.Stream;
 
 /**
  * Aviator 除法运算单元测试，对应 {@code OperatorType.DIV}（即 {@code /} 号）。
- *
- * <p>测试策略：
- * <ul>
- *   <li>每个 {@code testXxx} 方法固定 {@code a} 的类型，{@code b} 依次覆盖 type.txt 中的全部 8 种类型</li>
- *   <li>数值型之间遵循类型提升规则：OraDecimal > BigDecimal > Double > BigInteger > Long ≥ Integer</li>
- *   <li>Long / Long 为整数除法（截断余数）；只要一方为浮点/小数类型，结果提升为 OraDecimal</li>
- *   <li>String 或 Instant 参与除法时触发 {@link ExpressionRuntimeException}</li>
- * </ul>
  */
 @DisplayName("Aviator 除法测试")
 public class AviatorDivTest {
@@ -34,9 +26,6 @@ public class AviatorDivTest {
 
     // ========================= Long =========================
 
-    /**
-     * a 固定为 Long，b 依次为 Long / Integer / BigInteger / Double / BigDecimal / OraDecimal / String / Instant
-     */
     static Stream<Arguments> testLongProvider() {
         return Stream.of(
                 // a(Long) / b(Long) → Long（整数除法，截断余数）
@@ -86,6 +75,12 @@ public class AviatorDivTest {
                         "a / b",
                         HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", Instant.parse("2024-01-01T00:00:02Z")).build(),
                         ExpressionRuntimeException.class
+                ),
+                // a(Long) / b(Boolean) → 抛出异常（Boolean 不支持算术运算）
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -106,9 +101,6 @@ public class AviatorDivTest {
 
     // ========================= Integer =========================
 
-    /**
-     * a 固定为 Integer，b 依次为全部 8 种类型
-     */
     static Stream<Arguments> testIntegerProvider() {
         return Stream.of(
                 // a(Integer) / b(Long) → Long
@@ -158,6 +150,12 @@ public class AviatorDivTest {
                         "a / b",
                         HashMapBuilder.<String, Object>builder().put("a", 10).put("b", Instant.parse("2024-01-01T00:00:02Z")).build(),
                         ExpressionRuntimeException.class
+                ),
+                // a(Integer) / b(Boolean) → 抛出异常（Boolean 不支持算术运算）
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -178,9 +176,6 @@ public class AviatorDivTest {
 
     // ========================= BigInteger =========================
 
-    /**
-     * a 固定为 BigInteger，b 依次为全部 8 种类型
-     */
     static Stream<Arguments> testBigIntegerProvider() {
         return Stream.of(
                 // a(BigInteger) / b(Long) → BigInteger
@@ -230,6 +225,12 @@ public class AviatorDivTest {
                         "a / b",
                         HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", Instant.parse("2024-01-01T00:00:02Z")).build(),
                         ExpressionRuntimeException.class
+                ),
+                // a(BigInteger) / b(Boolean) → 抛出异常（Boolean 不支持算术运算）
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -250,9 +251,6 @@ public class AviatorDivTest {
 
     // ========================= Double =========================
 
-    /**
-     * a 固定为 Double，b 依次为全部 8 种类型
-     */
     static Stream<Arguments> testDoubleProvider() {
         return Stream.of(
                 // a(Double) / b(Long) → OraDecimal
@@ -302,6 +300,12 @@ public class AviatorDivTest {
                         "a / b",
                         HashMapBuilder.<String, Object>builder().put("a", 10.0d).put("b", Instant.parse("2024-01-01T00:00:02Z")).build(),
                         ExpressionRuntimeException.class
+                ),
+                // a(Double) / b(Boolean) → 抛出异常（Boolean 不支持算术运算）
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10.0d).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -322,9 +326,6 @@ public class AviatorDivTest {
 
     // ========================= BigDecimal =========================
 
-    /**
-     * a 固定为 BigDecimal，b 依次为全部 8 种类型
-     */
     static Stream<Arguments> testBigDecimalProvider() {
         return Stream.of(
                 // a(BigDecimal) / b(Long) → OraDecimal
@@ -374,6 +375,12 @@ public class AviatorDivTest {
                         "a / b",
                         HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10")).put("b", Instant.parse("2024-01-01T00:00:02Z")).build(),
                         ExpressionRuntimeException.class
+                ),
+                // a(BigDecimal) / b(Boolean) → 抛出异常（Boolean 不支持算术运算）
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10")).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -394,9 +401,6 @@ public class AviatorDivTest {
 
     // ========================= OraDecimal =========================
 
-    /**
-     * a 固定为 OraDecimal（最高精度类型），b 依次为全部 8 种类型
-     */
     static Stream<Arguments> testOraDecimalProvider() {
         return Stream.of(
                 // a(OraDecimal) / b(Long) → OraDecimal
@@ -446,6 +450,12 @@ public class AviatorDivTest {
                         "a / b",
                         HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10")).put("b", Instant.parse("2024-01-01T00:00:02Z")).build(),
                         ExpressionRuntimeException.class
+                ),
+                // a(OraDecimal) / b(Boolean) → 抛出异常（Boolean 不支持算术运算）
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10")).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -466,10 +476,6 @@ public class AviatorDivTest {
 
     // ========================= String =========================
 
-    /**
-     * a 固定为 String，b 依次为全部 8 种类型。
-     * Aviator 中 String 不支持 {@code /} 运算，任意组合均抛出 {@link ExpressionRuntimeException}。
-     */
     static Stream<Arguments> testStringProvider() {
         return Stream.of(
                 // a(String) / b(Long) → 抛出异常
@@ -519,6 +525,12 @@ public class AviatorDivTest {
                         "a / b",
                         HashMapBuilder.<String, Object>builder().put("a", "10").put("b", Instant.parse("2024-01-01T00:00:02Z")).build(),
                         ExpressionRuntimeException.class
+                ),
+                // a(String) / b(Boolean) → 抛出异常（Boolean 不支持算术运算）
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", "10").put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -539,10 +551,6 @@ public class AviatorDivTest {
 
     // ========================= Instant =========================
 
-    /**
-     * a 固定为 Instant，b 依次为全部 8 种类型。
-     * Instant 无法参与任何算术运算，{@code /} 均触发 {@link ExpressionRuntimeException}。
-     */
     static Stream<Arguments> testInstantProvider() {
         Instant aInstant = Instant.parse("2024-01-01T00:00:10Z");
         Instant bInstant = Instant.parse("2024-01-01T00:00:02Z");
@@ -594,6 +602,12 @@ public class AviatorDivTest {
                         "a / b",
                         HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", bInstant).build(),
                         ExpressionRuntimeException.class
+                ),
+                // a(Instant) / b(Boolean) → 抛出异常（Boolean 不支持算术运算）
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -602,6 +616,81 @@ public class AviatorDivTest {
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testInstantProvider")
     public void testInstant(String expression, Map<String, Object> vars, Object excepted) {
+        if (excepted instanceof Class) {
+            @SuppressWarnings("unchecked")
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
+            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+        } else {
+            Object actual = aviator.execute(expression, vars);
+            Assertions.assertEquals(excepted, actual);
+        }
+    }
+
+    // ========================= Boolean =========================
+
+    static Stream<Arguments> testBooleanProvider() {
+        return Stream.of(
+                // a(Boolean) / b(Long) → 抛出异常
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", 2L).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) / b(Integer) → 抛出异常
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", 2).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) / b(BigInteger) → 抛出异常
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", new BigInteger("2")).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) / b(Double) → 抛出异常
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", 0.4836065573770491803278688524590163934426).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) / b(BigDecimal) → 抛出异常
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", new BigDecimal("4")).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) / b(OraDecimal) → 抛出异常
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", new OraDecimal("4")).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) / b(String) → 抛出异常
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", "2").build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) / b(Instant) → 抛出异常
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", Instant.parse("2024-01-01T00:00:02Z")).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) / b(Boolean) → 抛出异常
+                Arguments.of(
+                        "a / b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", false).build(),
+                        ExpressionRuntimeException.class
+                )
+        );
+    }
+
+    @DisplayName("Boolean")
+    @ParameterizedTest(name = "【{index}】{0}: vars={1}")
+    @MethodSource("testBooleanProvider")
+    public void testBoolean(String expression, Map<String, Object> vars, Object excepted) {
         if (excepted instanceof Class) {
             @SuppressWarnings("unchecked")
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;

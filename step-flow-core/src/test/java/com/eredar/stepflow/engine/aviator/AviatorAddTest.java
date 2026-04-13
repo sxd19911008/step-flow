@@ -18,13 +18,6 @@ import java.util.stream.Stream;
 
 /**
  * Aviator 加法运算单元测试，对应 {@code OperatorType.ADD}（即 {@code +} 号）。
- *
- * <p>测试策略：
- * <ul>
- *   <li>每个 {@code testXxx} 方法固定 {@code a} 的类型，{@code b} 依次覆盖 type.txt 中的全部 8 种类型</li>
- *   <li>数值型之间遵循类型提升规则：OraDecimal > BigDecimal > Double > BigInteger > Long ≥ Integer</li>
- *   <li>有一方为 String / Instant 时，触发 Aviator 字符串拼接语义</li>
- * </ul>
  */
 @DisplayName("Aviator 加法测试")
 public class AviatorAddTest {
@@ -33,9 +26,6 @@ public class AviatorAddTest {
 
     // ========================= Long =========================
 
-    /**
-     * a 固定为 Long，b 依次为 Long / Integer / BigInteger / Double / BigDecimal / OraDecimal / String / Instant
-     */
     static Stream<Arguments> testLongProvider() {
         return Stream.of(
                 // a(Long) + b(Long) → Long
@@ -84,6 +74,12 @@ public class AviatorAddTest {
                         "a + b",
                         HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", Instant.parse("2020-02-01T03:36:19Z")).build(),
                         Instant.parse("2020-02-03T03:36:19Z")
+                ),
+                // a(Long) + b(Boolean) → 抛出异常（Boolean 无法参与数值运算）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -104,9 +100,6 @@ public class AviatorAddTest {
 
     // ========================= Integer =========================
 
-    /**
-     * a 固定为 Integer，b 依次为全部 8 种类型
-     */
     static Stream<Arguments> testIntegerProvider() {
         return Stream.of(
                 // a(Integer) + b(Long) → Long
@@ -156,6 +149,12 @@ public class AviatorAddTest {
                         "a + b",
                         HashMapBuilder.<String, Object>builder().put("a", 2).put("b", Instant.parse("2020-02-01T03:36:19Z")).build(),
                         Instant.parse("2020-02-03T03:36:19Z")
+                ),
+                // a(Integer) + b(Boolean) → 抛出异常（Boolean 无法参与数值运算）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", 2).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -176,9 +175,6 @@ public class AviatorAddTest {
 
     // ========================= BigInteger =========================
 
-    /**
-     * a 固定为 BigInteger，b 依次为全部 8 种类型
-     */
     static Stream<Arguments> testBigIntegerProvider() {
         return Stream.of(
                 // a(BigInteger) + b(Long) → BigInteger
@@ -228,6 +224,12 @@ public class AviatorAddTest {
                         "a + b",
                         HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).put("b", Instant.parse("2020-02-01T03:36:19Z")).build(),
                         Instant.parse("2020-02-03T03:36:19Z")
+                ),
+                // a(BigInteger) + b(Boolean) → 抛出异常（Boolean 无法参与数值运算）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -248,58 +250,61 @@ public class AviatorAddTest {
 
     // ========================= Double =========================
 
-    /**
-     * a 固定为 Double，b 依次为全部 8 种类型
-     */
     static Stream<Arguments> testDoubleProvider() {
         return Stream.of(
                 // a(Double) + b(Long) → Double
-//                Arguments.of(
-//                        "a + b",
-//                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", 2L).build(),
-//                        new OraDecimal("2.48360655737704916")
-//                ),
-//                // a(Double) + b(Integer) → Double
-//                Arguments.of(
-//                        "a + b",
-//                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", 2).build(),
-//                        new OraDecimal("2.48360655737704916")
-//                ),
-//                // a(Double) + b(BigInteger) → Double
-//                Arguments.of(
-//                        "a + b",
-//                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", new BigInteger("2")).build(),
-//                        new OraDecimal("2.48360655737704916")
-//                ),
-//                // a(Double) + b(Double) → Double
-//                Arguments.of(
-//                        "a + b",
-//                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", 0.4836065573770491803278688524590163934426).build(),
-//                        new OraDecimal("0.96721311475409832")
-//                ),
-//                // a(Double) + b(BigDecimal) → BigDecimal（BigDecimal 优先级高于 Double）
-//                Arguments.of(
-//                        "a + b",
-//                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", new BigDecimal("2")).build(),
-//                        new OraDecimal("2.48360655737704916")
-//                ),
-//                // a(Double) + b(OraDecimal) → OraDecimal
-//                Arguments.of(
-//                        "a + b",
-//                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", new OraDecimal("2")).build(),
-//                        new OraDecimal("2.48360655737704916")
-//                ),
-//                // a(Double) + b(String) → String（Double.toString() = "2.0"）
-//                Arguments.of(
-//                        "a + b",
-//                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", "2").build(),
-//                        "0.483606557377049162"
-//                ),
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", 2L).build(),
+                        new OraDecimal("2.48360655737704916")
+                ),
+                // a(Double) + b(Integer) → Double
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", 2).build(),
+                        new OraDecimal("2.48360655737704916")
+                ),
+                // a(Double) + b(BigInteger) → Double
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", new BigInteger("2")).build(),
+                        new OraDecimal("2.48360655737704916")
+                ),
+                // a(Double) + b(Double) → Double
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", 0.4836065573770491803278688524590163934426).build(),
+                        new OraDecimal("0.96721311475409832")
+                ),
+                // a(Double) + b(BigDecimal) → BigDecimal（BigDecimal 优先级高于 Double）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", new BigDecimal("2")).build(),
+                        new OraDecimal("2.48360655737704916")
+                ),
+                // a(Double) + b(OraDecimal) → OraDecimal
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", new OraDecimal("2")).build(),
+                        new OraDecimal("2.48360655737704916")
+                ),
+                // a(Double) + b(String) → String（Double.toString() = "2.0"）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", "2").build(),
+                        "0.483606557377049162"
+                ),
                 // a(Double) + b(Instant) → String
                 Arguments.of(
                         "a + b",
                         HashMapBuilder.<String, Object>builder().put("a", 31.57349857284537940384752204323255406344).put("b", Instant.parse("2020-02-01T00:00:00Z")).build(),
                         Instant.parse("2020-03-03T13:45:50Z")
+                ),
+                // a(Double) + b(Boolean) → 抛出异常（Boolean 无法参与数值运算）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", 0.4836065573770491803278688524590163934426).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -320,9 +325,6 @@ public class AviatorAddTest {
 
     // ========================= BigDecimal =========================
 
-    /**
-     * a 固定为 BigDecimal，b 依次为全部 8 种类型
-     */
     static Stream<Arguments> testBigDecimalProvider() {
         return Stream.of(
                 // a(BigDecimal) + b(Long) → BigDecimal
@@ -372,6 +374,12 @@ public class AviatorAddTest {
                         "a + b",
                         HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("31.57349857284537940384752204323255406344")).put("b", Instant.parse("2020-02-01T00:00:00Z")).build(),
                         Instant.parse("2020-03-03T13:45:50Z")
+                ),
+                // a(BigDecimal) + b(Boolean) → 抛出异常（Boolean 无法参与数值运算）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("2")).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -392,9 +400,6 @@ public class AviatorAddTest {
 
     // ========================= OraDecimal =========================
 
-    /**
-     * a 固定为 OraDecimal（最高精度类型），b 依次为全部 8 种类型
-     */
     static Stream<Arguments> testOraDecimalProvider() {
         return Stream.of(
                 // a(OraDecimal) + b(Long) → OraDecimal
@@ -444,6 +449,12 @@ public class AviatorAddTest {
                         "a + b",
                         HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("31.57349857284537940384752204323255406344")).put("b", Instant.parse("2020-02-01T00:00:00Z")).build(),
                         Instant.parse("2020-03-03T13:45:50Z")
+                ),
+                // a(OraDecimal) + b(Boolean) → 抛出异常（Boolean 无法参与数值运算）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("2")).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -464,10 +475,6 @@ public class AviatorAddTest {
 
     // ========================= String =========================
 
-    /**
-     * a 固定为 String，b 依次为全部 8 种类型。
-     * Aviator 中只要一方为 String，{@code +} 即为字符串拼接。
-     */
     static Stream<Arguments> testStringProvider() {
         return Stream.of(
                 // a(String) + b(Long) → String
@@ -517,6 +524,12 @@ public class AviatorAddTest {
                         "a + b",
                         HashMapBuilder.<String, Object>builder().put("a", "2").put("b", Instant.parse("2024-01-01T00:00:10Z")).build(),
                         "2" + Instant.parse("2024-01-01T00:00:10Z")
+                ),
+                // a(String) + b(Boolean) → String（字符串拼接，Boolean.toString() = "true"）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", "2").put("b", true).build(),
+                        "2true"
                 )
         );
     }
@@ -537,10 +550,6 @@ public class AviatorAddTest {
 
     // ========================= Instant =========================
 
-    /**
-     * a 固定为 Instant，b 依次为全部 8 种类型。
-     * Instant 无法参与数值运算，{@code +} 触发字符串拼接语义：{@code Instant.toString() + b.toString()}。
-     */
     static Stream<Arguments> testInstantProvider() {
         // a 统一为 2024-01-01T00:00:02Z，b(Instant) 为 2024-01-01T00:00:10Z
         Instant aInstant = Instant.parse("2020-02-25T03:36:19Z");
@@ -592,6 +601,12 @@ public class AviatorAddTest {
                         "a + b",
                         HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", Instant.parse("2024-01-01T07:39:18Z")).build(),
                         ExpressionRuntimeException.class
+                ),
+                // a(Instant) + b(Boolean) → 抛出异常（Boolean 既无法与 Instant 做数值运算，也无法做日期偏移）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", aInstant).put("b", true).build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -600,6 +615,81 @@ public class AviatorAddTest {
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testInstantProvider")
     public void testInstant(String expression, Map<String, Object> vars, Object excepted) {
+        if (excepted instanceof Class) {
+            @SuppressWarnings("unchecked")
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
+            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+        } else {
+            Object actual = aviator.execute(expression, vars);
+            Assertions.assertEquals(excepted, actual);
+        }
+    }
+
+    // ========================= Boolean =========================
+
+    static Stream<Arguments> testBooleanProvider() {
+        return Stream.of(
+                // a(Boolean) + b(Long) → 抛出异常
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", 10L).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) + b(Integer) → 抛出异常
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", 10).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) + b(BigInteger) → 抛出异常
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", new BigInteger("10")).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) + b(Double) → 抛出异常
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", 0.4836065573770491803278688524590163934426).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) + b(BigDecimal) → 抛出异常
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", new BigDecimal("10")).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) + b(OraDecimal) → 抛出异常
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", new OraDecimal("10")).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) + b(String) → String（Boolean.toString() = "true"，字符串拼接）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", "10").build(),
+                        "true10"
+                ),
+                // a(Boolean) + b(Instant) → 抛出异常（Boolean 无日期偏移语义）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", Instant.parse("2020-02-01T00:00:00Z")).build(),
+                        ExpressionRuntimeException.class
+                ),
+                // a(Boolean) + b(Boolean) → 抛出异常（两个布尔值不能做加法）
+                Arguments.of(
+                        "a + b",
+                        HashMapBuilder.<String, Object>builder().put("a", true).put("b", false).build(),
+                        ExpressionRuntimeException.class
+                )
+        );
+    }
+
+    @DisplayName("Boolean")
+    @ParameterizedTest(name = "【{index}】{0}: vars={1}")
+    @MethodSource("testBooleanProvider")
+    public void testBoolean(String expression, Map<String, Object> vars, Object excepted) {
         if (excepted instanceof Class) {
             @SuppressWarnings("unchecked")
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
