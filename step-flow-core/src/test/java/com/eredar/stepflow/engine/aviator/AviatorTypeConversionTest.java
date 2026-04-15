@@ -22,13 +22,11 @@ import java.util.stream.Stream;
  * <p>2. {@code SFDate2StringFunction}，对应 {@code date_to_string()}。
  * <p>3. {@code SFString2DateFunction}，对应 {@code string_to_date()}。
  */
-public class TypeConversionFunctionTest {
+public class AviatorTypeConversionTest {
 
     private final AviatorBusinessExpressionEngine aviator = new AviatorBusinessExpressionEngine(null);
 
-    // ========================= decimal(xxx) =========================
-
-    static Stream<Arguments> testDecimalProvider() {
+    static Stream<Arguments> testTypeConversionProvider() {
         return Stream.of(
                 Arguments.of(
                         "decimal(31.57349857284537940384752204323255406344) + string_to_date(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
@@ -103,8 +101,8 @@ public class TypeConversionFunctionTest {
 
     @DisplayName("Long")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
-    @MethodSource("testDecimalProvider")
-    public void testDecimal(String expression, Map<String, Object> vars, Object excepted) {
+    @MethodSource("testTypeConversionProvider")
+    public void testTypeConversion(String expression, Map<String, Object> vars, Object excepted) {
         if (excepted instanceof Class) {
             @SuppressWarnings("unchecked")
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
