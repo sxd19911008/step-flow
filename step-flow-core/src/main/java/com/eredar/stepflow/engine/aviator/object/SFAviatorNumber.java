@@ -104,12 +104,6 @@ public abstract class SFAviatorNumber extends AviatorObject {
                 final Object otherValue = other.getValue(env);
                 if (otherValue instanceof Number) {
                     return innerSub(env, SFAviatorNumber.valueOf(otherValue));
-                } else if (otherValue instanceof Instant) {
-                    Number thisValue = this.number;
-                    if (thisValue == null) {
-                        thisValue = this.longValue;
-                    }
-                    return SFAviatorRuntimeJavaType.valueOf(CalcUtils.oracleMinusDays((Instant) otherValue, thisValue));
                 } else {
                     return super.sub(other, env);
                 }
