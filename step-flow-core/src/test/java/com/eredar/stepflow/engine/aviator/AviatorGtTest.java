@@ -39,6 +39,11 @@ public class AviatorGtTest {
                         HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", 12L).build(),
                         false
                 ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", 10L).build(),
+                        false
+                ),
                 // a(Long) > b(Integer) → Boolean
                 Arguments.of(
                         "a > b",
@@ -48,6 +53,11 @@ public class AviatorGtTest {
                 Arguments.of(
                         "a > b",
                         HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", 12).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", 10).build(),
                         false
                 ),
                 // a(Long) > b(BigInteger) → Boolean
@@ -61,37 +71,57 @@ public class AviatorGtTest {
                         HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", new BigInteger("12")).build(),
                         false
                 ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", new BigInteger("10")).build(),
+                        false
+                ),
                 // a(Long) > b(Double) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 12L).put("b", 10.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 12L).put("b", 10.0609458784987394).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", 12.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", 10.0432579867245).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", 10.0).build(),
                         false
                 ),
                 // a(Long) > b(BigDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 12L).put("b", new BigDecimal("10.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 12L).put("b", new BigDecimal("10.054769375987983")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", new BigDecimal("12.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", new BigDecimal("10.000000000000001")).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", new BigDecimal("10.0")).build(),
                         false
                 ),
                 // a(Long) > b(OraDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 12L).put("b", new OraDecimal("10.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 12L).put("b", new OraDecimal("11.9654798672894365892")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", new OraDecimal("12.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", new OraDecimal("10.000000000000001")).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10L).put("b", new OraDecimal("10.0")).build(),
                         false
                 ),
                 // a(Long) > b(String) → 抛出异常
@@ -144,6 +174,11 @@ public class AviatorGtTest {
                         HashMapBuilder.<String, Object>builder().put("a", 10).put("b", 12L).build(),
                         false
                 ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", 10L).build(),
+                        false
+                ),
                 // a(Integer) > b(Integer) → Boolean
                 Arguments.of(
                         "a > b",
@@ -153,6 +188,11 @@ public class AviatorGtTest {
                 Arguments.of(
                         "a > b",
                         HashMapBuilder.<String, Object>builder().put("a", 10).put("b", 12).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", 10).build(),
                         false
                 ),
                 // a(Integer) > b(BigInteger) → Boolean
@@ -166,37 +206,57 @@ public class AviatorGtTest {
                         HashMapBuilder.<String, Object>builder().put("a", 10).put("b", new BigInteger("12")).build(),
                         false
                 ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", new BigInteger("10")).build(),
+                        false
+                ),
                 // a(Integer) > b(Double) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 12).put("b", 10.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 12).put("b", 11.99999999).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", 12.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", 10.000000001).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", 10.0).build(),
                         false
                 ),
                 // a(Integer) > b(BigDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 12).put("b", new BigDecimal("10.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 12).put("b", new BigDecimal("11.999999999999999")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", new BigDecimal("12.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", new BigDecimal("10.00000000000001")).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", new BigDecimal("10.0")).build(),
                         false
                 ),
                 // a(Integer) > b(OraDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 12).put("b", new OraDecimal("10.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 12).put("b", new OraDecimal("11.999999999999999")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", new OraDecimal("12.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", new OraDecimal("10.0000000000000001")).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10).put("b", new OraDecimal("10.0")).build(),
                         false
                 ),
                 // a(Integer) > b(String) → 抛出异常
@@ -249,6 +309,11 @@ public class AviatorGtTest {
                         HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", 12L).build(),
                         false
                 ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", 10L).build(),
+                        false
+                ),
                 // a(BigInteger) > b(Integer) → Boolean
                 Arguments.of(
                         "a > b",
@@ -258,6 +323,11 @@ public class AviatorGtTest {
                 Arguments.of(
                         "a > b",
                         HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", 12).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", 10).build(),
                         false
                 ),
                 // a(BigInteger) > b(BigInteger) → Boolean
@@ -271,37 +341,57 @@ public class AviatorGtTest {
                         HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", new BigInteger("12")).build(),
                         false
                 ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", new BigInteger("10")).build(),
+                        false
+                ),
                 // a(BigInteger) > b(Double) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("12")).put("b", 10.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("12")).put("b", 11.9999999999).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", 12.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", 10.0000000001).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", 10.0).build(),
                         false
                 ),
                 // a(BigInteger) > b(BigDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("12")).put("b", new BigDecimal("10.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("12")).put("b", new BigDecimal("11.9999999999999")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", new BigDecimal("12.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", new BigDecimal("10.00000000001")).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", new BigDecimal("10.0")).build(),
                         false
                 ),
                 // a(BigInteger) > b(OraDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("12")).put("b", new OraDecimal("10.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("12")).put("b", new OraDecimal("11.9999999999999")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", new OraDecimal("12.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", new OraDecimal("10.00000000001")).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("10")).put("b", new OraDecimal("10.0")).build(),
                         false
                 ),
                 // a(BigInteger) > b(String) → 抛出异常
@@ -354,6 +444,11 @@ public class AviatorGtTest {
                         HashMapBuilder.<String, Object>builder().put("a", 10.0).put("b", 12L).build(),
                         false
                 ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10.0).put("b", 10L).build(),
+                        false
+                ),
                 // a(Double) > b(Integer) → Boolean
                 Arguments.of(
                         "a > b",
@@ -363,6 +458,11 @@ public class AviatorGtTest {
                 Arguments.of(
                         "a > b",
                         HashMapBuilder.<String, Object>builder().put("a", 10.0).put("b", 12).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10.0).put("b", 10).build(),
                         false
                 ),
                 // a(Double) > b(BigInteger) → Boolean
@@ -376,37 +476,57 @@ public class AviatorGtTest {
                         HashMapBuilder.<String, Object>builder().put("a", 10.0).put("b", new BigInteger("12")).build(),
                         false
                 ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10.0).put("b", new BigInteger("10")).build(),
+                        false
+                ),
                 // a(Double) > b(Double) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 12.0).put("b", 10.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10.00000001).put("b", 10.000000009).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 10.0).put("b", 12.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10.000000009).put("b", 10.00000001).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10.000000009).put("b", 10.000000009).build(),
                         false
                 ),
                 // a(Double) > b(BigDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 12.0).put("b", new BigDecimal("10.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10.00000001).put("b", new BigDecimal("10.000000009")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 10.0).put("b", new BigDecimal("12.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10.000000009).put("b", new BigDecimal("10.00000001")).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10.000000009).put("b", new BigDecimal("10.000000009")).build(),
                         false
                 ),
                 // a(Double) > b(OraDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 12.0).put("b", new OraDecimal("10.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10.00000001).put("b", new OraDecimal("10.000000009")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", 10.0).put("b", new OraDecimal("12.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", 10.000000009).put("b", new OraDecimal("10.00000001")).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", 10.000000009).put("b", new OraDecimal("10.000000009")).build(),
                         false
                 ),
                 // a(Double) > b(String) → 抛出异常
@@ -459,6 +579,11 @@ public class AviatorGtTest {
                         HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10")).put("b", 12L).build(),
                         false
                 ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10")).put("b", 10L).build(),
+                        false
+                ),
                 // a(BigDecimal) > b(Integer) → Boolean
                 Arguments.of(
                         "a > b",
@@ -468,6 +593,11 @@ public class AviatorGtTest {
                 Arguments.of(
                         "a > b",
                         HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10")).put("b", 12).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10")).put("b", 10).build(),
                         false
                 ),
                 // a(BigDecimal) > b(BigInteger) → Boolean
@@ -481,37 +611,57 @@ public class AviatorGtTest {
                         HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10")).put("b", new BigInteger("12")).build(),
                         false
                 ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10")).put("b", new BigInteger("10")).build(),
+                        false
+                ),
                 // a(BigDecimal) > b(Double) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("12.0")).put("b", 10.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.00000001")).put("b", 10.000000009).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.0")).put("b", 12.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.000000009")).put("b", 10.00000001).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.000000009")).put("b", 10.000000009).build(),
                         false
                 ),
                 // a(BigDecimal) > b(BigDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("12.0")).put("b", new BigDecimal("10.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.00000001")).put("b", new BigDecimal("10.000000009")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.0")).put("b", new BigDecimal("12.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.000000009")).put("b", new BigDecimal("10.00000001")).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.000000009")).put("b", new BigDecimal("10.000000009")).build(),
                         false
                 ),
                 // a(BigDecimal) > b(OraDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("12.0")).put("b", new OraDecimal("10.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.00000001")).put("b", new OraDecimal("10.000000009")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.0")).put("b", new OraDecimal("12.0")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.000000009")).put("b", new OraDecimal("10.00000001")).build(),
+                        false
+                ),
+                Arguments.of(
+                        "a > b",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigDecimal("10.000000009")).put("b", new OraDecimal("10.000000009")).build(),
                         false
                 ),
                 // a(BigDecimal) > b(String) → 抛出异常
@@ -604,28 +754,28 @@ public class AviatorGtTest {
                 // a(OraDecimal) > b(Double) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("12")).put("b", 10.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10.00000001")).put("b", 10.000000009).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10")).put("b", 12.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10.000000009")).put("b", 10.00000001).build(),
                         false
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10")).put("b", 10.0).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10.000000009")).put("b", 10.000000009).build(),
                         false
                 ),
                 // a(OraDecimal) > b(BigDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("12")).put("b", new BigDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10.00000001")).put("b", new BigDecimal("10.000000009")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10")).put("b", new BigDecimal("12")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10.000000009")).put("b", new BigDecimal("10.00000001")).build(),
                         false
                 ),
                 Arguments.of(
@@ -636,12 +786,12 @@ public class AviatorGtTest {
                 // a(OraDecimal) > b(OraDecimal) → Boolean
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("12")).put("b", new OraDecimal("10")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("0.00000001")).put("b", new OraDecimal("0.000000009")).build(),
                         true
                 ),
                 Arguments.of(
                         "a > b",
-                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("10")).put("b", new OraDecimal("12")).build(),
+                        HashMapBuilder.<String, Object>builder().put("a", new OraDecimal("0.000000009")).put("b", new OraDecimal("0.00000001")).build(),
                         false
                 ),
                 Arguments.of(
