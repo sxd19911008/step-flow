@@ -17,16 +17,13 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * Aviator 取负运算单元测试，对应 {@code OperatorType.NEG}（即一元 {@code -} 号）。
+ * Aviator 一元取负运算单元测试，对应 {@code OperatorType.NEG}（即一元 {@code -} 号）。
  */
-@DisplayName("Aviator 取负测试")
+@DisplayName("Aviator 一元取负测试")
 public class AviatorNegTest {
 
     private final AviatorBusinessExpressionEngine aviator = new AviatorBusinessExpressionEngine(null);
 
-    /**
-     * 一元取负 {@code -a} 的参数化用例：与 {@code type.txt} 中类型一一对应。
-     */
     static Stream<Arguments> testNegProvider() {
         return Stream.of(
                 // Long：取负仍为 Long
@@ -81,7 +78,7 @@ public class AviatorNegTest {
                                 .build(),
                         ExpressionRuntimeException.class
                 ),
-                // Boolean：非数值，无法取负（与 AviatorAddTest 中 Boolean 行为一致）
+                // Boolean：非数值，无法取负
                 Arguments.of(
                         "-a",
                         HashMapBuilder.<String, Object>builder().put("a", true).build(),
