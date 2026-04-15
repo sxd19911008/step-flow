@@ -18,9 +18,6 @@ import java.util.stream.Stream;
 
 /**
  * Aviator 取负运算单元测试，对应 {@code OperatorType.NEG}（即一元 {@code -} 号）。
- * <p>
- * 覆盖 {@code type.txt} 中列出的各类上下文变量类型：数值类型按 {@link com.eredar.stepflow.engine.aviator.object.SFAviatorJavaType#neg}
- * 与 {@link com.eredar.stepflow.engine.aviator.object.SFAviatorNumber} 族的行为取负；非数值类型走父类逻辑，与加法测试一致地抛出运行时异常。
  */
 @DisplayName("Aviator 取负测试")
 public class AviatorNegTest {
