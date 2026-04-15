@@ -44,6 +44,8 @@ public class SFDecimalFunction  extends AbstractFunction {
                 if (arg1 instanceof AviatorNumber) {
                     BigDecimal bigDecimal = ((AviatorNumber) arg1).toDecimal(env);
                     decimal = new OraDecimal(bigDecimal);
+                } else if (arg1 instanceof SFAviatorDecimal) {
+                    return arg1;
                 } else {
                     decimal = ((SFAviatorNumber) arg1).toDecimal();
                 }
