@@ -69,6 +69,8 @@ public class AviatorInstanceBuilder {
         aviator.addOpFunction(OperatorType.LE, new LeFunction());
         aviator.addOpFunction(OperatorType.GT, new GtFunction());
         aviator.addOpFunction(OperatorType.GE, new GeFunction());
+        aviator.addOpFunction(OperatorType.EQ, new EqFunction());
+        aviator.addOpFunction(OperatorType.NEQ, new NeqFunction());
 
         // 使用自定义方法，替换框架方法
         aviator.addFunction(new SFDecimalFunction());
