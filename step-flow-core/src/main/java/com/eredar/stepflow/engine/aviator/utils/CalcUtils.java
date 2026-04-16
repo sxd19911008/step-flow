@@ -101,23 +101,4 @@ public class CalcUtils {
          * 由于这里的精度差异可以忽略不计，且目前的逻辑未必错误，所以等遇到这个临界数字时再做处理。
          */
     }
-
-    /**
-     * 判断是否为支持的整数类型 ({@code Integer} 或 {@code Long})
-     */
-    public static boolean isSupportedInteger(Object obj) {
-        return obj instanceof Integer || obj instanceof Long;
-    }
-
-    public static boolean isZero(Object v) {
-        if (v instanceof OraDecimal) {
-            OraDecimal d = (OraDecimal) v;
-            return d.compareTo(OraDecimal.ZERO) == 0;
-        }
-        if (v instanceof Number) {
-            Number n = (Number) v;
-            return n.doubleValue() == 0;
-        }
-        return false;
-    }
 }
