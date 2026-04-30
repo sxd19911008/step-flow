@@ -27,6 +27,8 @@
         <step-flow.version>${project.version}</step-flow.version>
         <!-- AviatorScript 版本 -->
         <aviator.version>5.4.3</aviator.version>
+        <!-- jackson 版本 -->
+        <jackson.version>2.13.5</jackson.version>
         <!-- 编译器插件版本：集中维护 -->
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
         <!-- 日志框架 -->
@@ -62,11 +64,29 @@
                 <artifactId>aviator</artifactId>
                 <version>${aviator.version}</version>
             </dependency>
+            <!-- Jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <!-- 支持 LocalDateTime -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
             <!-- 日志框架 -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-api.version}</version>
+            </dependency>
+            <!-- Lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.30</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -94,38 +114,61 @@
                         </compilerArgs>
                     </configuration>
                 </plugin>
+                <!-- Flatten Plugin: 用于在 install/deploy 时将 ${revision} 替换为实际版本号 -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>1.2.7</version>
+                    <configuration>
+                        <!-- 是否生成临时文件：是 -->
+                        <updatePomFile>true</updatePomFile>
+                        <!-- 是否只替换版本变量：是 -->
+                        <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>flatten</id>
+                            <!-- 插件生效时间：maven生命周期-编译前 -->
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>flatten</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>flatten.clean</id>
+                            <!-- 执行clean时，清理临时文件 -->
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- 源码打包插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.3.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
-            <!-- Flatten Plugin: 用于在 install/deploy 时将 ${revision} 替换为实际版本号 -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.2.7</version>
-                <configuration>
-                    <!-- 是否生成临时文件：是 -->
-                    <updatePomFile>true</updatePomFile>
-                    <!-- 是否只替换版本变量：是 -->
-                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>flatten</id>
-                        <!-- 插件生效时间：maven生命周期-编译前 -->
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>flatten</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>flatten.clean</id>
-                        <!-- 执行clean时，清理临时文件 -->
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
