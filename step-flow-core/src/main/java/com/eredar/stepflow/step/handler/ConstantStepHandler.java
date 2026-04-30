@@ -3,12 +3,12 @@ package com.eredar.stepflow.step.handler;
 import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.OneOffParams;
 import com.eredar.stepflow.dto.StepFlowContext;
-import com.eredar.stepflow.engine.aviator.number.OraDecimal;
 import com.eredar.stepflow.exception.StepFlowException;
 import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
 import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.step.intf.StepHandler;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 /**
@@ -23,7 +23,7 @@ public class ConstantStepHandler implements StepHandler {
         String returnType = stepData.getReturnType();
 
         if (StepReturnTypeEnum.DECIMAL.getTypeCode().equals(returnType)) {
-            return new OraDecimal(constant);
+            return new BigDecimal(constant);
         } else if (StepReturnTypeEnum.STRING.getTypeCode().equals(returnType)) {
             return constant;
         } else if (StepReturnTypeEnum.BOOLEAN.getTypeCode().equals(returnType)) {

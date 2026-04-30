@@ -1,18 +1,18 @@
 package com.eredar.stepflow;
 
 import com.eredar.stepflow.dto.CalcDTO;
-import com.eredar.stepflow.engine.aviator.number.OraDecimal;
 import com.eredar.stepflow.flow.dto.InputFlow;
 import com.eredar.stepflow.flow.intf.FlowProvider;
 import com.eredar.stepflow.javaMethod.ChooseRes;
-import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
 import com.eredar.stepflow.step.constants.StepContentTypeEnum;
+import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
 import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.step.intf.JavaStep;
 import com.eredar.stepflow.step.intf.StepDataProvider;
 import com.eredar.stepflow.utils.StepFlowJsonUtils;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -99,10 +99,10 @@ public class StepFlowExecutorTestTest {
 
         Map<String, Object> contextMap = new ConcurrentHashMap<>();
         contextMap.put("dto", CalcDTO.builder()
-                .num1(new OraDecimal("58"))
-                .num2(new OraDecimal("77"))
-                .num3(new OraDecimal("145"))
-                .num4(new OraDecimal("69"))
+                .num1(new BigDecimal("58"))
+                .num2(new BigDecimal("77"))
+                .num3(new BigDecimal("145"))
+                .num4(new BigDecimal("69"))
                 .build());
         Map<String, Object> resMap = stepFlowExecutor.executeByFLowCode("CALC001", contextMap);
         System.err.println(StepFlowJsonUtils.writeValueAsString(resMap));

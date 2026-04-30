@@ -1,10 +1,11 @@
 package com.eredar.stepflow.dto;
 
-import com.eredar.stepflow.engine.aviator.number.OraDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,8 +13,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class CalcDTO {
 
-    private OraDecimal num1;
-    private OraDecimal num2;
-    private OraDecimal num3;
-    private OraDecimal num4;
+    private BigDecimal num1;
+    private BigDecimal num2;
+    private BigDecimal num3;
+    private BigDecimal num4;
 }
