@@ -9,30 +9,21 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>step-flow-core</artifactId>
-    <name>step-flow-core</name>
-    <description>Step-flow execution engine.</description>
+    <artifactId>step-flow-engine-aviator</artifactId>
+    <name>step-flow-engine-aviator</name>
+    <description>AviatorScript expression engine plugin for step-flow. Supports SPI auto-discovery (no Spring required).</description>
 
     <dependencies>
-        <!-- Jackson -->
+        <!-- step-flow 核心：提供 3 个引擎接口 -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <optional>true</optional>
+            <groupId>com.eredar</groupId>
+            <artifactId>step-flow-core</artifactId>
         </dependency>
 
-        <!-- 支持 java.time 包 -->
+        <!-- AviatorScript：表达式引擎核心依赖 -->
         <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- 日志框架 -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
+            <groupId>com.googlecode.aviator</groupId>
+            <artifactId>aviator</artifactId>
         </dependency>
 
         <!-- Lombok -->
@@ -47,6 +38,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- 测试时需要 Jackson 做结果序列化输出 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

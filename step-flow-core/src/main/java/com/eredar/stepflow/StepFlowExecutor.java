@@ -6,9 +6,7 @@ import com.eredar.stepflow.dto.StepFlowContext;
 import com.eredar.stepflow.engine.BusinessExpressionEngine;
 import com.eredar.stepflow.engine.ConditionExpressionEngine;
 import com.eredar.stepflow.engine.ParamExpressionEngine;
-import com.eredar.stepflow.engine.impl.AviatorBusinessExpressionEngine;
-import com.eredar.stepflow.engine.impl.AviatorConditionExpressionEngine;
-import com.eredar.stepflow.engine.impl.AviatorParamExpressionEngine;
+import com.eredar.stepflow.exception.StepFlowException;
 import com.eredar.stepflow.flow.FlowExecutor;
 import com.eredar.stepflow.flow.intf.FlowProvider;
 import com.eredar.stepflow.step.StepExecutor;
@@ -21,7 +19,9 @@ import com.eredar.stepflow.step.intf.StepHandler;
 import com.eredar.stepflow.threadpool.StepFlowThreadPoolFactory;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 
 public class StepFlowExecutor {
@@ -124,41 +124,59 @@ public class StepFlowExecutor {
         }
 
         /**
-         * 给一些Bean设置默认实现
+         * 给未显式设置的组件填充默认实现。
+         *
+         * <p>引擎实现通过 Java SPI（{@link ServiceLoader}）自动发现，无需在 core 包中
+         * 硬编码任何具体引擎类。只要 classpath 上存在实现了引擎接口的插件包
+         * （如 step-flow-engine-aviator），SPI 便会自动加载。
+         * 若 classpath 上找不到任何实现，则抛出明确的异常提示用户引入插件包。
          */
         private void setDefaultBean() {
 
-            // 防止空指针
             if (this.configProperties == null) {
                 this.configProperties = new StepFlowConfigProperties();
             }
 
             if (this.parallelThreadPool == null) {
-                // 构建线程池工厂
-                StepFlowThreadPoolFactory stepFlowThreadPoolFactory = new StepFlowThreadPoolFactory(configProperties);
-                // 创建线程池
-                this.parallelThreadPool = stepFlowThreadPoolFactory.getStepFlowParallelThreadPool();
+                StepFlowThreadPoolFactory factory = new StepFlowThreadPoolFactory(configProperties);
+                this.parallelThreadPool = factory.getStepFlowParallelThreadPool();
             }
 
-            // 如果用户不传入，则使用默认实现
+            // 通过 SPI 发现引擎实现，避免 core 直接依赖任何引擎库
             if (this.paramExpressionEngine == null) {
-                this.paramExpressionEngine = new AviatorParamExpressionEngine(configProperties.getParamExpressionEngine());
+                this.paramExpressionEngine = loadSpi(ParamExpressionEngine.class);
             }
 
-            // 如果用户不传入，则使用默认实现
             if (this.conditionExpressionEngine == null) {
-                this.conditionExpressionEngine = new AviatorConditionExpressionEngine(configProperties.getConditionExpressionEngine());
+                this.conditionExpressionEngine = loadSpi(ConditionExpressionEngine.class);
             }
 
-            // 如果用户不传入，则使用默认实现
             if (this.businessExpressionEngine == null) {
-                this.businessExpressionEngine = new AviatorBusinessExpressionEngine(configProperties.getBusinessExpressionEngine());
+                this.businessExpressionEngine = loadSpi(BusinessExpressionEngine.class);
             }
 
-            // 防止空指针
             if (this.javaStepMap == null) {
                 this.javaStepMap = new HashMap<>();
             }
+        }
+
+        /**
+         * 通过 Java SPI 加载指定接口的第一个实现类。
+         *
+         * @param spiClass 引擎接口类型
+         * @param <T>      引擎接口泛型
+         * @return 第一个可用的实现实例
+         * @throws StepFlowException 若 classpath 上没有任何实现时，抛出含引导信息的异常
+         */
+        private <T> T loadSpi(Class<T> spiClass) {
+            Iterator<T> it = ServiceLoader.load(spiClass).iterator();
+            if (it.hasNext()) {
+                return it.next();
+            }
+            throw new StepFlowException(
+                    "No " + spiClass.getSimpleName() + " implementation found on classpath. " +
+                    "Please add an engine plugin dependency, e.g. step-flow-engine-aviator."
+            );
         }
 
         /**

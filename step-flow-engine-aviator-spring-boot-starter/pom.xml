@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.eredar</groupId>
+        <artifactId>step-flow-parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>step-flow-engine-aviator-spring-boot-starter</artifactId>
+    <name>step-flow-engine-aviator-spring-boot-starter</name>
+    <description>
+        Spring Boot AutoConfiguration for the AviatorScript engine plugin.
+        引入此模块后，Spring 容器会自动注册3个 Aviator 引擎 Bean，
+        并支持通过 application.yml 中 stepflow.aviator.* 进行参数配置。
+    </description>
+
+    <dependencies>
+        <!-- Aviator 引擎插件包：提供3个引擎实现类 -->
+        <dependency>
+            <groupId>com.eredar</groupId>
+            <artifactId>step-flow-engine-aviator</artifactId>
+        </dependency>
+
+        <!-- Spring Boot 自动装配支持 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- 生成 IDE 的 application.yml 属性补全提示 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+</project>

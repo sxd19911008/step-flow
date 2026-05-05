@@ -1,23 +1,21 @@
 package com.eredar.stepflow.config;
 
-import com.eredar.stepflow.engine.aviator.dto.StepFlowAviatorConfigProperties;
 import lombok.Data;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * step-flow 核心配置项。
+ * 仅包含与具体引擎实现无关的通用配置（如线程池）。
+ * 各引擎插件的专属配置由对应的插件包自行定义（例如 StepFlowAviatorProperties）。
+ */
 @Data
 public class StepFlowConfigProperties {
 
     // 异步执行 FLowNode 的线程池
     private ThreadPoolProperty parallelThreadPool;
-    // 业务表达式引擎
-    private StepFlowAviatorConfigProperties businessExpressionEngine;
-    // 条件表达式引擎
-    private StepFlowAviatorConfigProperties ConditionExpressionEngine;
-    // 参数获取引擎
-    private StepFlowAviatorConfigProperties paramExpressionEngine;
 
     @Data
     public static class ThreadPoolProperty {

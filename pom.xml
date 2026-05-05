@@ -35,9 +35,11 @@
         <slf4j-api.version>1.7.36</slf4j-api.version>
     </properties>
 
-    <!-- 模块声明：将 core 与 starter 纳入同一父项目 -->
+    <!-- 模块声明 -->
     <modules>
         <module>step-flow-core</module>
+        <module>step-flow-engine-aviator</module>
+        <module>step-flow-engine-aviator-spring-boot-starter</module>
         <module>step-flow-spring-boot-starter</module>
     </modules>
 
@@ -56,6 +58,18 @@
             <dependency>
                 <groupId>com.eredar</groupId>
                 <artifactId>step-flow-core</artifactId>
+                <version>${step-flow.version}</version>
+            </dependency>
+            <!-- Aviator 引擎插件包 -->
+            <dependency>
+                <groupId>com.eredar</groupId>
+                <artifactId>step-flow-engine-aviator</artifactId>
+                <version>${step-flow.version}</version>
+            </dependency>
+            <!-- Aviator 引擎 Spring Boot Starter -->
+            <dependency>
+                <groupId>com.eredar</groupId>
+                <artifactId>step-flow-engine-aviator-spring-boot-starter</artifactId>
                 <version>${step-flow.version}</version>
             </dependency>
             <!-- 计算引擎 -->
