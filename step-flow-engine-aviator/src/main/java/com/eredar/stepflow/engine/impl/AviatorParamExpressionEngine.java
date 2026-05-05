@@ -34,9 +34,8 @@ public class AviatorParamExpressionEngine implements ParamExpressionEngine {
         if (config == null) {
             config = new StepFlowAviatorConfigProperties();
         }
-        if (config.getUseLRUExpressionCache() == null) {
-            // 参数取值表达式数量通常多于业务表达式，缓存适当调大
-            config.setUseLRUExpressionCache(4096);
+        if (config.getMaxExpressionCache() == null) {
+            config.setMaxExpressionCache(4096);
         }
         this.aviator = AviatorInstanceBuilder.buildAviatorEvaluatorInstance(config);
     }

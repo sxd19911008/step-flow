@@ -11,7 +11,7 @@
 
     <artifactId>step-flow-engine-aviator</artifactId>
     <name>step-flow-engine-aviator</name>
-    <description>AviatorScript expression engine plugin for step-flow. Supports SPI auto-discovery (no Spring required).</description>
+    <description>AviatorScript expression engine plugin for step-flow.</description>
 
     <dependencies>
         <!-- step-flow 核心：提供 3 个引擎接口 -->

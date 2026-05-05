@@ -35,8 +35,8 @@ public class AviatorConditionExpressionEngine implements ConditionExpressionEngi
         if (config == null) {
             config = new StepFlowAviatorConfigProperties();
         }
-        if (config.getUseLRUExpressionCache() == null) {
-            config.setUseLRUExpressionCache(2048);
+        if (config.getMaxExpressionCache() == null) {
+            config.setMaxExpressionCache(2048);
         }
         this.aviator = AviatorInstanceBuilder.buildAviatorEvaluatorInstance(config);
     }

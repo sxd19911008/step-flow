@@ -37,7 +37,7 @@ public class AviatorInstanceBuilder {
         aviator.setCachedExpressionByDefault(true);
 
         // 设置最大缓存表达式数量
-        aviator.useLRUExpressionCache(StepFlowUtils.defaultIfNull(config.getUseLRUExpressionCache(), 2048));
+        aviator.useLRUExpressionCache(StepFlowUtils.defaultIfNull(config.getMaxExpressionCache(), 2048));
 
         // decimal 数字精度，四舍五入，精度40位
         aviator.setOption(Options.MATH_CONTEXT, new MathContext(40, RoundingMode.HALF_UP));
@@ -58,7 +58,7 @@ public class AviatorInstanceBuilder {
         aviator.setOption(Options.MAX_LOOP_COUNT, StepFlowUtils.defaultIfNull(config.getMaxLoopCount(), 10000));
 
         // 调试日志，生产环境建议关闭
-        aviator.setOption(Options.TRACE_EVAL, StepFlowUtils.defaultIfNull(config.getTraceEval(), Boolean.FALSE));
+        aviator.setOption(Options.TRACE_EVAL, StepFlowUtils.defaultIfNull(config.getLogEnabled(), Boolean.FALSE));
 
         return aviator;
     }
