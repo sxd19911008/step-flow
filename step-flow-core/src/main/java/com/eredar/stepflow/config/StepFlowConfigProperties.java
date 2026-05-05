@@ -7,15 +7,28 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * step-flow 核心配置项。
- * 仅包含与具体引擎实现无关的通用配置（如线程池）。
- * 各引擎插件的专属配置由对应的插件包自行定义（例如 StepFlowAviatorProperties）。
+ * step-flow 核心配置项
  */
 @Data
 public class StepFlowConfigProperties {
 
     // 异步执行 FLowNode 的线程池
     private ThreadPoolProperty parallelThreadPool;
+
+    /**
+     * 参数取值引擎配置
+     */
+    private StepFlowEngineProperties paramEngineProperties;
+
+    /**
+     * 条件判断引擎配置
+     */
+    private StepFlowEngineProperties conditionEngineProperties;
+
+    /**
+     * 业务计算引擎配置
+     */
+    private StepFlowEngineProperties businessEngineProperties;
 
     @Data
     public static class ThreadPoolProperty {

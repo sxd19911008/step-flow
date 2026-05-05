@@ -9,7 +9,7 @@ import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
 import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.step.intf.JavaStep;
 import com.eredar.stepflow.step.intf.StepDataProvider;
-import com.eredar.stepflow.utils.StepFlowJsonUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -113,6 +113,6 @@ public class StepFlowExecutorTestTest {
                 .num4(new BigDecimal("69"))
                 .build());
         Map<String, Object> resMap = stepFlowExecutor.executeByFLowCode("CALC001", contextMap);
-        System.err.println(StepFlowJsonUtils.writeValueAsString(resMap));
+        Assertions.assertEquals(new BigDecimal("10260"), resMap.get("calc_Hades_res"));
     }
 }

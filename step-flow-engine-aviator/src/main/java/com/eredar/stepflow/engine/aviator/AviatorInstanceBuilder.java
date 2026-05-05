@@ -1,6 +1,6 @@
 package com.eredar.stepflow.engine.aviator;
 
-import com.eredar.stepflow.engine.aviator.dto.StepFlowAviatorConfigProperties;
+import com.eredar.stepflow.config.StepFlowEngineProperties;
 import com.eredar.stepflow.utils.StepFlowUtils;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.AviatorEvaluatorInstance;
@@ -10,21 +10,19 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
- * AviatorScript 引擎实例工厂，集中管理所有 Aviator 选项配置。
- * 各引擎实现类（Business / Condition / Param）均通过此类创建独立的 Aviator 实例，
- * 避免共享实例时的选项干扰。
+ * AviatorScript 引擎实例工厂，集中管理所有 Aviator 选项配置
  */
 public class AviatorInstanceBuilder {
 
     /**
-     * 根据配置构建一个独立的 AviatorEvaluatorInstance。
+     * 根据配置构建一个独立的 {@link AviatorEvaluatorInstance}。
      *
-     * @param config Aviator 配置项，传入 null 时使用全部默认值
-     * @return 配置完毕的 AviatorEvaluatorInstance
+     * @param config 引擎配置项，传入 null 时所有选项使用内置默认值
+     * @return 配置完毕、可直接使用的 AviatorEvaluatorInstance
      */
-    public static AviatorEvaluatorInstance buildAviatorEvaluatorInstance(StepFlowAviatorConfigProperties config) {
+    public static AviatorEvaluatorInstance buildAviatorEvaluatorInstance(StepFlowEngineProperties config) {
         if (config == null) {
-            config = new StepFlowAviatorConfigProperties();
+            config = new StepFlowEngineProperties();
         }
 
         // 每次创建独立实例，避免全局状态污染
@@ -39,7 +37,7 @@ public class AviatorInstanceBuilder {
         // 设置最大缓存表达式数量
         aviator.useLRUExpressionCache(StepFlowUtils.defaultIfNull(config.getMaxExpressionCache(), 2048));
 
-        // decimal 数字精度，四舍五入，精度40位
+        // decimal 数字精度，四舍五入，精度 40 位
         aviator.setOption(Options.MATH_CONTEXT, new MathContext(40, RoundingMode.HALF_UP));
 
         // 浮点数统一使用 BigDecimal，避免精度丢失

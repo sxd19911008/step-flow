@@ -5,6 +5,7 @@ import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.StepFlowContext;
 import com.eredar.stepflow.engine.BusinessExpressionEngine;
 import com.eredar.stepflow.engine.ConditionExpressionEngine;
+import com.eredar.stepflow.engine.ExpressionEngineProvider;
 import com.eredar.stepflow.engine.ParamExpressionEngine;
 import com.eredar.stepflow.exception.StepFlowException;
 import com.eredar.stepflow.flow.FlowExecutor;
@@ -24,6 +25,9 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * step-flow 核心执行器
+ */
 public class StepFlowExecutor {
 
     // 执行器上下文
@@ -33,6 +37,13 @@ public class StepFlowExecutor {
         this.executorsContext = executorsContext;
     }
 
+    /**
+     * 根据 flowCode 执行对应流程。
+     *
+     * @param flowCode   流程编码
+     * @param contextMap 流程执行上下文变量
+     * @return 执行结果上下文映射
+     */
     public Map<String, Object> executeByFLowCode(String flowCode, Map<String, Object> contextMap) {
         return executorsContext.executeByFLowCode(
                 flowCode,
@@ -41,22 +52,28 @@ public class StepFlowExecutor {
     }
 
     /**
-     * StepFlowExecutor 构建方法
+     * 创建 Builder。
      *
-     * @param stepDataProvider stepData 提供者
-     * @param flowProvider     flow 提供者
-     * @return StepFlowExecutor 的 Builder 对象
+     * @param stepDataProvider stepData 提供者（必填）
+     * @param flowProvider     flow 提供者（必填）
+     * @return Builder 实例
      */
     public static Builder builder(StepDataProvider stepDataProvider, FlowProvider flowProvider) {
         return new Builder(stepDataProvider, flowProvider);
     }
 
+    /**
+     * {@link StepFlowExecutor} 构建器。
+     */
     public static class Builder {
 
         private final StepDataProvider stepDataProvider;
 
         private final FlowProvider flowProvider;
 
+        /**
+         * step-flow 核心配置项
+         */
         private StepFlowConfigProperties configProperties;
 
         private Map<String, JavaStep> javaStepMap;
@@ -107,6 +124,8 @@ public class StepFlowExecutor {
         public StepFlowExecutor build() {
             // 给一些Bean设置默认实现
             this.setDefaultBean();
+            // 设置表达式引擎
+            this.setExpressionEngine();
             // 构建 step 执行器
             StepExecutor stepExecutor = this.buildStepExecutor();
             // 构建 flow 执行器
@@ -125,11 +144,6 @@ public class StepFlowExecutor {
 
         /**
          * 给未显式设置的组件填充默认实现。
-         *
-         * <p>引擎实现通过 Java SPI（{@link ServiceLoader}）自动发现，无需在 core 包中
-         * 硬编码任何具体引擎类。只要 classpath 上存在实现了引擎接口的插件包
-         * （如 step-flow-engine-aviator），SPI 便会自动加载。
-         * 若 classpath 上找不到任何实现，则抛出明确的异常提示用户引入插件包。
          */
         private void setDefaultBean() {
 
@@ -142,29 +156,47 @@ public class StepFlowExecutor {
                 this.parallelThreadPool = factory.getStepFlowParallelThreadPool();
             }
 
-            // 通过 SPI 发现引擎实现，避免 core 直接依赖任何引擎库
-            if (this.paramExpressionEngine == null) {
-                this.paramExpressionEngine = loadSpi(ParamExpressionEngine.class);
-            }
-
-            if (this.conditionExpressionEngine == null) {
-                this.conditionExpressionEngine = loadSpi(ConditionExpressionEngine.class);
-            }
-
-            if (this.businessExpressionEngine == null) {
-                this.businessExpressionEngine = loadSpi(BusinessExpressionEngine.class);
-            }
-
             if (this.javaStepMap == null) {
                 this.javaStepMap = new HashMap<>();
             }
         }
 
         /**
+         * 设置表达式引擎
+         */
+        private void setExpressionEngine() {
+            // 若三个引擎中任意一个未显式设置，则通过 SPI 加载统一的 ExpressionEngineProvider
+            if (this.paramExpressionEngine == null
+                    || this.conditionExpressionEngine == null
+                    || this.businessExpressionEngine == null) {
+
+                // 通过 SPI 发现引擎 Provider 实现，避免 core 直接依赖任何具体引擎库
+                ExpressionEngineProvider provider = loadSpi(ExpressionEngineProvider.class);
+
+                /*
+                 * 从 configProperties 中读取三个引擎的独立配置，分别传入
+                 */
+                provider.setParamEngineProperties(configProperties.getParamEngineProperties());
+                provider.setConditionEngineProperties(configProperties.getConditionEngineProperties());
+                provider.setBusinessEngineProperties(configProperties.getBusinessEngineProperties());
+
+                // 仅填充尚未显式设置的引擎，不覆盖用户手动设置的引擎
+                if (this.paramExpressionEngine == null) {
+                    this.paramExpressionEngine = provider.buildParamExpressionEngine();
+                }
+                if (this.conditionExpressionEngine == null) {
+                    this.conditionExpressionEngine = provider.buildConditionExpressionEngine();
+                }
+                if (this.businessExpressionEngine == null) {
+                    this.businessExpressionEngine = provider.buildBusinessExpressionEngine();
+                }
+            }
+        }
+
+        /**
          * 通过 Java SPI 加载指定接口的第一个实现类。
          *
-         * @param spiClass 引擎接口类型
-         * @param <T>      引擎接口泛型
+         * @param spiClass 接口类型
          * @return 第一个可用的实现实例
          * @throws StepFlowException 若 classpath 上没有任何实现时，抛出含引导信息的异常
          */
@@ -180,7 +212,7 @@ public class StepFlowExecutor {
         }
 
         /**
-         * 构建 StepExecutor
+         * 构建 {@link StepExecutor}，注册所有 StepHandler。
          */
         private StepExecutor buildStepExecutor() {
             ConstantStepHandler constantStepHandler = new ConstantStepHandler();

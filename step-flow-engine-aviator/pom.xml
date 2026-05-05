@@ -14,7 +14,7 @@
     <description>AviatorScript expression engine plugin for step-flow.</description>
 
     <dependencies>
-        <!-- step-flow 核心：提供 3 个引擎接口 -->
+        <!-- step-flow 核心 -->
         <dependency>
             <groupId>com.eredar</groupId>
             <artifactId>step-flow-core</artifactId>

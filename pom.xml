@@ -39,7 +39,6 @@
     <modules>
         <module>step-flow-core</module>
         <module>step-flow-engine-aviator</module>
-        <module>step-flow-engine-aviator-spring-boot-starter</module>
         <module>step-flow-spring-boot-starter</module>
     </modules>
 
@@ -64,12 +63,6 @@
             <dependency>
                 <groupId>com.eredar</groupId>
                 <artifactId>step-flow-engine-aviator</artifactId>
-                <version>${step-flow.version}</version>
-            </dependency>
-            <!-- Aviator 引擎 Spring Boot Starter -->
-            <dependency>
-                <groupId>com.eredar</groupId>
-                <artifactId>step-flow-engine-aviator-spring-boot-starter</artifactId>
                 <version>${step-flow.version}</version>
             </dependency>
             <!-- 计算引擎 -->
