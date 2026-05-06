@@ -20,7 +20,7 @@ import lombok.Getter;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = StepFlowNode.class, name = "STEP"),
-        @JsonSubTypes.Type(value = FlowFlowNode.class, name = "FLOW"),
+        @JsonSubTypes.Type(value = SubFlowNode.class, name = "FLOW"),
         @JsonSubTypes.Type(value = SequenceFlowNode.class, name = "SEQUENCE"),
         @JsonSubTypes.Type(value = ParallelFlowNode.class, name = "PARALLEL"),
         @JsonSubTypes.Type(value = IfElseFlowNode.class, name = "IF_ELSE")

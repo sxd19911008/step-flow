@@ -12,15 +12,15 @@ import lombok.Getter;
 /**
  * 运行另一个 Flow 的 FlowNode
  */
-public class FlowFlowNode extends FlowNode {
+public class SubFlowNode extends FlowNode {
 
     @JsonSetter(nulls = Nulls.FAIL)
     @Getter
     private final String flowCode;
 
     @JsonCreator
-    public FlowFlowNode(@JsonProperty("type") String type,
-                        @JsonProperty("flowCode") String flowCode) {
+    public SubFlowNode(@JsonProperty("type") String type,
+                       @JsonProperty("flowCode") String flowCode) {
         super(type);
         this.flowCode = flowCode;
     }

@@ -16,8 +16,6 @@ public enum FlowContentTypeEnum {
     SEQUENCE("SEQUENCE", "多个步骤/流程顺序执行"),
     PARALLEL("PARALLEL", "多个步骤/流程并发执行"),
     IF_ELSE("IF_ELSE", "if-else判断后执行步骤/流程"),
-    FOR("FOR", "for循环步骤/流程"),
-    WHILE("WHILE", "while循环步骤/流程"),
     ;
 
     // 类型code
