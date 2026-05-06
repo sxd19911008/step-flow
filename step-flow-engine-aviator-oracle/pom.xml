@@ -9,9 +9,9 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>step-flow-engine-aviator</artifactId>
-    <name>step-flow-engine-aviator</name>
-    <description>AviatorScript expression engine plugin for step-flow.</description>
+    <artifactId>step-flow-engine-aviator-oracle</artifactId>
+    <name>step-flow-engine-aviator-oracle</name>
+    <description>Oracle-compatible expression engine plugin for step-flow.</description>
 
     <dependencies>
         <!-- step-flow 核心 -->
@@ -22,9 +22,9 @@
 
         <!-- 表达式引擎核心依赖 -->
         <dependency>
-            <groupId>com.googlecode.aviator</groupId>
-            <artifactId>aviator</artifactId>
-            <version>5.4.3</version>
+            <groupId>com.eredar</groupId>
+            <artifactId>aviator-oracle</artifactId>
+            <version>5.4.3.0</version>
         </dependency>
 
         <!-- Lombok -->

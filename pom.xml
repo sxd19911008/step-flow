@@ -25,8 +25,6 @@
         <spring-boot.version>2.7.18</spring-boot.version>
         <!-- step-flow 核心版本：Starter 引用时使用 -->
         <step-flow.version>${project.version}</step-flow.version>
-        <!-- AviatorScript 版本 -->
-        <aviator.version>5.4.3</aviator.version>
         <!-- jackson 版本 -->
         <jackson.version>2.13.5</jackson.version>
         <!-- 编译器插件版本：集中维护 -->
@@ -39,6 +37,7 @@
     <modules>
         <module>step-flow-core</module>
         <module>step-flow-engine-aviator</module>
+        <module>step-flow-engine-aviator-oracle</module>
         <module>step-flow-spring-boot-starter</module>
     </modules>
 
@@ -65,11 +64,11 @@
                 <artifactId>step-flow-engine-aviator</artifactId>
                 <version>${step-flow.version}</version>
             </dependency>
-            <!-- 计算引擎 -->
+            <!-- Aviator 引擎插件包（Oracle 变体） -->
             <dependency>
-                <groupId>com.googlecode.aviator</groupId>
-                <artifactId>aviator</artifactId>
-                <version>${aviator.version}</version>
+                <groupId>com.eredar</groupId>
+                <artifactId>step-flow-engine-aviator-oracle</artifactId>
+                <version>${step-flow.version}</version>
             </dependency>
             <!-- Jackson -->
             <dependency>
