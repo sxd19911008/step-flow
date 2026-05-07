@@ -38,6 +38,7 @@
         <module>step-flow-core</module>
         <module>step-flow-engine-aviator</module>
         <module>step-flow-engine-aviator-oracle</module>
+        <module>step-flow-engine-jexl</module>
         <module>step-flow-spring-boot-starter</module>
     </modules>
 
@@ -68,6 +69,12 @@
             <dependency>
                 <groupId>com.eredar</groupId>
                 <artifactId>step-flow-engine-aviator-oracle</artifactId>
+                <version>${step-flow.version}</version>
+            </dependency>
+            <!-- JEXL 引擎插件包 -->
+            <dependency>
+                <groupId>com.eredar</groupId>
+                <artifactId>step-flow-engine-jexl</artifactId>
                 <version>${step-flow.version}</version>
             </dependency>
             <!-- Jackson -->
