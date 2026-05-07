@@ -1,6 +1,7 @@
 package com.eredar.stepflow.engine.impl;
 
 import com.eredar.stepflow.config.StepFlowEngineProperties;
+import com.eredar.stepflow.engine.EngineCustomizer;
 import com.eredar.stepflow.engine.ParamExpressionEngine;
 import com.eredar.stepflow.engine.jexl.JexlInstanceBuilder;
 import org.apache.commons.jexl3.JexlEngine;
@@ -18,17 +19,14 @@ public class JexlParamExpressionEngine implements ParamExpressionEngine {
     /** 线程安全的 JexlEngine，可并发执行 {@link JexlExpression#evaluate} */
     private final JexlEngine jexl;
 
-    /**
-     * @param config 引擎配置；未显式设置 maxExpressionCache 时默认 4096（与 Aviator 插件行为一致）
-     */
-    public JexlParamExpressionEngine(StepFlowEngineProperties config) {
+    public JexlParamExpressionEngine(StepFlowEngineProperties config, EngineCustomizer customizer) {
         if (config == null) {
             config = new StepFlowEngineProperties();
         }
         if (config.getMaxExpressionCache() == null) {
             config.setMaxExpressionCache(4096);
         }
-        this.jexl = JexlInstanceBuilder.buildJexlEngine(config);
+        this.jexl = JexlInstanceBuilder.buildJexlEngine(config, customizer);
     }
 
     /**

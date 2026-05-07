@@ -2,10 +2,10 @@ package com.eredar.stepflow.engine.impl;
 
 import com.eredar.stepflow.config.StepFlowEngineProperties;
 import com.eredar.stepflow.engine.ConditionExpressionEngine;
+import com.eredar.stepflow.engine.EngineCustomizer;
 import com.eredar.stepflow.engine.jexl.JexlInstanceBuilder;
 import com.eredar.stepflow.exception.StepFlowException;
 import org.apache.commons.jexl3.JexlEngine;
-import org.apache.commons.jexl3.JexlExpression;
 import org.apache.commons.jexl3.MapContext;
 
 import java.util.Collections;
@@ -18,17 +18,14 @@ public class JexlConditionExpressionEngine implements ConditionExpressionEngine 
 
     private final JexlEngine jexl;
 
-    /**
-     * @param config 引擎配置；未显式设置 maxExpressionCache 时默认 2048
-     */
-    public JexlConditionExpressionEngine(StepFlowEngineProperties config) {
+    public JexlConditionExpressionEngine(StepFlowEngineProperties config, EngineCustomizer customizer) {
         if (config == null) {
             config = new StepFlowEngineProperties();
         }
         if (config.getMaxExpressionCache() == null) {
             config.setMaxExpressionCache(2048);
         }
-        this.jexl = JexlInstanceBuilder.buildJexlEngine(config);
+        this.jexl = JexlInstanceBuilder.buildJexlEngine(config, customizer);
     }
 
     /**

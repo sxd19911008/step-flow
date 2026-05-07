@@ -3,6 +3,7 @@ package com.eredar.stepflow.engine.impl;
 import com.eredar.aviatororacle.AviatorOracleBuilder;
 import com.eredar.stepflow.config.StepFlowEngineProperties;
 import com.eredar.stepflow.engine.ConditionExpressionEngine;
+import com.eredar.stepflow.engine.EngineCustomizer;
 import com.eredar.stepflow.exception.StepFlowException;
 import com.googlecode.aviator.AviatorEvaluatorInstance;
 
@@ -15,7 +16,7 @@ public class AviatorOracleConditionExpressionEngine implements ConditionExpressi
 
     private final AviatorEvaluatorInstance aviator;
 
-    public AviatorOracleConditionExpressionEngine(StepFlowEngineProperties config) {
+    public AviatorOracleConditionExpressionEngine(StepFlowEngineProperties config, EngineCustomizer customizer) {
         if (config == null) {
             config = new StepFlowEngineProperties();
         }
@@ -28,6 +29,9 @@ public class AviatorOracleConditionExpressionEngine implements ConditionExpressi
                 .maxLoopCount(config.getMaxLoopCount())
                 .traceEval(config.getLogEnabled())
                 .build();
+        if (customizer != null) {
+            customizer.customize(this.aviator);
+        }
     }
 
     /**

@@ -2,6 +2,7 @@ package com.eredar.stepflow.engine.impl;
 
 import com.eredar.stepflow.config.StepFlowEngineProperties;
 import com.eredar.stepflow.engine.BusinessExpressionEngine;
+import com.eredar.stepflow.engine.EngineCustomizer;
 import com.eredar.stepflow.engine.jexl.JexlInstanceBuilder;
 import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.JexlExpression;
@@ -17,17 +18,14 @@ public class JexlBusinessExpressionEngine implements BusinessExpressionEngine {
 
     private final JexlEngine jexl;
 
-    /**
-     * @param config 引擎配置；未显式设置 maxExpressionCache 时默认 2048
-     */
-    public JexlBusinessExpressionEngine(StepFlowEngineProperties config) {
+    public JexlBusinessExpressionEngine(StepFlowEngineProperties config, EngineCustomizer customizer) {
         if (config == null) {
             config = new StepFlowEngineProperties();
         }
         if (config.getMaxExpressionCache() == null) {
             config.setMaxExpressionCache(2048);
         }
-        this.jexl = JexlInstanceBuilder.buildJexlEngine(config);
+        this.jexl = JexlInstanceBuilder.buildJexlEngine(config, customizer);
     }
 
     /**

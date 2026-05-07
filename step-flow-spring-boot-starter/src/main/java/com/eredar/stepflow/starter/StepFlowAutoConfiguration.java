@@ -4,6 +4,7 @@ import com.eredar.stepflow.StepFlowExecutor;
 import com.eredar.stepflow.config.StepFlowConfigProperties;
 import com.eredar.stepflow.engine.BusinessExpressionEngine;
 import com.eredar.stepflow.engine.ConditionExpressionEngine;
+import com.eredar.stepflow.engine.EngineCustomizer;
 import com.eredar.stepflow.engine.ParamExpressionEngine;
 import com.eredar.stepflow.flow.intf.FlowProvider;
 import com.eredar.stepflow.step.intf.JavaStep;
@@ -48,7 +49,10 @@ public class StepFlowAutoConfiguration {
                                              @Qualifier("stepFlowParallelThreadPool") ExecutorService stepFlowParallelThreadPool,
                                              @Nullable ParamExpressionEngine paramExpressionEngine,
                                              @Nullable ConditionExpressionEngine conditionExpressionEngine,
-                                             @Nullable BusinessExpressionEngine businessExpressionEngine) {
+                                             @Nullable BusinessExpressionEngine businessExpressionEngine,
+                                             @Nullable EngineCustomizer<?> paramEngineCustomizer,
+                                             @Nullable EngineCustomizer<?> conditionEngineCustomizer,
+                                             @Nullable EngineCustomizer<?> businessEngineCustomizer) {
         return StepFlowExecutor.builder(stepDataProvider, flowProvider)
                 .configProperties(stepFlowConfigProperties)
                 .javaStepMap(javaStepMap)
@@ -56,6 +60,9 @@ public class StepFlowAutoConfiguration {
                 .paramExpressionEngine(paramExpressionEngine)
                 .conditionExpressionEngine(conditionExpressionEngine)
                 .businessExpressionEngine(businessExpressionEngine)
+                .paramEngineCustomizer(paramEngineCustomizer)
+                .conditionEngineCustomizer(conditionEngineCustomizer)
+                .businessEngineCustomizer(businessEngineCustomizer)
                 .build();
     }
 }

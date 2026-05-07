@@ -3,10 +3,7 @@ package com.eredar.stepflow;
 import com.eredar.stepflow.config.StepFlowConfigProperties;
 import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.StepFlowContext;
-import com.eredar.stepflow.engine.BusinessExpressionEngine;
-import com.eredar.stepflow.engine.ConditionExpressionEngine;
-import com.eredar.stepflow.engine.ExpressionEngineProvider;
-import com.eredar.stepflow.engine.ParamExpressionEngine;
+import com.eredar.stepflow.engine.*;
 import com.eredar.stepflow.exception.StepFlowException;
 import com.eredar.stepflow.flow.FlowExecutor;
 import com.eredar.stepflow.flow.intf.FlowProvider;
@@ -86,6 +83,15 @@ public class StepFlowExecutor {
 
         private BusinessExpressionEngine businessExpressionEngine;
 
+        // 参数取值引擎编程式定制回调，通过 SPI 加载 Provider 后注入
+        private EngineCustomizer<?> paramEngineCustomizer;
+
+        // 条件判断引擎编程式定制回调
+        private EngineCustomizer<?> conditionEngineCustomizer;
+
+        // 业务计算引擎编程式定制回调
+        private EngineCustomizer<?> businessEngineCustomizer;
+
         public Builder(StepDataProvider stepDataProvider, FlowProvider flowProvider) {
             this.stepDataProvider = stepDataProvider;
             this.flowProvider = flowProvider;
@@ -118,6 +124,21 @@ public class StepFlowExecutor {
 
         public Builder businessExpressionEngine(BusinessExpressionEngine businessExpressionEngine) {
             this.businessExpressionEngine = businessExpressionEngine;
+            return this;
+        }
+
+        public Builder paramEngineCustomizer(EngineCustomizer<?> paramEngineCustomizer) {
+            this.paramEngineCustomizer = paramEngineCustomizer;
+            return this;
+        }
+
+        public Builder conditionEngineCustomizer(EngineCustomizer<?> conditionEngineCustomizer) {
+            this.conditionEngineCustomizer = conditionEngineCustomizer;
+            return this;
+        }
+
+        public Builder businessEngineCustomizer(EngineCustomizer<?> businessEngineCustomizer) {
+            this.businessEngineCustomizer = businessEngineCustomizer;
             return this;
         }
 
@@ -171,14 +192,17 @@ public class StepFlowExecutor {
                     || this.businessExpressionEngine == null) {
 
                 // 通过 SPI 发现引擎 Provider 实现，避免 core 直接依赖任何具体引擎库
-                ExpressionEngineProvider provider = loadSpi(ExpressionEngineProvider.class);
+                AbstractExpressionEngineProvider provider = loadSpi();
 
-                /*
-                 * 从 configProperties 中读取三个引擎的独立配置，分别传入
-                 */
+                // 从 configProperties 中读取三个引擎的独立配置，分别传入
                 provider.setParamEngineProperties(configProperties.getParamEngineProperties());
                 provider.setConditionEngineProperties(configProperties.getConditionEngineProperties());
                 provider.setBusinessEngineProperties(configProperties.getBusinessEngineProperties());
+
+                // 注入编程式定制回调
+                provider.setParamEngineCustomizer(this.paramEngineCustomizer);
+                provider.setConditionEngineCustomizer(this.conditionEngineCustomizer);
+                provider.setBusinessEngineCustomizer(this.businessEngineCustomizer);
 
                 // 仅填充尚未显式设置的引擎，不覆盖用户手动设置的引擎
                 if (this.paramExpressionEngine == null) {
@@ -194,21 +218,17 @@ public class StepFlowExecutor {
         }
 
         /**
-         * 通过 Java SPI 加载指定接口的第一个实现类。
+         * 通过 Java SPI 加载 {@link AbstractExpressionEngineProvider} 的第一个实现类。
          *
-         * @param spiClass 接口类型
-         * @return 第一个可用的实现实例
+         * @return {@link AbstractExpressionEngineProvider} 的第一个可用的实现实例
          * @throws StepFlowException 若 classpath 上没有任何实现时，抛出含引导信息的异常
          */
-        private <T> T loadSpi(Class<T> spiClass) {
-            Iterator<T> it = ServiceLoader.load(spiClass).iterator();
+        private AbstractExpressionEngineProvider loadSpi() {
+            Iterator<AbstractExpressionEngineProvider> it = ServiceLoader.load(AbstractExpressionEngineProvider.class).iterator();
             if (it.hasNext()) {
                 return it.next();
             }
-            throw new StepFlowException(
-                    "No " + spiClass.getSimpleName() + " implementation found on classpath. " +
-                    "Please add an engine plugin dependency, e.g. step-flow-engine-aviator."
-            );
+            throw new StepFlowException("No [com.eredar.stepflow.engine.AbstractExpressionEngineProvider] implementation found on classpath.");
         }
 
         /**

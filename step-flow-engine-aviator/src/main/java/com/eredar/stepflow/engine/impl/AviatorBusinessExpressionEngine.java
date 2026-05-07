@@ -2,6 +2,7 @@ package com.eredar.stepflow.engine.impl;
 
 import com.eredar.stepflow.config.StepFlowEngineProperties;
 import com.eredar.stepflow.engine.BusinessExpressionEngine;
+import com.eredar.stepflow.engine.EngineCustomizer;
 import com.eredar.stepflow.engine.aviator.AviatorInstanceBuilder;
 import com.googlecode.aviator.AviatorEvaluatorInstance;
 
@@ -14,7 +15,7 @@ public class AviatorBusinessExpressionEngine implements BusinessExpressionEngine
 
     private final AviatorEvaluatorInstance aviator;
 
-    public AviatorBusinessExpressionEngine(StepFlowEngineProperties config) {
+    public AviatorBusinessExpressionEngine(StepFlowEngineProperties config, EngineCustomizer customizer) {
         if (config == null) {
             config = new StepFlowEngineProperties();
         }
@@ -23,6 +24,9 @@ public class AviatorBusinessExpressionEngine implements BusinessExpressionEngine
             config.setMaxExpressionCache(2048);
         }
         this.aviator = AviatorInstanceBuilder.buildAviatorEvaluatorInstance(config);
+        if (customizer != null) {
+            customizer.customize(this.aviator);
+        }
     }
 
     /**

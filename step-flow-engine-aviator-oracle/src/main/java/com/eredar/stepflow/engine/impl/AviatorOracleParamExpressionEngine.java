@@ -2,6 +2,7 @@ package com.eredar.stepflow.engine.impl;
 
 import com.eredar.aviatororacle.AviatorOracleBuilder;
 import com.eredar.stepflow.config.StepFlowEngineProperties;
+import com.eredar.stepflow.engine.EngineCustomizer;
 import com.eredar.stepflow.engine.ParamExpressionEngine;
 import com.googlecode.aviator.AviatorEvaluatorInstance;
 
@@ -14,7 +15,7 @@ public class AviatorOracleParamExpressionEngine implements ParamExpressionEngine
 
     private final AviatorEvaluatorInstance aviator;
 
-    public AviatorOracleParamExpressionEngine(StepFlowEngineProperties config) {
+    public AviatorOracleParamExpressionEngine(StepFlowEngineProperties config, EngineCustomizer customizer) {
         if (config == null) {
             config = new StepFlowEngineProperties();
         }
@@ -27,6 +28,9 @@ public class AviatorOracleParamExpressionEngine implements ParamExpressionEngine
                 .maxLoopCount(config.getMaxLoopCount())
                 .traceEval(config.getLogEnabled())
                 .build();
+        if (customizer != null) {
+            customizer.customize(this.aviator);
+        }
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.eredar.stepflow.engine.jexl;
 
 import com.eredar.stepflow.config.StepFlowEngineProperties;
+import com.eredar.stepflow.engine.EngineCustomizer;
 import com.eredar.stepflow.utils.StepFlowUtils;
 import org.apache.commons.jexl3.JexlArithmetic;
 import org.apache.commons.jexl3.JexlBuilder;
@@ -22,10 +23,13 @@ public final class JexlInstanceBuilder {
     /**
      * 根据配置构建一个独立的 {@link JexlEngine}。
      *
-     * @param config 引擎配置项，传入 null 时所有选项使用内置默认值
+     * @param config     引擎配置项，传入 null 时所有选项使用内置默认值
+     * @param customizer 编程式定制回调，在 {@link JexlBuilder#create()} 之前触发，
+     *                   入参为 {@link JexlBuilder}，允许追加 namespaces、修改 sandbox 等。
+     *                   传入 null 时跳过回调。
      * @return 配置完毕、可直接使用的 JexlEngine
      */
-    public static JexlEngine buildJexlEngine(StepFlowEngineProperties config) {
+    public static JexlEngine buildJexlEngine(StepFlowEngineProperties config, EngineCustomizer customizer) {
         if (config == null) {
             config = new StepFlowEngineProperties();
         }
@@ -33,20 +37,25 @@ public final class JexlInstanceBuilder {
         /* 缓存大小 */
         int cacheSize = StepFlowUtils.defaultIfNull(config.getMaxExpressionCache(), 2048);
 
-        /* 严格算术逻辑 */
-        // 全部有效位数60位，四舍五入，小数位数40位
+        /* 严格算术逻辑：全部有效位数60位，四舍五入，小数位数40位 */
         JexlArithmetic arithmetic = new JexlArithmetic(true, new MathContext(60, RoundingMode.HALF_UP), 40);
 
-        /* 构建引擎 */
-        return new JexlBuilder()
+        /* 构建 JexlBuilder */
+        JexlBuilder builder = new JexlBuilder()
                 .cache(cacheSize) // 缓存大小：缓存已解析的表达式
                 .strict(true) // 严格模式: true-遇到未定义的变量或属性访问错误时抛出异常；false-返回 null
                 .silent(false) // 静默模式: true-发生错误时返回null并记录日志；false-发生错误时直接抛出异常
                 .permissions(JexlPermissions.UNRESTRICTED) // UNRESTRICTED模式，允许new对象、反射等
                 .sandbox(new JexlSandbox(true)) // 黑名单沙箱。true-黑单模式
                 .arithmetic(arithmetic) // 配置严格算术逻辑
-//                .namespaces(namespaces) // 载入工具类
-                .debug(StepFlowUtils.defaultIfNull(config.getLogEnabled(), Boolean.FALSE))
-                .create();
+                .debug(StepFlowUtils.defaultIfNull(config.getLogEnabled(), Boolean.FALSE));
+
+        /* 自定义配置 */
+        if (customizer != null) {
+            customizer.customize(builder);
+        }
+
+        /* 构建引擎对象并返回 */
+        return builder.create();
     }
 }
