@@ -15,11 +15,9 @@ import com.eredar.stepflow.step.intf.JavaStep;
 import com.eredar.stepflow.step.intf.StepDataProvider;
 import com.eredar.stepflow.step.intf.StepHandler;
 import com.eredar.stepflow.threadpool.StepFlowThreadPoolFactory;
+import com.eredar.stepflow.utils.StepFlowUtils;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -68,12 +66,11 @@ public class StepFlowExecutor {
 
         private final FlowProvider flowProvider;
 
-        /**
-         * step-flow 核心配置项
-         */
         private StepFlowConfigProperties configProperties;
 
         private Map<String, JavaStep> javaStepMap;
+
+        private List<StepHandler> stepHandlerList;
 
         private ExecutorService parallelThreadPool;
 
@@ -99,6 +96,11 @@ public class StepFlowExecutor {
 
         public Builder javaStepMap(Map<String, JavaStep> javaStepMap) {
             this.javaStepMap = javaStepMap;
+            return this;
+        }
+
+        public Builder stepHandlerList(List<StepHandler> stepHandlerList) {
+            this.stepHandlerList = stepHandlerList;
             return this;
         }
 
@@ -235,15 +237,27 @@ public class StepFlowExecutor {
          * 构建 {@link StepExecutor}，注册所有 StepHandler。
          */
         private StepExecutor buildStepExecutor() {
+            /* 创建 stepHandlerMap */
+            Map<String, StepHandler> stepHandlerMap = new HashMap<>();
+            /* 默认 StepHandler */
+            // 创建默认 StepHandler
             ConstantStepHandler constantStepHandler = new ConstantStepHandler();
             JavaStepHandler javaStepHandler = new JavaStepHandler(this.javaStepMap);
             ExpressionStepHandler expressionStepHandler = new ExpressionStepHandler();
 
-            Map<String, StepHandler> stepHandlerMap = new HashMap<>();
+            // 存入 stepHandlerMap
             stepHandlerMap.put(constantStepHandler.getStepContentType(), constantStepHandler);
             stepHandlerMap.put(javaStepHandler.getStepContentType(), javaStepHandler);
             stepHandlerMap.put(expressionStepHandler.getStepContentType(), expressionStepHandler);
 
+            /* 将传入的 stepHandler 存入 stepHandlerMap */
+            if (StepFlowUtils.isNotEmpty(stepHandlerList)) {
+                for (StepHandler stepHandler : stepHandlerList) {
+                    stepHandlerMap.put(stepHandler.getStepContentType(), stepHandler);
+                }
+            }
+
+            /* 创建 StepExecutor 对象并返回 */
             return new StepExecutor(this.stepDataProvider, stepHandlerMap);
         }
     }

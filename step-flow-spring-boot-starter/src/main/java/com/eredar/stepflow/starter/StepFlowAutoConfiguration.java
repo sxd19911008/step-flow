@@ -9,6 +9,7 @@ import com.eredar.stepflow.engine.ParamExpressionEngine;
 import com.eredar.stepflow.flow.intf.FlowProvider;
 import com.eredar.stepflow.step.intf.JavaStep;
 import com.eredar.stepflow.step.intf.StepDataProvider;
+import com.eredar.stepflow.step.intf.StepHandler;
 import com.eredar.stepflow.threadpool.StepFlowThreadPoolFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,6 +17,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.lang.Nullable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
@@ -46,6 +48,7 @@ public class StepFlowAutoConfiguration {
                                              FlowProvider flowProvider,
                                              StepFlowConfigProperties stepFlowConfigProperties,
                                              @Nullable Map<String, JavaStep> javaStepMap,
+                                             @Nullable List<StepHandler> stepHandlerList,
                                              @Qualifier("stepFlowParallelThreadPool") ExecutorService stepFlowParallelThreadPool,
                                              @Nullable ParamExpressionEngine paramExpressionEngine,
                                              @Nullable ConditionExpressionEngine conditionExpressionEngine,
@@ -56,6 +59,7 @@ public class StepFlowAutoConfiguration {
         return StepFlowExecutor.builder(stepDataProvider, flowProvider)
                 .configProperties(stepFlowConfigProperties)
                 .javaStepMap(javaStepMap)
+                .stepHandlerList(stepHandlerList)
                 .parallelThreadPool(stepFlowParallelThreadPool)
                 .paramExpressionEngine(paramExpressionEngine)
                 .conditionExpressionEngine(conditionExpressionEngine)
