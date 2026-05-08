@@ -240,9 +240,9 @@ public class StepFlowExecutor {
             ExpressionStepHandler expressionStepHandler = new ExpressionStepHandler();
 
             Map<String, StepHandler> stepHandlerMap = new HashMap<>();
-            stepHandlerMap.put("constantStepHandler", constantStepHandler);
-            stepHandlerMap.put("javaStepHandler", javaStepHandler);
-            stepHandlerMap.put("expressionStepHandler", expressionStepHandler);
+            stepHandlerMap.put(constantStepHandler.getStepContentType(), constantStepHandler);
+            stepHandlerMap.put(javaStepHandler.getStepContentType(), javaStepHandler);
+            stepHandlerMap.put(expressionStepHandler.getStepContentType(), expressionStepHandler);
 
             return new StepExecutor(this.stepDataProvider, stepHandlerMap);
         }

@@ -4,7 +4,6 @@ import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.OneOffParams;
 import com.eredar.stepflow.dto.StepFlowContext;
 import com.eredar.stepflow.exception.StepFlowException;
-import com.eredar.stepflow.step.constants.StepContentTypeEnum;
 import com.eredar.stepflow.step.dto.Step;
 import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.step.intf.StepDataProvider;
@@ -12,8 +11,7 @@ import com.eredar.stepflow.step.intf.StepHandler;
 import com.eredar.stepflow.utils.StepFlowJsonUtils;
 import com.eredar.stepflow.utils.StepFlowUtils;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -31,26 +29,40 @@ public class StepExecutor {
         }
         /* 组装 step 对象 */
         if (StepFlowUtils.isNotEmpty(stepDataList)) {
-            // 查询所有 StepHandler 对象
+            Set<String> duplicateSet = new HashSet<>();
+            List<String> illegalList = new ArrayList<>();
             // 组装 Step
             for (StepData stepData : stepDataList) {
-                // 校验步骤信息是否合法
-                this.validateStepData(stepData);
+                Step existingStep = stepMap.get(stepData.getStepCode());
+                if (existingStep != null) {
+                    duplicateSet.add(stepData.getStepCode());
+                    continue;
+                }
                 // 查找对应的 StepHandler
-                String beanName = StepContentTypeEnum.getBeanName(stepData.getContentType());
-                StepHandler stepHandler = stepHandlerMap.get(beanName);
+                StepHandler stepHandler = stepHandlerMap.get(stepData.getContentType());
+                if (stepHandler == null) {
+                    illegalList.add(String.format("Step[%s] 的 contentType[%s] 不存在", stepData.getStepCode(), stepData.getContentType()));
+                    continue;
+                }
+                // 校验步骤信息是否合法
+                if (stepHandler.isStepDataIllegal(stepData)) {
+                    illegalList.add(String.format(
+                            "Step[%s] contentType 为 [%s]，未通过 [%s#isStepDataIllegal] 方法的校验",
+                            stepData.getStepCode(),
+                            stepData.getContentType(),
+                            stepHandler.getClass().getName()
+                    ));
+                    continue;
+                }
                 // 放入 stepMap
                 stepMap.put(stepData.getStepCode(), new Step(stepData, stepHandler));
             }
-        }
-    }
-
-    /**
-     * 合法性校验
-     */
-    private void validateStepData(StepData stepData) {
-        if (StepContentTypeEnum.isStepDataIllegal(stepData)) {
-            throw new StepFlowException("stepData 对象不合法：" + StepFlowJsonUtils.writeValueAsString(stepData));
+            if (StepFlowUtils.isNotEmpty(duplicateSet)) {
+                throw new StepFlowException("这些stepCode重复了：" + StepFlowJsonUtils.writeValueAsString(duplicateSet));
+            }
+            if (StepFlowUtils.isNotEmpty(illegalList)) {
+                throw new StepFlowException("这些step不合法：" + StepFlowJsonUtils.writeValueAsString(illegalList));
+            }
         }
     }
 

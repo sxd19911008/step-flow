@@ -3,6 +3,7 @@ package com.eredar.stepflow.step.handler;
 import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.OneOffParams;
 import com.eredar.stepflow.dto.StepFlowContext;
+import com.eredar.stepflow.step.constants.StepContentType;
 import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.exception.StepFlowException;
 import com.eredar.stepflow.step.intf.JavaStep;
@@ -28,6 +29,11 @@ public class JavaStepHandler implements StepHandler {
     }
 
     @Override
+    public String getStepContentType() {
+        return StepContentType.JAVA;
+    }
+
+    @Override
     public Object execute(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext) {
         String beanName = stepData.getContent();
         JavaStep javaStep = methodMap.get(beanName);
@@ -36,5 +42,10 @@ public class JavaStepHandler implements StepHandler {
         }
         // 执行 Java 方法
         return javaStep.invoke(stepData, stepFlowContext, oneOffParams);
+    }
+
+    @Override
+    public boolean isStepDataIllegal(StepData stepData) {
+        return  StepFlowUtils.isBlank(stepData.getContent());
     }
 }

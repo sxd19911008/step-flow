@@ -4,7 +4,7 @@ import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.stepflow.dto.DateCalcDTO;
 import com.eredar.stepflow.flow.dto.InputFlow;
 import com.eredar.stepflow.flow.intf.FlowProvider;
-import com.eredar.stepflow.step.constants.StepContentTypeEnum;
+import com.eredar.stepflow.step.constants.StepContentType;
 import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
 import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.step.intf.StepDataProvider;
@@ -32,7 +32,7 @@ public class AviatorOracleExpressionTest {
                         .stepCode("DC001")
                         .stepName("calc_months_raw")
                         .stepType("DATE")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("trunc(months_between(endDate, startDate), 4)")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Arrays.asList("endDate", "startDate"))
@@ -42,7 +42,7 @@ public class AviatorOracleExpressionTest {
                         .stepCode("DC002")
                         .stepName("calc_abs_val")
                         .stepType("DATE")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("abs(signedValue)")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Collections.singletonList("signedValue"))
@@ -52,7 +52,7 @@ public class AviatorOracleExpressionTest {
                         .stepCode("DC003")
                         .stepName("calc_base")
                         .stepType("DATE")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("floor(calc_months_raw) * principal + ceil(rateInput * calc_abs_val)")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Arrays.asList("calc_months_raw", "principal", "rateInput", "calc_abs_val"))
@@ -62,7 +62,7 @@ public class AviatorOracleExpressionTest {
                         .stepCode("DC004")
                         .stepName("calc_base")
                         .stepType("DATE")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("round(calc_months_raw, 1) * principal - floor(rateInput * calc_abs_val)")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Arrays.asList("calc_months_raw", "principal", "rateInput", "calc_abs_val"))
@@ -72,7 +72,7 @@ public class AviatorOracleExpressionTest {
                         .stepCode("DC005")
                         .stepName("calc_date_shifted")
                         .stepType("DATE")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("startDate + 1.5")
                         .returnType(StepReturnTypeEnum.DATE.getTypeCode())
                         .paramNameList(Collections.singletonList("startDate"))
@@ -82,7 +82,7 @@ public class AviatorOracleExpressionTest {
                         .stepCode("DC006")
                         .stepName("calc_add_months")
                         .stepType("DATE")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("add_months(startDate, 6)")
                         .returnType(StepReturnTypeEnum.DATE.getTypeCode())
                         .paramNameList(Collections.singletonList("startDate"))
@@ -92,7 +92,7 @@ public class AviatorOracleExpressionTest {
                         .stepCode("DC007")
                         .stepName("calc_last_day")
                         .stepType("DATE")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("last_day(endDate)")
                         .returnType(StepReturnTypeEnum.DATE.getTypeCode())
                         .paramNameList(Collections.singletonList("endDate"))
@@ -102,7 +102,7 @@ public class AviatorOracleExpressionTest {
                         .stepCode("DC008")
                         .stepName("calc_date_diff")
                         .stepType("DATE")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("calc_last_day - endDate")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Arrays.asList("calc_last_day", "endDate"))
@@ -112,7 +112,7 @@ public class AviatorOracleExpressionTest {
                         .stepCode("DC009")
                         .stepName("calc_extra")
                         .stepType("DATE")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("decode(nvl(extraFactor, 5), 5, coalesce(extraFactor, nvl(extraFactor, 5)), 0)")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Collections.singletonList("extraFactor"))
@@ -123,7 +123,7 @@ public class AviatorOracleExpressionTest {
                         .stepCode("DC010")
                         .stepName("calc_final")
                         .stepType("DATE")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("round(calc_base + calc_date_diff * calc_extra - power(calc_extra, 2) / calc_abs_val, 2)")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Arrays.asList("calc_base", "calc_date_diff", "calc_extra", "calc_abs_val"))

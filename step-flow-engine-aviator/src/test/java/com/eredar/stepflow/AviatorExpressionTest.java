@@ -4,7 +4,7 @@ import com.eredar.stepflow.dto.CalcDTO;
 import com.eredar.stepflow.flow.dto.InputFlow;
 import com.eredar.stepflow.flow.intf.FlowProvider;
 import com.eredar.stepflow.javaMethod.ChooseRes;
-import com.eredar.stepflow.step.constants.StepContentTypeEnum;
+import com.eredar.stepflow.step.constants.StepContentType;
 import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
 import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.step.intf.JavaStep;
@@ -25,7 +25,7 @@ public class AviatorExpressionTest {
                         .stepCode("COMMON001")
                         .stepName("add")
                         .stepType("COMMON")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("a + b")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Arrays.asList("a", "b"))
@@ -34,7 +34,7 @@ public class AviatorExpressionTest {
                         .stepCode("COMMON002")
                         .stepName("subtract")
                         .stepType("COMMON")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("a - b")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Arrays.asList("a", "b"))
@@ -43,7 +43,7 @@ public class AviatorExpressionTest {
                         .stepCode("COMMON003")
                         .stepName("multiply")
                         .stepType("COMMON")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("a * b")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Arrays.asList("a", "b"))
@@ -52,7 +52,7 @@ public class AviatorExpressionTest {
                         .stepCode("COMMON004")
                         .stepName("divide")
                         .stepType("COMMON")
-                        .contentType(StepContentTypeEnum.EXPRESSION.getTypeCode())
+                        .contentType(StepContentType.EXPRESSION)
                         .content("a / b")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Arrays.asList("a", "b"))
@@ -61,7 +61,7 @@ public class AviatorExpressionTest {
                         .stepCode("JAVA001")
                         .stepName("calc_Hades_res")
                         .stepType("JAVA")
-                        .contentType(StepContentTypeEnum.JAVA.getTypeCode())
+                        .contentType(StepContentType.JAVA)
                         .content("chooseRes")
                         .returnType(StepReturnTypeEnum.DECIMAL.getTypeCode())
                         .paramNameList(Arrays.asList("calc_multiply", "calc_divide"))

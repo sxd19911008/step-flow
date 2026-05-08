@@ -25,7 +25,7 @@ public class StepData {
     // 步骤类型
     private String stepType;
 
-    // 内容类型，详情见 StepContentTypeEnum
+    // 内容类型，详情见 StepContentType
     private String contentType;
 
     // 步骤内容

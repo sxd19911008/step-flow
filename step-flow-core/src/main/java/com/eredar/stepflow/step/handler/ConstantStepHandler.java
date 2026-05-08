@@ -4,9 +4,11 @@ import com.eredar.stepflow.dto.ExecutorsContext;
 import com.eredar.stepflow.dto.OneOffParams;
 import com.eredar.stepflow.dto.StepFlowContext;
 import com.eredar.stepflow.exception.StepFlowException;
+import com.eredar.stepflow.step.constants.StepContentType;
 import com.eredar.stepflow.step.constants.StepReturnTypeEnum;
 import com.eredar.stepflow.step.dto.StepData;
 import com.eredar.stepflow.step.intf.StepHandler;
+import com.eredar.stepflow.utils.StepFlowUtils;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -16,6 +18,11 @@ import java.time.ZonedDateTime;
  * <P>将常量值按照配置的类型转换成对象
  */
 public class ConstantStepHandler implements StepHandler {
+
+    @Override
+    public String getStepContentType() {
+        return StepContentType.CONSTANT;
+    }
 
     @Override
     public Object execute(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext) {
@@ -35,5 +42,26 @@ public class ConstantStepHandler implements StepHandler {
         }
 
         throw new StepFlowException("未知的returnType类型：" + returnType);
+    }
+
+    @Override
+    public boolean isStepDataIllegal(StepData stepData) {
+        return StepFlowUtils.isBlank(stepData.getContent()) || this.isConstantTypeIllegal(stepData.getReturnType());
+    }
+
+    /**
+     * 校验 constantType 是否有错误
+     * @return true-有错误；false-正确
+     */
+    private boolean isConstantTypeIllegal(String constantType) {
+        if (StepFlowUtils.isBlank(constantType)) {
+            return true;
+        }
+        for (StepReturnTypeEnum anEnum : StepReturnTypeEnum.values()) {
+            if (anEnum.getTypeCode().equals(constantType)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

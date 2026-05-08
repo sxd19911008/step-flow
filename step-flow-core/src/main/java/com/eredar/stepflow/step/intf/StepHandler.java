@@ -6,10 +6,14 @@ import com.eredar.stepflow.dto.StepFlowContext;
 import com.eredar.stepflow.step.dto.StepData;
 
 /**
- * step 的执行类型，详情见 StepContentTypeEnum。
- * 每个枚举类型都会有一个对应的 Handler 实现。
+ * step 的执行类型，每个 Handler 实现都对应一个 StepContentType。
  */
 public interface StepHandler {
+
+    /**
+     * 该 Handler 对应的 StepContentType
+     */
+    String getStepContentType();
 
     /**
      * step 行为的抽象方法
@@ -20,4 +24,12 @@ public interface StepHandler {
      * @return 计算结果
      */
     Object execute(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext);
+
+    /**
+     * 校验 {@code StepData} 是否非法
+     *
+     * @param stepData 待校验的 {@code StepData}
+     * @return true-非法；false-合法
+     */
+    boolean isStepDataIllegal(StepData stepData);
 }
