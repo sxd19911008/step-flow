@@ -1,0 +1,18 @@
+package io.github.kentasun.stepflow.flow.intf;
+
+import io.github.kentasun.stepflow.flow.dto.InputFlow;
+
+import java.util.List;
+
+/**
+ * flow 信息提供者接口。
+ */
+public interface FlowProvider {
+
+    /**
+     * 加载并返回所有 Flow。
+     *
+     * @return 已拼装完成的 Flow 列表
+     */
+    List<InputFlow> loadFlowList();
+}
