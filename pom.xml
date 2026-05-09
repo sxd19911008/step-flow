@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- 父项目基础坐标：统一管理子模块版本与依赖策略 -->
-    <groupId>com.eredar</groupId>
+    <groupId>io.github.kenta-sun</groupId>
     <artifactId>step-flow-parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
@@ -15,7 +15,7 @@
 
     <!-- 统一属性：集中管理 Java 与依赖版本 -->
     <properties>
-        <revision>2.7.0</revision>
+        <revision>1.0.0</revision>
         <java.version>8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -55,25 +55,25 @@
             </dependency>
             <!-- step-flow 核心模块版本：供 starter 或其他模块引用 -->
             <dependency>
-                <groupId>com.eredar</groupId>
+                <groupId>io.github.kenta-sun</groupId>
                 <artifactId>step-flow-core</artifactId>
                 <version>${step-flow.version}</version>
             </dependency>
             <!-- Aviator 引擎插件包 -->
             <dependency>
-                <groupId>com.eredar</groupId>
+                <groupId>io.github.kenta-sun</groupId>
                 <artifactId>step-flow-engine-aviator</artifactId>
                 <version>${step-flow.version}</version>
             </dependency>
             <!-- Aviator 引擎插件包（Oracle 变体） -->
             <dependency>
-                <groupId>com.eredar</groupId>
+                <groupId>io.github.kenta-sun</groupId>
                 <artifactId>step-flow-engine-aviator-oracle</artifactId>
                 <version>${step-flow.version}</version>
             </dependency>
             <!-- JEXL 引擎插件包 -->
             <dependency>
-                <groupId>com.eredar</groupId>
+                <groupId>io.github.kenta-sun</groupId>
                 <artifactId>step-flow-engine-jexl</artifactId>
                 <version>${step-flow.version}</version>
             </dependency>
@@ -172,6 +172,64 @@
                         </execution>
                     </executions>
                 </plugin>
+                <!-- 根据注释自动生成javadoc文档插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- gpg签名插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <!-- 在 Maven 生命周期的 verify 阶段运行 -->
+                            <phase>verify</phase>
+                            <goals>
+                                <!-- 调用插件的签名功能 -->
+                                <goal>sign</goal>
+                            </goals>
+                            <configuration>
+                                <!-- 告诉 Maven 去 settings.xml 中查找 ID 为 gpg 的 server 配置，从中读取密码。 -->
+                                <passphraseServerId>gpg</passphraseServerId>
+                                <gpgArguments>
+                                    <!-- pinentry-mode 用来指定GPG密码工具的工作模式，类似一个key -->
+                                    <arg>--pinentry-mode</arg>
+                                    <!-- loopback 是那个具体的工作模式，类似上面那个key的value。2者是一个组合，不能单独存在 -->
+                                    <!-- loopback 环回模式：不再通过输入框让用户输入密码，而是把输入权交给调用程序 -->
+                                    <arg>loopback</arg>
+                                    <!-- 让 GPG 不要占用终端 -->
+                                    <arg>--no-tty</arg>
+                                </gpgArguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- 自动化发布至 Maven Central (Sonatype) 新版发布平台的官方插件 -->
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.4.0</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <!-- 告诉 Maven 去 settings.xml 中查找 ID 为 central 的 server 配置，从中读取用户名和密码。 -->
+                        <publishingServerId>central</publishingServerId>
+                        <!-- 发布任务的显示名称 -->
+                        <deploymentName>${project.artifactId}:${project.version}</deploymentName>
+                        <!-- Sonatype Central Portal -->
+                        <tokenAuth>true</tokenAuth>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -182,6 +240,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.eredar</groupId>
+        <groupId>io.github.kenta-sun</groupId>
         <artifactId>step-flow-parent</artifactId>
         <version>${revision}</version>
     </parent>

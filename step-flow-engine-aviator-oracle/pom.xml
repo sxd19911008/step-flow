@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.eredar</groupId>
+        <groupId>io.github.kenta-sun</groupId>
         <artifactId>step-flow-parent</artifactId>
         <version>${revision}</version>
     </parent>
@@ -16,13 +16,13 @@
     <dependencies>
         <!-- step-flow 核心 -->
         <dependency>
-            <groupId>com.eredar</groupId>
+            <groupId>io.github.kenta-sun</groupId>
             <artifactId>step-flow-core</artifactId>
         </dependency>
 
         <!-- 表达式引擎核心依赖 -->
         <dependency>
-            <groupId>com.eredar</groupId>
+            <groupId>io.github.kenta-sun</groupId>
             <artifactId>aviator-oracle</artifactId>
             <version>5.4.3.0</version>
         </dependency>
