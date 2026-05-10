@@ -30,16 +30,22 @@ public abstract class AbstractExpressionEngineProvider {
 
     /**
      * 构建参数取值引擎。
+     *
+     * @return 参数取值引擎
      */
     public abstract ParamExpressionEngine buildParamExpressionEngine();
 
     /**
      * 构建条件判断引擎。
+     *
+     * @return 条件判断引擎
      */
     public abstract ConditionExpressionEngine buildConditionExpressionEngine();
 
     /**
      * 构建业务计算引擎。
+     *
+     * @return 业务计算引擎
      */
     public abstract BusinessExpressionEngine buildBusinessExpressionEngine();
 }

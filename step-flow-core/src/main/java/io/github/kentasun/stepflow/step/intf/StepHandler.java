@@ -12,6 +12,8 @@ public interface StepHandler {
 
     /**
      * 该 Handler 对应的 StepContentType
+     *
+     * @return {@code StepHandler} 对应的 StepContentType 类型
      */
     String getStepContentType();
 
@@ -21,6 +23,7 @@ public interface StepHandler {
      * @param stepData 步骤信息
      * @param stepFlowContext 步骤上下文，用于传递
      * @param oneOffParams 1次性参数，仅供当前 step 使用
+     * @param executorsContext 用于随着上下文一起传递的各种执行器
      * @return 计算结果
      */
     Object execute(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext);

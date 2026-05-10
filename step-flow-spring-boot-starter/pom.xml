@@ -25,6 +25,13 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- 补充 Spring @Nullable 注解的依赖 -->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+            <optional>true</optional>
+        </dependency>
         <!-- 生成 IDE 提示文件 -->
         <!-- application.yml 里会弹出属性补全和文档描述 -->
         <dependency>

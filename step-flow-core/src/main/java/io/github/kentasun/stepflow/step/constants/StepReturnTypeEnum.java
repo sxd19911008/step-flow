@@ -1,6 +1,5 @@
 package io.github.kentasun.stepflow.step.constants;
 
-import io.github.kentasun.stepflow.utils.StepFlowUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,20 +18,4 @@ public enum StepReturnTypeEnum {
     ;
 
     private final String typeCode;
-
-    /**
-     * 校验 constantType 是否有错误
-     * @return true-有错误；false-正确
-     */
-    public static boolean isConstantTypeIllegal(String constantType) {
-        if (StepFlowUtils.isBlank(constantType)) {
-            return true;
-        }
-        for (StepReturnTypeEnum anEnum : values()) {
-            if (anEnum.getTypeCode().equals(constantType)) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

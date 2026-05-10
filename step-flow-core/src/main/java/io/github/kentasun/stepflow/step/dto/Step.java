@@ -28,6 +28,7 @@ public class Step {
      *
      * @param stepFlowContext 步骤上下文，用于传递
      * @param oneOffParams    1次性参数，仅供当前 step 使用
+     * @param executorsContext 用于随着上下文一起传递的各种执行器
      * @return 返回步骤设置的参数
      */
     public Map<String, Object> execute(StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext) {

@@ -72,6 +72,7 @@ public class StepExecutor {
      * @param stepCode        步骤代码
      * @param stepFlowContext 上下文对象
      * @param oneOffParams    1次性参数，仅供当前 step 使用
+     * @param executorsContext 用于随着上下文一起传递的各种执行器
      * @return 步骤执行结果
      */
     public Map<String, Object> executeByStepCode(final String stepCode, StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext) {
@@ -85,6 +86,7 @@ public class StepExecutor {
     /**
      * 校验：是否存在指定的 stepCode
      *
+     * @param stepCode 步骤标识
      * @return true-存在; false-不存在
      */
     public boolean hasStepCode(String stepCode) {

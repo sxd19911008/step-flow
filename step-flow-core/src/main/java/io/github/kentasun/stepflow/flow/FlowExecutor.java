@@ -91,6 +91,7 @@ public class FlowExecutor {
      *
      * @param flowCode 流程代码
      * @param stepFlowContext 上下文对象
+     * @param executorsContext 用于随着上下文一起传递的各种执行器
      * @return 流程执行结果
      */
     public Map<String, Object> executeByFLowCode(final String flowCode, StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {

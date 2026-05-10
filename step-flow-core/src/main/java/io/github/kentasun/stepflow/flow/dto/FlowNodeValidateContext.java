@@ -29,6 +29,8 @@ public class FlowNodeValidateContext {
 
     /**
      * flowCode 是否不存在
+     *
+     * @param flowCode 流程标识
      * @return true-不存在; false-存在
      */
     public boolean flowCodeNotExist(String flowCode) {
@@ -37,6 +39,8 @@ public class FlowNodeValidateContext {
 
     /**
      * stepCode 是否不存在
+     *
+     * @param stepCode 步骤标识
      * @return true-不存在; false-存在
      */
     public boolean stepCodeNotExist(String stepCode) {
@@ -56,6 +60,8 @@ public class FlowNodeValidateContext {
 
     /**
      * 拼接最终的信息字符串
+     *
+     * @return 最终的信息字符串
      */
     public String buildErrMsg() {
         if (StepFlowUtils.isEmpty(illegalMsgMap)) {

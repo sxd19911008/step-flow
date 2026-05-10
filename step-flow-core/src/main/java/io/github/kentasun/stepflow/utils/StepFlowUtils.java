@@ -41,9 +41,12 @@ public class StepFlowUtils {
 
     /**
      * 字符串是否非空
+     *
+     * @param cs the CharSequence to check, may be null
+     * @return {@code true} if the CharSequence is not null, not empty and not whitespace only
      */
-    public static boolean isNotBlank(String str) {
-        return !isBlank(str);
+    public static boolean isNotBlank(final CharSequence cs) {
+        return !isBlank(cs);
     }
 
     /**
@@ -58,24 +61,6 @@ public class StepFlowUtils {
      */
     public static int length(final CharSequence cs) {
         return cs == null ? 0 : cs.length();
-    }
-
-    /**
-     * 驼峰命名转下划线大写
-     * <p>例：userName -> USER_NAME</p>
-     */
-    public static String humpToUpper(String str) {
-        if (isBlank(str)) return str;
-        return str.replaceAll("(\\p{Upper})", "_$1").toUpperCase();
-    }
-
-    /**
-     * 驼峰命名转下划线大写
-     * 例：userName -> user_name
-     */
-    public static String humpToLower(String str) {
-        if (isBlank(str)) return str;
-        return str.replaceAll("(\\p{Upper})", "_$1").toLowerCase();
     }
 
     /**
@@ -126,6 +111,7 @@ public class StepFlowUtils {
      * @param map   参数集合
      * @param clazz 参数期望类型
      * @return 参数对象
+     * @param <T> 参数期望类型
      */
     public static <T> T getValByMap(String key, Map<String, Object> map, Class<T> clazz) {
         return getValByMap(key, map, clazz, false);
@@ -139,6 +125,7 @@ public class StepFlowUtils {
      * @param clazz       参数期望类型
      * @param isCheckNull 为 null 是否报错：true-报错；false-返回null。默认false
      * @return 参数对象
+     * @param <T> 参数期望类型
      */
     public static <T> T getValByMap(String key, Map<String, Object> map, Class<T> clazz, boolean isCheckNull) {
         Object o = map.get(key);
@@ -163,7 +150,12 @@ public class StepFlowUtils {
     }
 
     /**
-     * 默认值工具
+     * 默认值
+     *
+     * @param object 目标对象
+     * @param defaultValue 默认值对象
+     * @return 如果 {@code object} 不为 {@code null} 则返回 {@code object}；反之返回 {@code defaultValue}
+     * @param <T> 目标对象的类型
      */
     public static <T> T defaultIfNull(final T object, final T defaultValue) {
         return object != null ? object : defaultValue;

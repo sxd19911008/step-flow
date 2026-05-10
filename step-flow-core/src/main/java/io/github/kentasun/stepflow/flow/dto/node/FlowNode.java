@@ -42,6 +42,9 @@ public abstract class FlowNode {
 
     /**
      * 递归校验节点合法性
+     *
+     * @param context 递归校验上下文
+     * @param globalFlowCode 此节点所属的 {@code Flow} 的步骤标识
      */
     public abstract void validate(FlowNodeValidateContext context, String globalFlowCode);
 }
