@@ -266,23 +266,26 @@ public class GetValueFromMapUtils {
     }
 
     private static Map<String, PropertyFoundResult> getClassPropertyResults(Class<?> clazz) {
-        Reference<Map<String, PropertyFoundResult>> existsRef = cachedProperties.get(clazz);
+        Reference<Map<String, PropertyFoundResult>> existingRef = cachedProperties.get(clazz);
         Map<String, PropertyFoundResult> results = Collections.emptyMap();
 
-        if (existsRef == null) {
+        if (existingRef == null) {
             clearCache(cachePropertyRq, cachedProperties);
             results = new ConcurrentHashMap<>();
-            existsRef = cachedProperties.putIfAbsent(clazz, new SoftReference<>(results, cachePropertyRq));
+            existingRef = cachedProperties.putIfAbsent(clazz, new SoftReference<>(results, cachePropertyRq));
         }
-        if (existsRef == null) {
+        if (existingRef == null) {
             return results;
         }
 
-        results = existsRef.get();
+        results = existingRef.get();
         if (results != null) {
             return results;
         }
-        cachedProperties.remove(clazz, existsRef);
+
+        // entry died in the interim, do over
+        cachedProperties.remove(clazz, existingRef);
+        // retry
         return getClassPropertyResults(clazz);
     }
 
