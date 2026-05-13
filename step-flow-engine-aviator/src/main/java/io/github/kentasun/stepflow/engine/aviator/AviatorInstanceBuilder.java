@@ -43,12 +43,6 @@ public class AviatorInstanceBuilder {
         // 浮点数统一使用 BigDecimal，避免精度丢失
         aviator.setOption(Options.ALWAYS_PARSE_FLOATING_POINT_NUMBER_INTO_DECIMAL, true);
 
-        // 支持 policyInfo.applyDate 这类属性访问语法糖
-        aviator.setOption(Options.ENABLE_PROPERTY_SYNTAX_SUGAR, true);
-
-        // 访问对象属性为 null 时返回 null，而非抛异常（false = 严格模式）
-        aviator.setOption(Options.NIL_WHEN_PROPERTY_NOT_FOUND, false);
-
         // 单次脚本执行超时时间（毫秒），防止恶意/死循环表达式长期占用线程
         aviator.setOption(Options.EVAL_TIMEOUT_MS, 5000L);
 
