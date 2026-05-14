@@ -57,7 +57,7 @@ public class MethodHandleCache {
      * @param args     透传给目标方法的实参列表（不含 receiver）
      * @return 方法调用的返回值；若方法返回 {@code void} 则为 {@code null}
      */
-    public static Object invoke(Object receiver, Method method, Object... args) {
+    public static Object invokeMethod(Object receiver, Method method, Object... args) {
         MethodHandle handle = unReflect(method);
         // MethodHandle 首参为 receiver，后续依次为方法实参
         Object[] invokeArgs = new Object[args.length + 1];
@@ -73,40 +73,39 @@ public class MethodHandleCache {
     /**
      * 获取指定 {@link Method} 对应的 {@link MethodHandle}，优先从缓存中返回。
      *
+     * <p>利用 {@link ConcurrentHashMap#computeIfAbsent} 的原子语义保证：对同一
+     * {@link Method} key 发生并发缓存未命中时，映射函数只会被其中一个线程执行，
+     * 其余线程阻塞等待结果，从而消除重复 {@link MethodHandles.Lookup#unreflect} 的性能浪费。</p>
+     *
+     * <p>若 {@link SoftReference} 的 referent 已被 GC 回收，{@code computeIfAbsent}
+     * 不会重算（key 仍存在），因此移除失效条目后以循环重试。</p>
+     *
      * @param method 目标方法，不可为 {@code null}
      * @return 与 {@code method} 对应的 {@link MethodHandle}
      */
     public static MethodHandle unReflect(Method method) {
-        Reference<MethodHandle> existingRef = cachedHandles.get(method);
+        // 虽然可以使用递归代替 while-true，但是每次重试都吃一帧栈空间，理论上有栈溢出风险，不建议使用递归。
+        while (true) {
+            // computeIfAbsent 保证同一 key 的映射函数在并发场景下只执行一次
+            Reference<MethodHandle> ref = cachedHandles.computeIfAbsent(method, m -> {
+                clearCache();
+                m.setAccessible(true);
+                try {
+                    return new SoftReference<>(MethodHandles.lookup().unreflect(m), cacheHandlesRq);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
-        MethodHandle handle = null;
-        if (existingRef == null) {
-            // 缓存未命中：顺手清理失效条目，再创建句柄并写入缓存
-            clearCache();
-            // 支持非 public 可见性场景
-            method.setAccessible(true);
-            // 缓存未命中或 referent 已被 GC 回收时，重新创建并写入缓存。
-            try {
-                handle = MethodHandles.lookup().unreflect(method);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-            existingRef = cachedHandles.putIfAbsent(method, new SoftReference<>(handle, cacheHandlesRq));
-            // putIfAbsent 返回 null 说明本次竞争成功写入，直接返回
-            if (existingRef == null) {
+            MethodHandle handle = ref.get();
+            if (handle != null) {
                 return handle;
             }
-            // 另一线程已抢先写入，继续走下方的 get() 逻辑
-        }
 
-        handle = existingRef.get();
-        if (handle != null) {
-            return handle;
+            // referent 已被 GC 回收：key 仍在 map 中，computeIfAbsent 不会重算，
+            // 需手动移除失效条目后循环重试
+            cachedHandles.remove(method, ref);
         }
-
-        // referent 在两次操作之间已被 GC 回收，移除失效条目后重试
-        cachedHandles.remove(method, existingRef);
-        return unReflect(method);
     }
 
     /* ---------- 内部逻辑 ---------- */
