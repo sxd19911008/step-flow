@@ -9,43 +9,16 @@ import lombok.Setter;
 @Setter
 public abstract class AbstractExpressionEngineProvider {
 
-    // 参数取值引擎通用配置
-    protected StepFlowEngineProperties paramEngineProperties;
+    // 表达式引擎通用配置
+    protected StepFlowEngineProperties engineProperties;
 
-    // 条件判断引擎通用配置
-    protected StepFlowEngineProperties conditionEngineProperties;
-
-    // 业务计算引擎通用配置
-    protected StepFlowEngineProperties businessEngineProperties;
-
-    // 参数取值引擎编程式定制回调
-    protected EngineCustomizer paramEngineCustomizer;
-
-    // 条件判断引擎编程式定制回调
-    protected EngineCustomizer conditionEngineCustomizer;
-
-    // 业务计算引擎编程式定制回调
-    protected EngineCustomizer businessEngineCustomizer;
-
+    // 表达式引擎定制回调
+    protected EngineCustomizer engineCustomizer;
 
     /**
-     * 构建参数取值引擎。
+     * 构建表达式引擎。
      *
-     * @return 参数取值引擎
+     * @return 表达式引擎
      */
-    public abstract ParamExpressionEngine buildParamExpressionEngine();
-
-    /**
-     * 构建条件判断引擎。
-     *
-     * @return 条件判断引擎
-     */
-    public abstract ConditionExpressionEngine buildConditionExpressionEngine();
-
-    /**
-     * 构建业务计算引擎。
-     *
-     * @return 业务计算引擎
-     */
-    public abstract BusinessExpressionEngine buildBusinessExpressionEngine();
+    public abstract ExpressionEngine buildExpressionEngine();
 }

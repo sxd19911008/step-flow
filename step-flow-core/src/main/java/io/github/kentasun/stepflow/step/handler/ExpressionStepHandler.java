@@ -23,7 +23,7 @@ public class ExpressionStepHandler implements StepHandler {
         // 表达式
         String expression = stepData.getContent();
         // 执行表达式并返回
-        return executorsContext.executeBusinessExpression(expression, oneOffParams.getVars());
+        return executorsContext.executeExpression(expression, oneOffParams.getVars());
     }
 
     @Override

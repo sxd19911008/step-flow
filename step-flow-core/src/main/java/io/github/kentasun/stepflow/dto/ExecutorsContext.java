@@ -1,9 +1,8 @@
 package io.github.kentasun.stepflow.dto;
 
 import io.github.kentasun.stepflow.config.StepFlowConfigProperties;
-import io.github.kentasun.stepflow.engine.BusinessExpressionEngine;
-import io.github.kentasun.stepflow.engine.ConditionExpressionEngine;
-import io.github.kentasun.stepflow.engine.ParamExpressionEngine;
+import io.github.kentasun.stepflow.engine.ExpressionEngine;
+import io.github.kentasun.stepflow.exception.StepFlowException;
 import io.github.kentasun.stepflow.flow.FlowExecutor;
 import io.github.kentasun.stepflow.step.StepExecutor;
 import lombok.AllArgsConstructor;
@@ -29,12 +28,8 @@ public class ExecutorsContext {
     // 多个 FlowNode 多线程并发执行的线程池
     @Getter
     private final ExecutorService stepFlowParallelThreadPool;
-    // 参数获取引擎
-    private final ParamExpressionEngine paramExpressionEngine;
-    // 条件表达式引擎
-    private final ConditionExpressionEngine conditionExpressionEngine;
-    // 业务表达式引擎
-    private final BusinessExpressionEngine businessExpressionEngine;
+    // 表达式引擎
+    private final ExpressionEngine expressionEngine;
 
     /**
      * 执行步骤
@@ -60,17 +55,6 @@ public class ExecutorsContext {
     }
 
     /**
-     * 获取参数
-     *
-     * @param expression 用于获取参数的表达式
-     * @param vars 表达式参数
-     * @return 获取到的参数
-     */
-    public Object getParam(String expression, Map<String, Object> vars) {
-        return paramExpressionEngine.getParam(expression, vars);
-    }
-
-    /**
      * 执行条件表达式
      *
      * @param expression 条件表达式
@@ -78,17 +62,24 @@ public class ExecutorsContext {
      * @return 表达式结果: true / false
      */
     public Boolean isTrue(String expression, Map<String, Object> vars) {
-        return conditionExpressionEngine.isTrue(expression, vars);
+        Object res = expressionEngine.execute(expression, vars);
+        if (res instanceof Boolean) {
+            return (Boolean) res;
+        } else if (res == null) {
+            throw new StepFlowException(String.format("执行条件表达式[%s]，返回null", expression));
+        } else {
+            throw new StepFlowException(String.format("执行条件表达式[%s]，返回错误类型：%s", expression, res.getClass().getName()));
+        }
     }
 
     /**
-     * 执行 业务表达式
+     * 执行表达式
      *
-     * @param expression 计算表达式
+     * @param expression 表达式
      * @param vars 表达式参数
      * @return 表达式结果
      */
-    public Object executeBusinessExpression(String expression, Map<String, Object> vars) {
-        return businessExpressionEngine.execute(expression, vars);
+    public Object executeExpression(String expression, Map<String, Object> vars) {
+        return expressionEngine.execute(expression, vars);
     }
 }

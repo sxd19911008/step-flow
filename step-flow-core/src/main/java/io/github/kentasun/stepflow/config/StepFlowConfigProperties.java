@@ -16,19 +16,9 @@ public class StepFlowConfigProperties {
     private ThreadPoolProperty parallelThreadPool;
 
     /**
-     * 参数取值引擎配置
+     * 表达式引擎配置
      */
-    private StepFlowEngineProperties paramEngineProperties;
-
-    /**
-     * 条件判断引擎配置
-     */
-    private StepFlowEngineProperties conditionEngineProperties;
-
-    /**
-     * 业务计算引擎配置
-     */
-    private StepFlowEngineProperties businessEngineProperties;
+    private StepFlowEngineProperties engineProperties;
 
     @Data
     public static class ThreadPoolProperty {

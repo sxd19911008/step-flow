@@ -2,10 +2,8 @@ package io.github.kentasun.stepflow.starter;
 
 import io.github.kentasun.stepflow.StepFlowExecutor;
 import io.github.kentasun.stepflow.config.StepFlowConfigProperties;
-import io.github.kentasun.stepflow.engine.BusinessExpressionEngine;
-import io.github.kentasun.stepflow.engine.ConditionExpressionEngine;
+import io.github.kentasun.stepflow.engine.ExpressionEngine;
 import io.github.kentasun.stepflow.engine.EngineCustomizer;
-import io.github.kentasun.stepflow.engine.ParamExpressionEngine;
 import io.github.kentasun.stepflow.flow.intf.FlowProvider;
 import io.github.kentasun.stepflow.step.intf.JavaStep;
 import io.github.kentasun.stepflow.step.intf.StepDataProvider;
@@ -50,23 +48,15 @@ public class StepFlowAutoConfiguration {
                                              @Nullable Map<String, JavaStep> javaStepMap,
                                              @Nullable List<StepHandler> stepHandlerList,
                                              @Qualifier("stepFlowParallelThreadPool") ExecutorService stepFlowParallelThreadPool,
-                                             @Nullable ParamExpressionEngine paramExpressionEngine,
-                                             @Nullable ConditionExpressionEngine conditionExpressionEngine,
-                                             @Nullable BusinessExpressionEngine businessExpressionEngine,
-                                             @Nullable EngineCustomizer<?> paramEngineCustomizer,
-                                             @Nullable EngineCustomizer<?> conditionEngineCustomizer,
-                                             @Nullable EngineCustomizer<?> businessEngineCustomizer) {
+                                             @Nullable ExpressionEngine expressionEngine,
+                                             @Nullable EngineCustomizer<?> engineCustomizer) {
         return StepFlowExecutor.builder(stepDataProvider, flowProvider)
                 .configProperties(stepFlowConfigProperties)
                 .javaStepMap(javaStepMap)
                 .stepHandlerList(stepHandlerList)
                 .parallelThreadPool(stepFlowParallelThreadPool)
-                .paramExpressionEngine(paramExpressionEngine)
-                .conditionExpressionEngine(conditionExpressionEngine)
-                .businessExpressionEngine(businessExpressionEngine)
-                .paramEngineCustomizer(paramEngineCustomizer)
-                .conditionEngineCustomizer(conditionEngineCustomizer)
-                .businessEngineCustomizer(businessEngineCustomizer)
+                .expressionEngine(expressionEngine)
+                .engineCustomizer(engineCustomizer)
                 .build();
     }
 }

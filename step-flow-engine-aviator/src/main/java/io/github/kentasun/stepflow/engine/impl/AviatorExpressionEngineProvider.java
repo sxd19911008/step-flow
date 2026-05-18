@@ -1,9 +1,7 @@
 package io.github.kentasun.stepflow.engine.impl;
 
 import io.github.kentasun.stepflow.engine.AbstractExpressionEngineProvider;
-import io.github.kentasun.stepflow.engine.BusinessExpressionEngine;
-import io.github.kentasun.stepflow.engine.ConditionExpressionEngine;
-import io.github.kentasun.stepflow.engine.ParamExpressionEngine;
+import io.github.kentasun.stepflow.engine.ExpressionEngine;
 
 /**
  * 基于 AviatorScript 的表达式引擎提供者，实现 {@link AbstractExpressionEngineProvider} SPI 接口。
@@ -16,17 +14,7 @@ public class AviatorExpressionEngineProvider extends AbstractExpressionEnginePro
     public AviatorExpressionEngineProvider() {}
 
     @Override
-    public ParamExpressionEngine buildParamExpressionEngine() {
-        return new AviatorParamExpressionEngine(paramEngineProperties, paramEngineCustomizer);
-    }
-
-    @Override
-    public ConditionExpressionEngine buildConditionExpressionEngine() {
-        return new AviatorConditionExpressionEngine(conditionEngineProperties, conditionEngineCustomizer);
-    }
-
-    @Override
-    public BusinessExpressionEngine buildBusinessExpressionEngine() {
-        return new AviatorBusinessExpressionEngine(businessEngineProperties, businessEngineCustomizer);
+    public ExpressionEngine buildExpressionEngine() {
+        return new AviatorExpressionEngine(engineProperties, engineCustomizer);
     }
 }

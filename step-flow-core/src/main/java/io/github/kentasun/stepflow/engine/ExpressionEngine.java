@@ -3,14 +3,14 @@ package io.github.kentasun.stepflow.engine;
 import java.util.Map;
 
 /**
- * 业务表达式引擎
+ * 表达式引擎
  */
-public interface BusinessExpressionEngine {
+public interface ExpressionEngine {
 
     /**
-     * 执行计算表达式
+     * 执行表达式
      *
-     * @param expression 计算表达式
+     * @param expression 表达式
      * @param vars 表达式参数
      * @return 表达式结果
      */

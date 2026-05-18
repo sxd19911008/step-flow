@@ -73,20 +73,9 @@ public class StepFlowExecutor {
 
         private ExecutorService parallelThreadPool;
 
-        private ParamExpressionEngine paramExpressionEngine;
+        private ExpressionEngine expressionEngine;
 
-        private ConditionExpressionEngine conditionExpressionEngine;
-
-        private BusinessExpressionEngine businessExpressionEngine;
-
-        // 参数取值引擎编程式定制回调，通过 SPI 加载 Provider 后注入
-        private EngineCustomizer<?> paramEngineCustomizer;
-
-        // 条件判断引擎编程式定制回调
-        private EngineCustomizer<?> conditionEngineCustomizer;
-
-        // 业务计算引擎编程式定制回调
-        private EngineCustomizer<?> businessEngineCustomizer;
+        private EngineCustomizer<?> engineCustomizer;
 
         public Builder(StepDataProvider stepDataProvider, FlowProvider flowProvider) {
             this.stepDataProvider = stepDataProvider;
@@ -113,33 +102,13 @@ public class StepFlowExecutor {
             return this;
         }
 
-        public Builder paramExpressionEngine(ParamExpressionEngine paramExpressionEngine) {
-            this.paramExpressionEngine = paramExpressionEngine;
+        public Builder expressionEngine(ExpressionEngine expressionEngine) {
+            this.expressionEngine = expressionEngine;
             return this;
         }
 
-        public Builder conditionExpressionEngine(ConditionExpressionEngine conditionExpressionEngine) {
-            this.conditionExpressionEngine = conditionExpressionEngine;
-            return this;
-        }
-
-        public Builder businessExpressionEngine(BusinessExpressionEngine businessExpressionEngine) {
-            this.businessExpressionEngine = businessExpressionEngine;
-            return this;
-        }
-
-        public Builder paramEngineCustomizer(EngineCustomizer<?> paramEngineCustomizer) {
-            this.paramEngineCustomizer = paramEngineCustomizer;
-            return this;
-        }
-
-        public Builder conditionEngineCustomizer(EngineCustomizer<?> conditionEngineCustomizer) {
-            this.conditionEngineCustomizer = conditionEngineCustomizer;
-            return this;
-        }
-
-        public Builder businessEngineCustomizer(EngineCustomizer<?> businessEngineCustomizer) {
-            this.businessEngineCustomizer = businessEngineCustomizer;
+        public Builder engineCustomizer(EngineCustomizer<?> engineCustomizer) {
+            this.engineCustomizer = engineCustomizer;
             return this;
         }
 
@@ -158,9 +127,7 @@ public class StepFlowExecutor {
                     .stepExecutor(stepExecutor)
                     .flowExecutor(flowExecutor)
                     .stepFlowParallelThreadPool(parallelThreadPool)
-                    .paramExpressionEngine(paramExpressionEngine)
-                    .conditionExpressionEngine(conditionExpressionEngine)
-                    .businessExpressionEngine(businessExpressionEngine)
+                    .expressionEngine(expressionEngine)
                     .build());
         }
 
@@ -187,33 +154,21 @@ public class StepFlowExecutor {
          * 设置表达式引擎
          */
         private void setExpressionEngine() {
-            // 若三个引擎中任意一个未显式设置，则通过 SPI 加载统一的 ExpressionEngineProvider
-            if (this.paramExpressionEngine == null
-                    || this.conditionExpressionEngine == null
-                    || this.businessExpressionEngine == null) {
+            // 若表达式引擎未显式设置，则通过 SPI 加载统一的 ExpressionEngineProvider
+            if (this.expressionEngine == null) {
 
                 // 通过 SPI 发现引擎 Provider 实现，避免 core 直接依赖任何具体引擎库
                 AbstractExpressionEngineProvider provider = loadSpi();
 
-                // 从 configProperties 中读取三个引擎的独立配置，分别传入
-                provider.setParamEngineProperties(configProperties.getParamEngineProperties());
-                provider.setConditionEngineProperties(configProperties.getConditionEngineProperties());
-                provider.setBusinessEngineProperties(configProperties.getBusinessEngineProperties());
+                // 从 configProperties 中读取表达式引擎的独立配置，分别传入
+                provider.setEngineProperties(configProperties.getEngineProperties());
 
-                // 注入编程式定制回调
-                provider.setParamEngineCustomizer(this.paramEngineCustomizer);
-                provider.setConditionEngineCustomizer(this.conditionEngineCustomizer);
-                provider.setBusinessEngineCustomizer(this.businessEngineCustomizer);
+                // 注入定制回调
+                provider.setEngineCustomizer(this.engineCustomizer);
 
-                // 仅填充尚未显式设置的引擎，不覆盖用户手动设置的引擎
-                if (this.paramExpressionEngine == null) {
-                    this.paramExpressionEngine = provider.buildParamExpressionEngine();
-                }
-                if (this.conditionExpressionEngine == null) {
-                    this.conditionExpressionEngine = provider.buildConditionExpressionEngine();
-                }
-                if (this.businessExpressionEngine == null) {
-                    this.businessExpressionEngine = provider.buildBusinessExpressionEngine();
+                // 仅填充尚未显式设置的表达式引擎，不覆盖用户手动设置的引擎
+                if (this.expressionEngine == null) {
+                    this.expressionEngine = provider.buildExpressionEngine();
                 }
             }
         }

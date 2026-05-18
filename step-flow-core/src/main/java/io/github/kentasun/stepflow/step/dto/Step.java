@@ -4,6 +4,7 @@ import io.github.kentasun.stepflow.dto.ExecutorsContext;
 import io.github.kentasun.stepflow.dto.OneOffParams;
 import io.github.kentasun.stepflow.dto.StepFlowContext;
 import io.github.kentasun.stepflow.step.intf.StepHandler;
+import io.github.kentasun.stepflow.utils.GetValueFromMapUtils;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 
 import java.util.HashMap;
@@ -26,8 +27,8 @@ public class Step {
     /**
      * 执行步骤
      *
-     * @param stepFlowContext 步骤上下文，用于传递
-     * @param oneOffParams    1次性参数，仅供当前 step 使用
+     * @param stepFlowContext  步骤上下文，用于传递
+     * @param oneOffParams     1次性参数，仅供当前 step 使用
      * @param executorsContext 用于随着上下文一起传递的各种执行器
      * @return 返回步骤设置的参数
      */
@@ -46,18 +47,12 @@ public class Step {
             for (String paramName : paramNameList) {
                 Object value;
                 String tempName = this.getTempName(paramName, paramNameMap);
-                // 不为空说明需要映射
                 if (StepFlowUtils.isNotBlank(tempName)) {
-                    //noinspection DataFlowIssue
-                    if (tempName.contains(".")) {
-                        // 说明存在`policyInfo.applyDate`类型的参数获取，需要调用表达式引擎的getParam方法
-                        value = executorsContext.getParam(tempName, contextMap);
-                    } else {
-                        // 普通情况下直接从 contextMap 中获取
-                        value = contextMap.get(tempName);
-                    }
+                    // 不为空说明需要映射
+                    value = GetValueFromMapUtils.getValueFromContextMap(tempName, contextMap);
                 } else {
-                    value = contextMap.get(paramName);
+                    // 不需要映射
+                    value = GetValueFromMapUtils.getValueFromContextMap(paramName, contextMap);
                 }
                 if (value != null) {
                     vars.put(paramName, value);
@@ -78,6 +73,7 @@ public class Step {
         /* 处理返回值类型、名称 */
         if (result != null) {
             if (result instanceof Map) {
+                //noinspection unchecked
                 return (Map<String, Object>) result;
             } else {
                 String stepName = stepData.getStepName();
