@@ -55,7 +55,7 @@ public class GetValueFromMapUtils {
     private static final Pattern SPLIT_PAT = Pattern.compile("\\.");
 
     public static Object getValueFromContextMap(Map<String, Object> env, String name) {
-        if (containsDot(name) && !env.containsKey(name)) {
+        if (containsSymbol(name) && !env.containsKey(name)) {
             return getProperty(name, env);
         }
         return env.get(name);
@@ -64,7 +64,7 @@ public class GetValueFromMapUtils {
     private static Object getProperty(final String name, final Map<String, Object> env) {
         try {
             String[] names = SPLIT_PAT.split(name);
-            return GetValueFromMapUtils.fastGetProperty(name, names, env);
+            return fastGetProperty(name, names, env);
         } catch (Throwable t) {
             log.info("Could not get property [{}]", name);
             return null;
@@ -77,12 +77,12 @@ public class GetValueFromMapUtils {
      * @param name 待校验的名称字符串
      * @return {@code true} -有点；{@code false} -没有点
      */
-    private static boolean containsDot(String name) {
-        return name.contains(".");
+    private static boolean containsSymbol(String name) {
+        return name.contains(".") || (name.contains("[") && name.contains("]")) || (name.contains("(") && name.contains(")"));
     }
 
     private static Object fastGetProperty(String name, String[] names, Map<String, Object> env) {
-        Target target = GetValueFromMapUtils.Target.withEnv(env);
+        Target target = Target.withEnv(env);
         int max = names.length;
         for (int i = 0; i < max; i++) {
             String rName = names[i];
@@ -200,13 +200,7 @@ public class GetValueFromMapUtils {
             }
 
             if (result.handle != null) {
-                Object ret = result.handle.invoke(obj);
-                if (result.isBooleanType && !(ret instanceof Boolean)) {
-                    putDummyHandle(name, results);
-                    return throwNoSuchPropertyException(
-                            "Property `" + name + "` not found in java bean: " + obj);
-                }
-                return ret;
+                return result.handle.invoke(obj);
             } else {
                 return throwNoSuchPropertyException(
                         "Property `" + name + "` not found in java bean: " + obj);
@@ -231,11 +225,9 @@ public class GetValueFromMapUtils {
             throws IllegalAccessException {
         PropertyFoundResult result;
         List<Method> methods = getInstanceMethods(clazz, genGetterName("get", name));
-        boolean isBooleanType = false;
 
         if (methods == null || methods.isEmpty()) {
             methods = getInstanceMethods(clazz, genGetterName("is", name));
-            isBooleanType = true;
         }
 
         if ((methods == null || methods.isEmpty()) && name.startsWith("is")) {
@@ -255,16 +247,16 @@ public class GetValueFromMapUtils {
             }
             method.setAccessible(true);
             MethodHandle handle = MethodHandles.lookup().unreflect(method);
-            result = new PropertyFoundResult(handle, isBooleanType);
+            result = new PropertyFoundResult(handle);
         } else {
-            result = new PropertyFoundResult(null, isBooleanType);
+            result = new PropertyFoundResult(null);
         }
         results.put(name, result);
         return result;
     }
 
     private static void putDummyHandle(String name, Map<String, PropertyFoundResult> handles) {
-        handles.put(name, new PropertyFoundResult(null, false));
+        handles.put(name, new PropertyFoundResult(null));
     }
 
     private static Map<String, PropertyFoundResult> getClassPropertyResults(Class<?> clazz) {
@@ -387,11 +379,9 @@ public class GetValueFromMapUtils {
 
     private static class PropertyFoundResult {
         MethodHandle handle;
-        boolean isBooleanType;
 
-        PropertyFoundResult(MethodHandle handle, boolean isBooleanType) {
+        PropertyFoundResult(MethodHandle handle) {
             super();
-            this.isBooleanType = isBooleanType;
             this.handle = handle;
         }
 
@@ -399,7 +389,6 @@ public class GetValueFromMapUtils {
         public String toString() {
             return "PropertyFoundResult{" +
                     "handle=" + handle +
-                    ", isBooleanType=" + isBooleanType +
                     '}';
         }
     }
