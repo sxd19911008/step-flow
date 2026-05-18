@@ -64,7 +64,7 @@ public class StepFlowUtils {
     /**
      * 比较两个字符串是否相等
      * <p>特殊规则：</p>
-     * <p>1. 如果两个字符串都为null，视为不相等</p>
+     * <p>1. 如果两个字符串都为null，视为相等</p>
      * <p>2. 如果只有一个字符串为null，视为不相等</p>
      * <p>3. 都不为null时，使用String.equals进行比对</p>
      *
@@ -73,6 +73,7 @@ public class StepFlowUtils {
      * @return true:相等; false:不相等
      */
     public static boolean equals(String str1, String str2) {
+        if (str1 == null && str2 == null) return true;
         if (str1 == null) return false;
         return str1.equals(str2);
     }
