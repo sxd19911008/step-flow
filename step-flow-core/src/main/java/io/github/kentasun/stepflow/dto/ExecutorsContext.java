@@ -2,9 +2,9 @@ package io.github.kentasun.stepflow.dto;
 
 import io.github.kentasun.stepflow.config.StepFlowConfigProperties;
 import io.github.kentasun.stepflow.engine.ExpressionEngine;
-import io.github.kentasun.stepflow.exception.StepFlowException;
 import io.github.kentasun.stepflow.flow.FlowExecutor;
 import io.github.kentasun.stepflow.step.StepExecutor;
+import io.github.kentasun.stepflow.step.dto.Step;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,7 +39,7 @@ public class ExecutorsContext {
      * @param oneOffParams 1次性参数，仅供当前 step 使用
      * @return 步骤执行结果
      */
-    public Map<String, Object> executeByStepCode(final String stepCode, StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
+    public Object executeByStepCode(final String stepCode, StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
         return stepExecutor.executeByStepCode(stepCode, stepFlowContext, oneOffParams, this);
     }
 
@@ -55,24 +55,6 @@ public class ExecutorsContext {
     }
 
     /**
-     * 执行条件表达式
-     *
-     * @param expression 条件表达式
-     * @param vars 表达式参数
-     * @return 表达式结果: true / false
-     */
-    public Boolean isTrue(String expression, Map<String, Object> vars) {
-        Object res = expressionEngine.execute(expression, vars);
-        if (res instanceof Boolean) {
-            return (Boolean) res;
-        } else if (res == null) {
-            throw new StepFlowException(String.format("执行条件表达式[%s]，返回null", expression));
-        } else {
-            throw new StepFlowException(String.format("执行条件表达式[%s]，返回错误类型：%s", expression, res.getClass().getName()));
-        }
-    }
-
-    /**
      * 执行表达式
      *
      * @param expression 表达式
@@ -81,5 +63,9 @@ public class ExecutorsContext {
      */
     public Object executeExpression(String expression, Map<String, Object> vars) {
         return expressionEngine.execute(expression, vars);
+    }
+
+    public Step getStep(String stepCode) {
+        return stepExecutor.getStep(stepCode);
     }
 }

@@ -116,6 +116,14 @@ public class AviatorOracleExpressionTest {
                         .contentType(StepContentType.EXPRESSION)
                         .content("round(calc_base + calc_date_diff * calc_extra - power(calc_extra, 2) / calc_abs_val, 2)")
                         .paramNameList(Arrays.asList("calc_base", "calc_date_diff", "calc_extra", "calc_abs_val"))
+                        .build(),
+                StepData.builder()
+                        .stepCode("CONDITION001")
+                        .stepName("condition1")
+                        .stepType("CONDITION")
+                        .contentType(StepContentType.EXPRESSION)
+                        .content("calc_months_raw < 18.16121")
+                        .paramNameList(Collections.singletonList("calc_months_raw"))
                         .build()
         );
 
@@ -159,7 +167,7 @@ public class AviatorOracleExpressionTest {
                                 // [IF_ELSE] calc_months_raw < 18.16121 → true 走 DC003，false 走 DC004
                                 // Oracle: trunc(months_between(...), 4) = 18.1612 < 18.16121 → true 分支
                                 + "{\"type\":\"IF_ELSE\","
-                                + "\"condition\":\"calc_months_raw < 18.16121\","
+                                + "\"condition\":{\"type\":\"STEP\",\"stepCode\":\"CONDITION001\"},"
                                 + "\"trueFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"DC003\","
                                 + "\"paramNameMap\":{\"principal\":\"dto.principal\",\"rateInput\":\"dto.rateInput\"}},"
                                 + "\"falseFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"DC004\","

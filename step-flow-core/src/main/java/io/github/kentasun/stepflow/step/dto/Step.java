@@ -30,9 +30,9 @@ public class Step {
      * @param stepFlowContext  步骤上下文，用于传递
      * @param oneOffParams     1次性参数，仅供当前 step 使用
      * @param executorsContext 用于随着上下文一起传递的各种执行器
-     * @return 返回步骤设置的参数
+     * @return 返回步骤执行结果
      */
-    public Map<String, Object> execute(StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext) {
+    public Object execute(StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext) {
         /* 准备参数 */
         // 该步骤用到的参数名称
         List<String> paramNameList = stepData.getParamNameList();
@@ -70,19 +70,8 @@ public class Step {
                 executorsContext
         );
 
-        /* 处理返回值类型、名称 */
-        if (result != null) {
-            if (result instanceof Map) {
-                //noinspection unchecked
-                return (Map<String, Object>) result;
-            } else {
-                String stepName = stepData.getStepName();
-                Map<String, Object> resMap = new HashMap<>();
-                resMap.put(stepName, result);
-                return resMap;
-            }
-        }
-        return null;
+        /* 返回结果 */
+        return result;
     }
 
     private String getTempName(String paramName, Map<String, String> map) {
@@ -91,5 +80,9 @@ public class Step {
         } else {
             return null;
         }
+    }
+
+    public StepData getStepData() {
+        return stepData;
     }
 }

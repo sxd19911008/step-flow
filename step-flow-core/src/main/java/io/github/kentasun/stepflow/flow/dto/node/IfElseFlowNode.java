@@ -2,6 +2,7 @@ package io.github.kentasun.stepflow.flow.dto.node;
 
 import io.github.kentasun.stepflow.dto.ExecutorsContext;
 import io.github.kentasun.stepflow.dto.StepFlowContext;
+import io.github.kentasun.stepflow.exception.StepFlowException;
 import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,7 +18,7 @@ public class IfElseFlowNode extends FlowNode {
 
     @JsonSetter(nulls = Nulls.FAIL)
     @Getter
-    private final String condition;
+    private final StepFlowNode condition;
 
     @JsonSetter(nulls = Nulls.FAIL)
     @Getter
@@ -29,7 +30,7 @@ public class IfElseFlowNode extends FlowNode {
 
     @JsonCreator
     public IfElseFlowNode(@JsonProperty("type") String type,
-                          @JsonProperty("condition") String condition,
+                          @JsonProperty("condition") StepFlowNode condition,
                           @JsonProperty("trueFlowNode") FlowNode trueFlowNode,
                           @JsonProperty("falseFlowNode") FlowNode falseFlowNode) {
         super(type);
@@ -40,7 +41,15 @@ public class IfElseFlowNode extends FlowNode {
 
     @Override
     public void execute(StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
-        Boolean isTrue = executorsContext.isTrue(condition, stepFlowContext.getContextMap());
+        Object res = condition.executeThenReturnRes(stepFlowContext, executorsContext);
+        Boolean isTrue;
+        if (res instanceof Boolean) {
+            isTrue = (Boolean) res;
+        } else if (res == null) {
+            throw new StepFlowException(String.format("执行step[%s]，返回null", condition.getStepCode()));
+        } else {
+            throw new StepFlowException(String.format("执行step[%s]，返回错误类型：%s", condition.getStepCode(), res.getClass().getName()));
+        }
         if (isTrue) {
             trueFlowNode.execute(stepFlowContext, executorsContext);
         } else {
@@ -50,6 +59,8 @@ public class IfElseFlowNode extends FlowNode {
 
     @Override
     public void validate(FlowNodeValidateContext context, String globalFlowCode) {
+        // 校验条件节点
+        condition.validate(context, globalFlowCode);
         // 校验2个子节点
         trueFlowNode.validate(context, globalFlowCode);
         falseFlowNode.validate(context, globalFlowCode);

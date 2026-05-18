@@ -84,7 +84,7 @@ public class StepExecutor {
      * @param executorsContext 用于随着上下文一起传递的各种执行器
      * @return 步骤执行结果
      */
-    public Map<String, Object> executeByStepCode(final String stepCode, StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext) {
+    public Object executeByStepCode(final String stepCode, StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext) {
         Step step = stepMap.get(stepCode);
         if (step == null) {
             throw new StepFlowException(String.format("【%s】步骤不存在", stepCode));
@@ -100,5 +100,9 @@ public class StepExecutor {
      */
     public boolean hasStepCode(String stepCode) {
         return stepMap.containsKey(stepCode);
+    }
+
+    public Step getStep(String stepCode) {
+        return stepMap.get(stepCode);
     }
 }

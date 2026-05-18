@@ -5,6 +5,7 @@ import io.github.kentasun.stepflow.dto.ExecutorsContext;
 import io.github.kentasun.stepflow.dto.OneOffParams;
 import io.github.kentasun.stepflow.dto.StepFlowContext;
 import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
+import io.github.kentasun.stepflow.step.dto.Step;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,17 +46,35 @@ public class StepFlowNode extends FlowNode {
     @Override
     public void execute(StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
         /* 执行 step */
-        Map<String, Object> resMap = executorsContext.executeByStepCode(
-                stepCode,
+        Object res = executorsContext.executeByStepCode(
+                this.stepCode,
                 stepFlowContext,
                 OneOffParams.builder()
-                        .paramNameMap(paramNameMap)
+                        .paramNameMap(this.paramNameMap)
                         .build());
+
+        /* 组装 resMap */
+        Map<String, Object> resMap;
+
+        // 如果结果为null，直接返回
+        if (res == null) {
+            return;
+        }
+
+        if (res instanceof Map) {
+            //noinspection unchecked
+            resMap = (Map<String, Object>) res;
+        } else {
+            String stepName = this.getStepName(executorsContext);
+            resMap = new HashMap<>();
+            resMap.put(stepName, res);
+        }
+
         /* 将计算结果放入上下文 */
         if (StepFlowUtils.isNotEmpty(resMap)) {
             // 有映射，先处理映射字段
-            if (StepFlowUtils.isNotEmpty(resultNameMap)) {
-                for (Map.Entry<String, String> resEntry : resultNameMap.entrySet()) {
+            if (StepFlowUtils.isNotEmpty(this.resultNameMap)) {
+                for (Map.Entry<String, String> resEntry : this.resultNameMap.entrySet()) {
                     String resMapKey = resEntry.getKey(); // 子步骤默认返回的字段名
                     String stepContextKey = resEntry.getValue(); // 映射期望的字段名
                     // 获取 value，同时在 resMap 中删除，防止重复放入相同字段
@@ -70,11 +90,32 @@ public class StepFlowNode extends FlowNode {
         }
     }
 
+    /**
+     * 执行step并返回结果
+     *
+     * @param stepFlowContext  参数上下文对象
+     * @param executorsContext 执行器上下文对象
+     * @return step的执行结果
+     */
+    public Object executeThenReturnRes(StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
+        return executorsContext.executeByStepCode(
+                this.stepCode,
+                stepFlowContext,
+                OneOffParams.builder()
+                        .paramNameMap(this.paramNameMap)
+                        .build());
+    }
+
     @Override
     public void validate(FlowNodeValidateContext context, String globalFlowCode) {
         // 校验 stepCode 是否存在
         if (context.stepCodeNotExist(this.stepCode)) {
             context.saveErrMsg(globalFlowCode, String.format("stepCode[%s] not exist", this.stepCode));
         }
+    }
+
+    private String getStepName(ExecutorsContext executorsContext) {
+        Step step = executorsContext.getStep(this.stepCode);
+        return step.getStepData().getStepName();
     }
 }
