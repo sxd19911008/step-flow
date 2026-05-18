@@ -5,18 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -27,61 +19,22 @@ public class GetValueFromMapUtils {
 
     private static final Logger log = LoggerFactory.getLogger(GetValueFromMapUtils.class);
 
-    private static final ConcurrentHashMap<MethodKey, Reference<List<Method>>> cacheMethods = new ConcurrentHashMap<>();
-
-    /**
-     * {@link #cacheMethods} 中 {@link SoftReference} 所绑定的引用队列。
-     *
-     * <p>当 GC 回收某个 {@code SoftReference} 的 referent 后，JVM 会自动将该
-     * {@code SoftReference} 对象本身入队。{@link #clearCache} 通过轮询此队列
-     * 感知 GC 事件，从而按需触发对 {@code cacheMethods} 的失效条目清理，同时
-     * 排空队列以防止 {@code SoftReference} 壳子对象在队列中持续积压。</p>
-     */
-    private static final ReferenceQueue<List<Method>> cacheMethodsRq = new ReferenceQueue<>();
-
-    /**
-     * static and instance fields property caching
-     */
-    private static final ConcurrentHashMap<Class<?>, Reference<Map<String, PropertyFoundResult>>> cachedProperties = new ConcurrentHashMap<>();
-
-    /**
-     * {@link #cachedProperties} 中 {@link SoftReference} 所绑定的引用队列。
-     *
-     * <p>作用与 {@link #cacheMethodsRq} 相同，用于感知 {@code cachedProperties}
-     * 中软引用的 GC 回收事件，以驱动对应缓存的失效条目清理。</p>
-     */
-    private static final ReferenceQueue<Map<String, PropertyFoundResult>> cachePropertyRq = new ReferenceQueue<>();
-
     private static final Pattern SPLIT_PAT = Pattern.compile("\\.");
 
     public static Object getValueFromContextMap(Map<String, Object> env, String name) {
         if (containsSymbol(name) && !env.containsKey(name)) {
-            return getProperty(name, env);
+            try {
+                return fastGetProperty(name, env);
+            } catch (Throwable t) {
+                log.info("Could not get property [{}]", name);
+                return null;
+            }
         }
         return env.get(name);
     }
 
-    private static Object getProperty(final String name, final Map<String, Object> env) {
-        try {
-            String[] names = SPLIT_PAT.split(name);
-            return fastGetProperty(name, names, env);
-        } catch (Throwable t) {
-            log.info("Could not get property [{}]", name);
-            return null;
-        }
-    }
-
-    /**
-     * 名字里面是否有 {@code .}
-     *
-     * @param name 待校验的名称字符串
-     * @return {@code true} -有点；{@code false} -没有点
-     */
-    private static boolean containsSymbol(String name) {
-        return name.contains(".") || (name.contains("[") && name.contains("]")) || (name.contains("(") && name.contains(")"));
-    }
-
-    private static Object fastGetProperty(String name, String[] names, Map<String, Object> env) {
+    private static Object fastGetProperty(String name, Map<String, Object> env) {
+        String[] names = SPLIT_PAT.split(name);
         Target target = Target.withEnv(env);
         int max = names.length;
         for (int i = 0; i < max; i++) {
@@ -127,7 +80,7 @@ public class GetValueFromMapUtils {
                 if (target.innerEnv != null) {
                     val = target.innerEnv.get(rName);
                 } else {
-                    val = fastGetProperty(target.targetObject, rName);
+                    val = getPropertyFromObject(target.targetObject, rName);
                 }
             }
 
@@ -166,49 +119,25 @@ public class GetValueFromMapUtils {
                 target.innerEnv = null;
             }
         }
-        return throwNoSuchPropertyException("Variable `" + name + "` not found in env: " + env);
+
+        throw new StepFlowException(String.format("Property[%s] not found in env", name));
     }
 
-    private static void capitalize(StringBuilder sb, String s) {
-        if (s == null) {
-            return;
-        }
-        if (s.length() > 1 && Character.isUpperCase(s.charAt(1))) {
-            sb.append(s);
-            return;
-        }
-        sb.append(s.substring(0, 1).toUpperCase());
-        sb.append(s.substring(1));
-    }
-
-    private static String genGetterName(String prefix, String name) {
-        StringBuilder sb = new StringBuilder(prefix);
-        capitalize(sb, name);
-        return sb.toString();
-    }
-
-    private static Object fastGetProperty(Object obj, String name) {
+    private static Object getPropertyFromObject(Object obj, String name) {
         final Class<?> clazz = obj.getClass();
-        Map<String, PropertyFoundResult> results;
-
-        results = getClassPropertyResults(clazz);
-
         try {
-            PropertyFoundResult result = results.get(name);
-            if (result == null) {
-                result = retrieveGetterHandle(results, clazz, name);
-            }
-
-            if (result.handle != null) {
-                return result.handle.invoke(obj);
+            Optional<MethodHandle> methodHandleOptional = GetterMethodsCacheUtils.getMethodHandleOptional(clazz, name);
+            if (methodHandleOptional.isPresent()) {
+                MethodHandle methodHandle = methodHandleOptional.get();
+                return methodHandle.invoke(obj);
             } else {
-                return throwNoSuchPropertyException(
-                        "Property `" + name + "` not found in java bean: " + obj);
+                throw new StepFlowException(String.format(
+                        "The getter method for the Property[%s] can not found in class[%s].",
+                        name,
+                        clazz.getName()
+                ));
             }
         } catch (Throwable t) {
-            if (!results.containsKey(name)) {
-                putDummyHandle(name, results);
-            }
             if (t instanceof RuntimeException) {
                 throw (RuntimeException) t;
             } else {
@@ -217,142 +146,14 @@ public class GetValueFromMapUtils {
         }
     }
 
-    private static Object throwNoSuchPropertyException(String msg) {
-        throw new StepFlowException(msg);
-    }
-
-    private static PropertyFoundResult retrieveGetterHandle(Map<String, PropertyFoundResult> results, Class<?> clazz, String name)
-            throws IllegalAccessException {
-        PropertyFoundResult result;
-        List<Method> methods = getInstanceMethods(clazz, genGetterName("get", name));
-
-        if (methods == null || methods.isEmpty()) {
-            methods = getInstanceMethods(clazz, genGetterName("is", name));
-        }
-
-        if ((methods == null || methods.isEmpty()) && name.startsWith("is")) {
-            // Fix https://github.com/killme2008/aviatorscript/issues/517
-            methods = getInstanceMethods(clazz, name);
-        }
-
-        if (methods != null && !methods.isEmpty()) {
-            // 默认先取第一个作为兜底
-            Method method = methods.get(0);
-            for (Method m : methods) {
-                // 找到无参方法时，优先使用它
-                if (m.getParameterTypes().length == 0) {
-                    method = m;
-                    break;
-                }
-            }
-            method.setAccessible(true);
-            MethodHandle handle = MethodHandles.lookup().unreflect(method);
-            result = new PropertyFoundResult(handle);
-        } else {
-            result = new PropertyFoundResult(null);
-        }
-        results.put(name, result);
-        return result;
-    }
-
-    private static void putDummyHandle(String name, Map<String, PropertyFoundResult> handles) {
-        handles.put(name, new PropertyFoundResult(null));
-    }
-
-    private static Map<String, PropertyFoundResult> getClassPropertyResults(Class<?> clazz) {
-        Reference<Map<String, PropertyFoundResult>> existingRef = cachedProperties.get(clazz);
-        Map<String, PropertyFoundResult> results = Collections.emptyMap();
-
-        if (existingRef == null) {
-            clearCache(cachePropertyRq, cachedProperties);
-            results = new ConcurrentHashMap<>();
-            existingRef = cachedProperties.putIfAbsent(clazz, new SoftReference<>(results, cachePropertyRq));
-        }
-        if (existingRef == null) {
-            return results;
-        }
-
-        results = existingRef.get();
-        if (results != null) {
-            return results;
-        }
-
-        // entry died in the interim, do over
-        cachedProperties.remove(clazz, existingRef);
-        // retry
-        return getClassPropertyResults(clazz);
-    }
-
-    private static List<Method> getInstanceMethods(Class<?> clazz, String methodName) {
-        MethodKey key = new MethodKey(clazz, methodName);
-        Reference<List<Method>> existingRef = cacheMethods.get(key);
-        List<Method> methods = Collections.emptyList();
-
-        if (existingRef == null) {
-            clearCache(cacheMethodsRq, cacheMethods);
-            methods = getClassInstanceMethods(clazz, methodName);
-            existingRef = cacheMethods.putIfAbsent(key, new SoftReference<>(methods, cacheMethodsRq));
-        }
-        if (existingRef == null) {
-            return methods;
-        }
-
-        List<Method> existingMethods = existingRef.get();
-        if (existingMethods != null) {
-            return existingMethods;
-        }
-
-        // entry died in the interim, do over
-        cacheMethods.remove(key, existingRef);
-        // retry
-        return getInstanceMethods(clazz, methodName);
-    }
-
-    private static List<Method> getClassInstanceMethods(Class<?> c, String methodName) {
-        List<Method> ret = new ArrayList<>();
-        for (Method method : c.getMethods()) {
-            int modifiers = method.getModifiers();
-            if (!Modifier.isStatic(modifiers)
-                    && Modifier.isPublic(modifiers)
-                    && methodName.equals(method.getName())) {
-                method.setAccessible(true);
-                ret.add(method);
-            }
-        }
-        return ret;
-    }
-
     /**
-     * 清理缓存中已被 GC 回收的软引用条目。
+     * 名字里面是否有 {@code .}、{@code []}、{@code ()}
      *
-     * <p>以 {@code rq.poll() != null} 作为 O(1) 的 GC 事件探针：仅当队列中存在
-     * 已入队的 {@link SoftReference} 时，才执行代价较高的 O(n) 全量缓存扫描，
-     * 避免在无 GC 事件时产生不必要的遍历开销。</p>
-     *
-     * <p>探针确认后，通过 {@code while} 循环将队列中所有已入队的
-     * {@link SoftReference} 对象排空，防止其在 {@link ReferenceQueue} 内持续
-     * 积压，造成 {@link SoftReference} 壳子对象本身无法被回收。随后遍历
-     * {@code cache}，移除 referent 已为 {@code null} 的失效条目。</p>
-     *
-     * @param rq    与缓存中 {@link SoftReference} 绑定的引用队列
-     * @param cache 待清理的缓存映射表
-     * @param <K>   缓存键类型
-     * @param <V>   缓存值类型（即 {@link SoftReference} 所包装的对象类型）
+     * @param name 待校验的名称字符串
+     * @return {@code true} -有点；{@code false} -没有点
      */
-    private static <K, V> void clearCache(ReferenceQueue<V> rq, ConcurrentHashMap<K, Reference<V>> cache) {
-        if (rq.poll() != null) {
-            // 该队列仅用来感知 GC，所以需要排空队列，释放所有已无用的 SoftReference 壳子对象
-            // 每次 rq.poll() 都会释放一个 SoftReference 并返回。直到 rq.poll() 返回null，表示全部释放完成。
-            //noinspection StatementWithEmptyBody
-            while (rq.poll() != null) {}
-            // 扫描缓存，移除 referent 已被 GC 回收的失效条目
-            for (Map.Entry<K, Reference<V>> e : cache.entrySet()) {
-                Reference<V> val = e.getValue();
-                if (val != null && val.get() == null) {
-                    cache.remove(e.getKey(), val);
-                }
-            }
-        }
+    private static boolean containsSymbol(String name) {
+        return name.contains(".") || (name.contains("[") && name.contains("]")) || (name.contains("(") && name.contains(")"));
     }
 
     private static Object get(final Object a, final int index) {
@@ -375,74 +176,6 @@ public class GetValueFromMapUtils {
         }
 
         return Array.get(a, index);
-    }
-
-    private static class PropertyFoundResult {
-        MethodHandle handle;
-
-        PropertyFoundResult(MethodHandle handle) {
-            super();
-            this.handle = handle;
-        }
-
-        @Override
-        public String toString() {
-            return "PropertyFoundResult{" +
-                    "handle=" + handle +
-                    '}';
-        }
-    }
-
-    /**
-     *
-     * Class's instance method cache key
-     *
-     */
-    private static class MethodKey {
-        Class<?> clazz;
-        String name;
-
-        MethodKey(Class<?> clazz, String name) {
-            super();
-            this.clazz = clazz;
-            this.name = name;
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((this.clazz == null) ? 0 : this.clazz.hashCode());
-            result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            MethodKey other = (MethodKey) obj;
-            if (this.clazz == null) {
-                if (other.clazz != null) {
-                    return false;
-                }
-            } else if (!this.clazz.equals(other.clazz)) {
-                return false;
-            }
-            if (this.name == null) {
-                return other.name == null;
-            } else {
-                return this.name.equals(other.name);
-            }
-        }
-
     }
 
     private static class Target {
