@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
+ * 从 {@code Map<String, Object>} 中获取数据，支持 {@code a.b[0].c} 类型的参数获取
  *
  * @author kenta-sun
  */
@@ -21,6 +22,13 @@ public class GetValueFromMapUtils {
 
     private static final Pattern SPLIT_PAT = Pattern.compile("\\.");
 
+    /**
+     * 从 {@code Map<String, Object>} 中获取数据
+     *
+     * @param name 参数名，支持 {@code a.b[0].c} 类型
+     * @param env 参数map
+     * @return 获取到的参数
+     */
     public static Object getValueFromContextMap(String name, Map<String, Object> env) {
         if (containsSymbol(name) && !env.containsKey(name)) {
             try {
@@ -129,6 +137,13 @@ public class GetValueFromMapUtils {
         throw new StepFlowException(String.format("Property[%s] not found in env", name));
     }
 
+    /**
+     * 从非 {@link Map} 类型的Java对象中获取参数
+     *
+     * @param obj java对象
+     * @param name 参数名
+     * @return 获取到的参数
+     */
     private static Object getPropertyFromObject(Object obj, String name) {
         final Class<?> clazz = obj.getClass();
         Optional<MethodHandle> methodHandleOptional = GetterMethodsCacheUtils.getMethodHandleOptional(clazz, name);
@@ -162,6 +177,13 @@ public class GetValueFromMapUtils {
         return name.contains(".") || (name.contains("[") && name.contains("]")) || (name.contains("(") && name.contains(")"));
     }
 
+    /**
+     * 根据下标，从数组中获取数据
+     *
+     * @param a 数组对象
+     * @param index 下标
+     * @return 从数组中获取到的数据
+     */
     private static Object getArrayElement(final Object a, final int index) {
         if (a instanceof byte[]) {
             return ((byte[]) a)[index];
