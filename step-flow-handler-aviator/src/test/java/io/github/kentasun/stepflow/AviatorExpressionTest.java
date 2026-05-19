@@ -1,7 +1,7 @@
 package io.github.kentasun.stepflow;
 
 import io.github.kentasun.stepflow.dto.CalcDTO;
-import io.github.kentasun.stepflow.engine.constants.AviatorStepContentType;
+import io.github.kentasun.stepflow.step.handler.constants.AviatorStepContentType;
 import io.github.kentasun.stepflow.flow.dto.InputFlow;
 import io.github.kentasun.stepflow.flow.intf.FlowProvider;
 import io.github.kentasun.stepflow.javaMethod.ChooseRes;

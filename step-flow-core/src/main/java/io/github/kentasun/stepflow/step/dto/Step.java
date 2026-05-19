@@ -3,7 +3,7 @@ package io.github.kentasun.stepflow.step.dto;
 import io.github.kentasun.stepflow.dto.ExecutorsContext;
 import io.github.kentasun.stepflow.dto.OneOffParams;
 import io.github.kentasun.stepflow.dto.StepFlowContext;
-import io.github.kentasun.stepflow.step.intf.StepHandler;
+import io.github.kentasun.stepflow.step.handler.StepHandler;
 import io.github.kentasun.stepflow.utils.GetValueFromMapUtils;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 

@@ -7,7 +7,7 @@ import io.github.kentasun.stepflow.exception.StepFlowException;
 import io.github.kentasun.stepflow.step.dto.Step;
 import io.github.kentasun.stepflow.step.dto.StepData;
 import io.github.kentasun.stepflow.step.intf.StepDataProvider;
-import io.github.kentasun.stepflow.step.intf.StepHandler;
+import io.github.kentasun.stepflow.step.handler.StepHandler;
 import io.github.kentasun.stepflow.utils.StepFlowJsonUtils;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 import org.slf4j.Logger;
