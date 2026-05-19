@@ -7,16 +7,14 @@ import io.github.kentasun.stepflow.flow.intf.FlowProvider;
 import io.github.kentasun.stepflow.javaMethod.ChooseRes;
 import io.github.kentasun.stepflow.step.constants.StepContentType;
 import io.github.kentasun.stepflow.step.dto.StepData;
+import io.github.kentasun.stepflow.step.handler.impl.JexlStepHandler;
 import io.github.kentasun.stepflow.step.intf.JavaStep;
 import io.github.kentasun.stepflow.step.intf.StepDataProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JexlExpressionTest {
@@ -96,6 +94,7 @@ public class JexlExpressionTest {
         javaStepMap.put("chooseRes", new ChooseRes());
         StepFlowExecutor stepFlowExecutor = StepFlowExecutor.builder(stepDataProvider, flowProvider)
                 .javaStepMap(javaStepMap)
+                .stepHandlerList(new ArrayList<>(Collections.singletonList(new JexlStepHandler(null, null))))
                 .build();
 
         Map<String, Object> contextMap = new ConcurrentHashMap<>();

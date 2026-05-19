@@ -3,18 +3,20 @@ package io.github.kentasun.stepflow;
 import io.github.kentasun.stepflow.config.StepFlowConfigProperties;
 import io.github.kentasun.stepflow.dto.ExecutorsContext;
 import io.github.kentasun.stepflow.dto.StepFlowContext;
-import io.github.kentasun.stepflow.step.handler.provider.AbstractStepHandlerProvider;
 import io.github.kentasun.stepflow.flow.FlowExecutor;
 import io.github.kentasun.stepflow.flow.intf.FlowProvider;
 import io.github.kentasun.stepflow.step.StepExecutor;
+import io.github.kentasun.stepflow.step.handler.StepHandler;
 import io.github.kentasun.stepflow.step.handler.impl.JavaStepHandler;
 import io.github.kentasun.stepflow.step.intf.JavaStep;
 import io.github.kentasun.stepflow.step.intf.StepDataProvider;
-import io.github.kentasun.stepflow.step.handler.StepHandler;
 import io.github.kentasun.stepflow.threadpool.StepFlowThreadPoolFactory;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -132,18 +134,6 @@ public class StepFlowExecutor {
         }
 
         /**
-         * 通过 Java SPI 加载 {@link AbstractStepHandlerProvider} 的所有实现类。
-         *
-         * @return {@link AbstractStepHandlerProvider} 的实例列表
-         */
-        private List<AbstractStepHandlerProvider> loadSpi() {
-            Iterator<AbstractStepHandlerProvider> it = ServiceLoader.load(AbstractStepHandlerProvider.class).iterator();
-            List<AbstractStepHandlerProvider> list = new ArrayList<>();
-            it.forEachRemaining(list::add);
-            return list;
-        }
-
-        /**
          * 构建 {@link StepExecutor}，注册所有 StepHandler。
          */
         private StepExecutor buildStepExecutor() {
@@ -152,9 +142,6 @@ public class StepFlowExecutor {
             JavaStepHandler javaStepHandler = new JavaStepHandler(this.javaStepMap);
             List<StepHandler> stepHandlers = new ArrayList<>();
             stepHandlers.add(javaStepHandler);
-            // 通过 SPI 加载 StepHandler，同 StepContentType 时覆盖内置实现
-            List<AbstractStepHandlerProvider> provider = loadSpi();
-            provider.forEach(p -> stepHandlers.add(p.buildStepHandler()));
             // 注册用户自定义 StepHandler，同 StepContentType 时覆盖内置实现
             if (StepFlowUtils.isNotEmpty(stepHandlerList)) {
                 stepHandlers.addAll(stepHandlerList);

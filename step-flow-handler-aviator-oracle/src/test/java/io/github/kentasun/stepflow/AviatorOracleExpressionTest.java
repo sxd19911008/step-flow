@@ -2,15 +2,17 @@ package io.github.kentasun.stepflow;
 
 import io.github.kentasun.aviatororacle.number.OraDecimal;
 import io.github.kentasun.stepflow.dto.DateCalcDTO;
-import io.github.kentasun.stepflow.step.handler.constants.AviatorOracleStepContentType;
 import io.github.kentasun.stepflow.flow.dto.InputFlow;
 import io.github.kentasun.stepflow.flow.intf.FlowProvider;
 import io.github.kentasun.stepflow.step.dto.StepData;
+import io.github.kentasun.stepflow.step.handler.constants.AviatorOracleStepContentType;
+import io.github.kentasun.stepflow.step.handler.impl.AviatorOracleStepHandler;
 import io.github.kentasun.stepflow.step.intf.StepDataProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -188,7 +190,9 @@ public class AviatorOracleExpressionTest {
         );
 
         // ---- 构建执行器（无需 JavaStep，纯表达式引擎即可）----
-        StepFlowExecutor stepFlowExecutor = StepFlowExecutor.builder(stepDataProvider, flowProvider).build();
+        StepFlowExecutor stepFlowExecutor = StepFlowExecutor.builder(stepDataProvider, flowProvider)
+                .stepHandlerList(new ArrayList<>(Collections.singletonList(new AviatorOracleStepHandler(null, null))))
+                .build();
 
         // ---- 构造输入 DTO ----
         SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-MM-dd");
