@@ -11,7 +11,7 @@
 
     <artifactId>step-flow-handler-aviator-oracle</artifactId>
     <name>step-flow-handler-aviator-oracle</name>
-    <description>Oracle-compatible expression engine plugin for step-flow.</description>
+    <description>Oracle-compatible handler plugin for step-flow.</description>
 
     <dependencies>
         <!-- step-flow 核心 -->

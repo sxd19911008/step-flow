@@ -11,7 +11,7 @@
 
     <artifactId>step-flow-handler-aviator</artifactId>
     <name>step-flow-handler-aviator</name>
-    <description>AviatorScript expression engine plugin for step-flow.</description>
+    <description>AviatorScript handler plugin for step-flow.</description>
 
     <dependencies>
         <!-- step-flow 核心 -->

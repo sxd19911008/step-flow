@@ -11,7 +11,7 @@
 
     <artifactId>step-flow-handler-jexl</artifactId>
     <name>step-flow-handler-jexl</name>
-    <description>JEXL expression engine plugin for step-flow.</description>
+    <description>JEXL handler plugin for step-flow.</description>
 
     <dependencies>
         <!-- step-flow 核心 -->
