@@ -1,9 +1,9 @@
 package io.github.kentasun.stepflow.step.dto;
 
-import io.github.kentasun.stepflow.dto.ExecutorsContext;
-import io.github.kentasun.stepflow.dto.OneOffParams;
-import io.github.kentasun.stepflow.dto.StepFlowContext;
-import io.github.kentasun.stepflow.step.handler.StepHandler;
+import io.github.kentasun.stepflow.api.dto.OneOffParams;
+import io.github.kentasun.stepflow.api.dto.StepFlowContext;
+import io.github.kentasun.stepflow.api.step.StepHandler;
+import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.utils.GetValueFromMapUtils;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 
@@ -29,10 +29,9 @@ public class Step {
      *
      * @param stepFlowContext  步骤上下文，用于传递
      * @param oneOffParams     1次性参数，仅供当前 step 使用
-     * @param executorsContext 用于随着上下文一起传递的各种执行器
      * @return 返回步骤执行结果
      */
-    public Object execute(StepFlowContext stepFlowContext, OneOffParams oneOffParams, ExecutorsContext executorsContext) {
+    public Object execute(StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
         /* 准备参数 */
         // 该步骤用到的参数名称
         List<String> paramNameList = stepData.getParamNameList();
@@ -66,8 +65,7 @@ public class Step {
                 stepFlowContext,
                 OneOffParams.builder()
                         .vars(vars)
-                        .build(),
-                executorsContext
+                        .build()
         );
     }
 

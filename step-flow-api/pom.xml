@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.kenta-sun</groupId>
+        <artifactId>step-flow-parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>step-flow-api</artifactId>
+    <name>step-flow-api</name>
+    <description>Public API for step-flow.</description>
+
+    <dependencies>
+        <!-- Lombok：后续迁入的 DTO 等可复用，与 core 保持一致 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+</project>

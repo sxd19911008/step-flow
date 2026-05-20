@@ -1,12 +1,12 @@
 package io.github.kentasun.stepflow.flow;
 
 import io.github.kentasun.stepflow.dto.ExecutorsContext;
-import io.github.kentasun.stepflow.dto.StepFlowContext;
+import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.exception.StepFlowException;
 import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
-import io.github.kentasun.stepflow.flow.dto.InputFlow;
+import io.github.kentasun.stepflow.api.flow.dto.InputFlow;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
-import io.github.kentasun.stepflow.flow.intf.FlowProvider;
+import io.github.kentasun.stepflow.api.flow.FlowProvider;
 import io.github.kentasun.stepflow.step.StepExecutor;
 import io.github.kentasun.stepflow.utils.StepFlowJsonUtils;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;

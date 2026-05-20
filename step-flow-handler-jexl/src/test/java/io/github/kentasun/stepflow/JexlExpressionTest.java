@@ -1,15 +1,15 @@
 package io.github.kentasun.stepflow;
 
 import io.github.kentasun.stepflow.dto.CalcDTO;
-import io.github.kentasun.stepflow.step.handler.constants.JexlStepContentType;
-import io.github.kentasun.stepflow.flow.dto.InputFlow;
-import io.github.kentasun.stepflow.flow.intf.FlowProvider;
+import io.github.kentasun.stepflow.jexl.constants.JexlStepContentType;
+import io.github.kentasun.stepflow.api.flow.dto.InputFlow;
+import io.github.kentasun.stepflow.api.flow.FlowProvider;
 import io.github.kentasun.stepflow.javaMethod.ChooseRes;
 import io.github.kentasun.stepflow.step.constants.StepContentType;
-import io.github.kentasun.stepflow.step.dto.StepData;
-import io.github.kentasun.stepflow.step.handler.impl.JexlStepHandler;
-import io.github.kentasun.stepflow.step.intf.JavaStep;
-import io.github.kentasun.stepflow.step.intf.StepDataProvider;
+import io.github.kentasun.stepflow.api.step.dto.StepData;
+import io.github.kentasun.stepflow.jexl.handler.JexlStepHandler;
+import io.github.kentasun.stepflow.api.step.JavaStep;
+import io.github.kentasun.stepflow.api.step.StepDataProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -94,7 +94,7 @@ public class JexlExpressionTest {
         javaStepMap.put("chooseRes", new ChooseRes());
         StepFlowExecutor stepFlowExecutor = StepFlowExecutor.builder(stepDataProvider, flowProvider)
                 .javaStepMap(javaStepMap)
-                .stepHandlerList(new ArrayList<>(Collections.singletonList(new JexlStepHandler(null, null))))
+                .stepHandlerList(new ArrayList<>(Collections.singletonList(new JexlStepHandler())))
                 .build();
 
         Map<String, Object> contextMap = new ConcurrentHashMap<>();

@@ -2,10 +2,10 @@ package io.github.kentasun.stepflow.starter;
 
 import io.github.kentasun.stepflow.StepFlowExecutor;
 import io.github.kentasun.stepflow.config.StepFlowConfigProperties;
-import io.github.kentasun.stepflow.flow.intf.FlowProvider;
-import io.github.kentasun.stepflow.step.intf.JavaStep;
-import io.github.kentasun.stepflow.step.intf.StepDataProvider;
-import io.github.kentasun.stepflow.step.handler.StepHandler;
+import io.github.kentasun.stepflow.api.flow.FlowProvider;
+import io.github.kentasun.stepflow.api.step.JavaStep;
+import io.github.kentasun.stepflow.api.step.StepDataProvider;
+import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.threadpool.StepFlowThreadPoolFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

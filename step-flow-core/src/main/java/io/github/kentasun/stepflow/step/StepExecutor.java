@@ -1,13 +1,13 @@
 package io.github.kentasun.stepflow.step;
 
 import io.github.kentasun.stepflow.dto.ExecutorsContext;
-import io.github.kentasun.stepflow.dto.OneOffParams;
-import io.github.kentasun.stepflow.dto.StepFlowContext;
+import io.github.kentasun.stepflow.api.dto.OneOffParams;
+import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.exception.StepFlowException;
 import io.github.kentasun.stepflow.step.dto.Step;
-import io.github.kentasun.stepflow.step.dto.StepData;
-import io.github.kentasun.stepflow.step.intf.StepDataProvider;
-import io.github.kentasun.stepflow.step.handler.StepHandler;
+import io.github.kentasun.stepflow.api.step.dto.StepData;
+import io.github.kentasun.stepflow.api.step.StepDataProvider;
+import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.utils.StepFlowJsonUtils;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 import org.slf4j.Logger;
@@ -96,7 +96,7 @@ public class StepExecutor {
         if (step == null) {
             throw new StepFlowException(String.format("【%s】步骤不存在", stepCode));
         }
-        return step.execute(stepFlowContext, oneOffParams, executorsContext);
+        return step.execute(stepFlowContext, oneOffParams);
     }
 
     /**

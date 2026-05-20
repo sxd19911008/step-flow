@@ -2,12 +2,12 @@ package io.github.kentasun.stepflow;
 
 import io.github.kentasun.aviatororacle.number.OraDecimal;
 import io.github.kentasun.stepflow.dto.DateCalcDTO;
-import io.github.kentasun.stepflow.flow.dto.InputFlow;
-import io.github.kentasun.stepflow.flow.intf.FlowProvider;
-import io.github.kentasun.stepflow.step.dto.StepData;
-import io.github.kentasun.stepflow.step.handler.constants.AviatorOracleStepContentType;
-import io.github.kentasun.stepflow.step.handler.impl.AviatorOracleStepHandler;
-import io.github.kentasun.stepflow.step.intf.StepDataProvider;
+import io.github.kentasun.stepflow.api.flow.dto.InputFlow;
+import io.github.kentasun.stepflow.api.flow.FlowProvider;
+import io.github.kentasun.stepflow.api.step.dto.StepData;
+import io.github.kentasun.stepflow.aviatororacle.constants.AviatorOracleStepContentType;
+import io.github.kentasun.stepflow.aviatororacle.handler.AviatorOracleStepHandler;
+import io.github.kentasun.stepflow.api.step.StepDataProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -191,7 +191,7 @@ public class AviatorOracleExpressionTest {
 
         // ---- 构建执行器（无需 JavaStep，纯表达式引擎即可）----
         StepFlowExecutor stepFlowExecutor = StepFlowExecutor.builder(stepDataProvider, flowProvider)
-                .stepHandlerList(new ArrayList<>(Collections.singletonList(new AviatorOracleStepHandler(null, null))))
+                .stepHandlerList(new ArrayList<>(Collections.singletonList(new AviatorOracleStepHandler())))
                 .build();
 
         // ---- 构造输入 DTO ----

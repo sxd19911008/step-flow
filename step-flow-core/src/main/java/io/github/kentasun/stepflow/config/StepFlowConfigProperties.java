@@ -15,11 +15,6 @@ public class StepFlowConfigProperties {
     // 异步执行 FLowNode 的线程池
     private ThreadPoolProperty parallelThreadPool;
 
-    /**
-     * 表达式引擎配置
-     */
-    private StepFlowEngineProperties engineProperties;
-
     @Data
     public static class ThreadPoolProperty {
 

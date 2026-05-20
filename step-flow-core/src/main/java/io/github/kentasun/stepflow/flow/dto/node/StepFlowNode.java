@@ -2,8 +2,8 @@ package io.github.kentasun.stepflow.flow.dto.node;
 
 
 import io.github.kentasun.stepflow.dto.ExecutorsContext;
-import io.github.kentasun.stepflow.dto.OneOffParams;
-import io.github.kentasun.stepflow.dto.StepFlowContext;
+import io.github.kentasun.stepflow.api.dto.OneOffParams;
+import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
 import io.github.kentasun.stepflow.step.dto.Step;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;

@@ -1,7 +1,7 @@
 package io.github.kentasun.stepflow.flow.dto.node;
 
 import io.github.kentasun.stepflow.dto.ExecutorsContext;
-import io.github.kentasun.stepflow.dto.StepFlowContext;
+import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

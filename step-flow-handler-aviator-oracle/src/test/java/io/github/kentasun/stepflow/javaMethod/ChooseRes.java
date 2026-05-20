@@ -1,10 +1,10 @@
 package io.github.kentasun.stepflow.javaMethod;
 
 import io.github.kentasun.aviatororacle.number.OraDecimal;
-import io.github.kentasun.stepflow.dto.OneOffParams;
-import io.github.kentasun.stepflow.dto.StepFlowContext;
-import io.github.kentasun.stepflow.step.dto.StepData;
-import io.github.kentasun.stepflow.step.intf.JavaStep;
+import io.github.kentasun.stepflow.api.dto.OneOffParams;
+import io.github.kentasun.stepflow.api.dto.StepFlowContext;
+import io.github.kentasun.stepflow.api.step.dto.StepData;
+import io.github.kentasun.stepflow.api.step.JavaStep;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 
 public class ChooseRes implements JavaStep {

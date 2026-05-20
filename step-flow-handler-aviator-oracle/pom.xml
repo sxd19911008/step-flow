@@ -14,10 +14,10 @@
     <description>Oracle-compatible handler plugin for step-flow.</description>
 
     <dependencies>
-        <!-- step-flow 核心 -->
+        <!-- step-flow 公共 API -->
         <dependency>
             <groupId>io.github.kenta-sun</groupId>
-            <artifactId>step-flow-core</artifactId>
+            <artifactId>step-flow-api</artifactId>
         </dependency>
 
         <!-- 表达式引擎核心依赖 -->
@@ -39,6 +39,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- step-flow 核心模块版本 -->
+        <dependency>
+            <groupId>io.github.kenta-sun</groupId>
+            <artifactId>step-flow-core</artifactId>
             <scope>test</scope>
         </dependency>
         <!-- 测试时需要 Jackson 做结果序列化输出 -->

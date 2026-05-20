@@ -1,6 +1,6 @@
 package io.github.kentasun.stepflow.utils;
 
-import io.github.kentasun.stepflow.dto.OneOffParams;
+import io.github.kentasun.stepflow.api.dto.OneOffParams;
 import io.github.kentasun.stepflow.exception.StepFlowException;
 
 import java.util.Collection;
@@ -54,8 +54,6 @@ public class StepFlowUtils {
      * @param cs a CharSequence or {@code null}
      * @return CharSequence length or {@code 0} if the CharSequence is
      * {@code null}.
-     * @since 2.4
-     * @since 3.0 Changed signature from length(String) to length(CharSequence)
      */
     public static int length(final CharSequence cs) {
         return cs == null ? 0 : cs.length();
