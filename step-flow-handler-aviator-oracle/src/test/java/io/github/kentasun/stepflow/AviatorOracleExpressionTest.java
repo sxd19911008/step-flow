@@ -207,7 +207,7 @@ public class AviatorOracleExpressionTest {
                 .build());
 
         // ---- 执行主流程 ----
-        Map<String, Object> resMap = stepFlowExecutor.executeByFLowCode("CALC_DATE_MAIN", contextMap);
+        Map<String, Object> resMap = stepFlowExecutor.executeByFlowCode("CALC_DATE_MAIN", contextMap);
 
         SimpleDateFormat dateTimeFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

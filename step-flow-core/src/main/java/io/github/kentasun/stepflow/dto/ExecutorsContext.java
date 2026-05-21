@@ -46,8 +46,8 @@ public class ExecutorsContext {
      * @param stepFlowContext 上下文对象
      * @return 流程执行结果
      */
-    public Map<String, Object> executeByFLowCode(final String flowCode, StepFlowContext stepFlowContext) {
-        return flowExecutor.executeByFLowCode(flowCode, stepFlowContext, this);
+    public Map<String, Object> executeByFlowCode(final String flowCode, StepFlowContext stepFlowContext) {
+        return flowExecutor.executeByFlowCode(flowCode, stepFlowContext, this);
     }
 
     public Step getStep(String stepCode) {

@@ -104,7 +104,7 @@ public class AviatorExpressionTest {
                 .num3(new BigDecimal("145"))
                 .num4(new BigDecimal("69"))
                 .build());
-        Map<String, Object> resMap = stepFlowExecutor.executeByFLowCode("CALC001", contextMap);
+        Map<String, Object> resMap = stepFlowExecutor.executeByFlowCode("CALC001", contextMap);
         Assertions.assertEquals(new BigDecimal("10260"), resMap.get("calc_Hades_res"));
     }
 }

@@ -104,7 +104,7 @@ public class JexlExpressionTest {
                 .num3(new BigDecimal("145"))
                 .num4(new BigDecimal("69"))
                 .build());
-        Map<String, Object> resMap = stepFlowExecutor.executeByFLowCode("CALC001", contextMap);
+        Map<String, Object> resMap = stepFlowExecutor.executeByFlowCode("CALC001", contextMap);
         BigDecimal actual = (BigDecimal) resMap.get("calc_Hades_res");
         Assertions.assertEquals(0, new BigDecimal("10260").compareTo(actual));
     }

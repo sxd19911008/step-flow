@@ -96,7 +96,7 @@ public class FlowExecutor {
      * @param executorsContext 用于随着上下文一起传递的各种执行器
      * @return 流程执行结果
      */
-    public Map<String, Object> executeByFLowCode(final String flowCode, StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
+    public Map<String, Object> executeByFlowCode(final String flowCode, StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
         Flow flow = flowMap.get(flowCode);
         if (flow == null) {
             throw new StepFlowException(String.format("【%s】流程不存在", flowCode));

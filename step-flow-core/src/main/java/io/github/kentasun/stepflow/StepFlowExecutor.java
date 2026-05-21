@@ -38,8 +38,8 @@ public class StepFlowExecutor {
      * @param contextMap 流程执行上下文变量
      * @return 执行结果上下文映射
      */
-    public Map<String, Object> executeByFLowCode(String flowCode, Map<String, Object> contextMap) {
-        return executorsContext.executeByFLowCode(
+    public Map<String, Object> executeByFlowCode(String flowCode, Map<String, Object> contextMap) {
+        return executorsContext.executeByFlowCode(
                 flowCode,
                 StepFlowContext.builder().contextMap(contextMap).build()
         );
