@@ -2,7 +2,6 @@ package io.github.kentasun.stepflow.dto;
 
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
 import io.github.kentasun.stepflow.api.dto.StepFlowContext;
-import io.github.kentasun.stepflow.config.StepFlowConfigProperties;
 import io.github.kentasun.stepflow.flow.FlowExecutor;
 import io.github.kentasun.stepflow.step.StepExecutor;
 import io.github.kentasun.stepflow.step.dto.Step;
@@ -20,8 +19,6 @@ import java.util.concurrent.ExecutorService;
 @Builder
 public class ExecutorsContext {
 
-    // 配置信息
-    private final StepFlowConfigProperties configProperties;
     // 步骤执行器
     private final StepExecutor stepExecutor;
     // 流程执行器

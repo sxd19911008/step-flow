@@ -107,7 +107,6 @@ public class StepFlowExecutor {
             FlowExecutor flowExecutor = new FlowExecutor(flowProvider, stepExecutor);
 
             return new StepFlowExecutor(ExecutorsContext.builder()
-                    .configProperties(configProperties)
                     .stepExecutor(stepExecutor)
                     .flowExecutor(flowExecutor)
                     .stepFlowParallelThreadPool(parallelThreadPool)
