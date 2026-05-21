@@ -1,5 +1,7 @@
 package io.github.kentasun.stepflow.config;
 
+import io.github.kentasun.stepflow.exception.StepFlowException;
+
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +59,7 @@ public class StepFlowConfigProperties {
                     case "DAYS":
                         return TimeUnit.DAYS;
                 }
+                throw new StepFlowException(String.format("TimeUnit[%s] not found", this.unit));
             }
             return null;
         }
@@ -73,6 +76,7 @@ public class StepFlowConfigProperties {
                     case "DiscardOldestPolicy":
                         return new ThreadPoolExecutor.DiscardOldestPolicy();
                 }
+                throw new StepFlowException(String.format("RejectedExecutionHandler[%s] not found", this.rejectedHandler));
             }
             return null;
         }
