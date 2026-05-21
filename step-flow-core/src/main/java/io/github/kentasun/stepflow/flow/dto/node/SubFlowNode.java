@@ -1,13 +1,12 @@
 package io.github.kentasun.stepflow.flow.dto.node;
 
-import io.github.kentasun.stepflow.dto.ExecutorsContext;
-import io.github.kentasun.stepflow.api.dto.StepFlowContext;
-import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import lombok.Getter;
+import io.github.kentasun.stepflow.api.dto.StepFlowContext;
+import io.github.kentasun.stepflow.dto.ExecutorsContext;
+import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
 
 /**
  * 运行另一个 Flow 的 FlowNode
@@ -15,7 +14,6 @@ import lombok.Getter;
 public class SubFlowNode extends FlowNode {
 
     @JsonSetter(nulls = Nulls.FAIL)
-    @Getter
     private final String flowCode;
 
     @JsonCreator
@@ -37,5 +35,9 @@ public class SubFlowNode extends FlowNode {
         if (context.flowCodeNotExist(this.flowCode)) {
             context.saveErrMsg(globalFlowCode, String.format("flowCode[%s] not exist", this.flowCode));
         }
+    }
+
+    public String getFlowCode() {
+        return this.flowCode;
     }
 }

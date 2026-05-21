@@ -1,14 +1,13 @@
 package io.github.kentasun.stepflow.flow.dto.node;
 
-import io.github.kentasun.stepflow.dto.ExecutorsContext;
-import io.github.kentasun.stepflow.api.dto.StepFlowContext;
-import io.github.kentasun.stepflow.exception.StepFlowException;
-import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import lombok.Getter;
+import io.github.kentasun.stepflow.api.dto.StepFlowContext;
+import io.github.kentasun.stepflow.dto.ExecutorsContext;
+import io.github.kentasun.stepflow.exception.StepFlowException;
+import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
 
 /**
  * 条件判断 FlowNode。
@@ -17,15 +16,12 @@ import lombok.Getter;
 public class IfElseFlowNode extends FlowNode {
 
     @JsonSetter(nulls = Nulls.FAIL)
-    @Getter
     private final StepFlowNode condition;
 
     @JsonSetter(nulls = Nulls.FAIL)
-    @Getter
     private final FlowNode trueFlowNode;
 
     @JsonSetter(nulls = Nulls.FAIL)
-    @Getter
     private final FlowNode falseFlowNode;
 
     @JsonCreator
@@ -64,5 +60,17 @@ public class IfElseFlowNode extends FlowNode {
         // 校验2个子节点
         trueFlowNode.validate(context, globalFlowCode);
         falseFlowNode.validate(context, globalFlowCode);
+    }
+
+    public StepFlowNode getCondition() {
+        return this.condition;
+    }
+
+    public FlowNode getTrueFlowNode() {
+        return this.trueFlowNode;
+    }
+
+    public FlowNode getFalseFlowNode() {
+        return this.falseFlowNode;
     }
 }

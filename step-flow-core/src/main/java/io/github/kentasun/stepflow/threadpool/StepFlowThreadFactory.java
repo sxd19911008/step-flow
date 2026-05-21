@@ -1,7 +1,5 @@
 package io.github.kentasun.stepflow.threadpool;
 
-import lombok.Setter;
-
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -12,10 +10,8 @@ public class StepFlowThreadFactory implements ThreadFactory {
     // 线程计数器，永远增加，即使之前创造的线程被销毁
     private final AtomicInteger threadCount = new AtomicInteger();
     // 线程优先级
-    @Setter
     private int threadPriority = Thread.NORM_PRIORITY;
     // 是否是守护线程
-    @Setter
     private boolean daemon = false;
 
     public StepFlowThreadFactory(String threadNamePrefix) {
@@ -36,5 +32,13 @@ public class StepFlowThreadFactory implements ThreadFactory {
 
     private String nextThreadName() {
         return this.threadNamePrefix + this.threadCount.incrementAndGet();
+    }
+
+    public void setThreadPriority(int threadPriority) {
+        this.threadPriority = threadPriority;
+    }
+
+    public void setDaemon(boolean daemon) {
+        this.daemon = daemon;
     }
 }

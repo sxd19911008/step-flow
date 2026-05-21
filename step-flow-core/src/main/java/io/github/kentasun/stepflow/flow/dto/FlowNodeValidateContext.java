@@ -2,10 +2,6 @@ package io.github.kentasun.stepflow.flow.dto;
 
 import io.github.kentasun.stepflow.step.StepExecutor;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +11,6 @@ import java.util.Set;
 /**
  * FlowNode 递归校验上下文
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Getter
 public class FlowNodeValidateContext {
 
     private Map<String, List<String>> illegalMsgMap;
@@ -26,6 +18,15 @@ public class FlowNodeValidateContext {
     private StepExecutor stepExecutor;
 
     private Set<String> flowCodeSet;
+
+    public FlowNodeValidateContext(Map<String, List<String>> illegalMsgMap, StepExecutor stepExecutor, Set<String> flowCodeSet) {
+        this.illegalMsgMap = illegalMsgMap;
+        this.stepExecutor = stepExecutor;
+        this.flowCodeSet = flowCodeSet;
+    }
+
+    public FlowNodeValidateContext() {
+    }
 
     /**
      * flowCode 是否不存在
@@ -51,7 +52,7 @@ public class FlowNodeValidateContext {
      * 保存校验发现的异常信息
      *
      * @param globalFlowCode FlowNode 所在的 Flow 对象的 flowCode
-     * @param errMsg 异常信息
+     * @param errMsg         异常信息
      */
     public void saveErrMsg(String globalFlowCode, String errMsg) {
         List<String> list = illegalMsgMap.computeIfAbsent(globalFlowCode, k -> new ArrayList<>());
@@ -78,6 +79,54 @@ public class FlowNodeValidateContext {
                 }
             }
             return sb.toString();
+        }
+    }
+
+    public Map<String, List<String>> getIllegalMsgMap() {
+        return this.illegalMsgMap;
+    }
+
+    public StepExecutor getStepExecutor() {
+        return this.stepExecutor;
+    }
+
+    public Set<String> getFlowCodeSet() {
+        return this.flowCodeSet;
+    }
+
+    public static FlowNodeValidateContextBuilder builder() {
+        return new FlowNodeValidateContextBuilder();
+    }
+
+    public static class FlowNodeValidateContextBuilder {
+        private Map<String, List<String>> illegalMsgMap;
+        private StepExecutor stepExecutor;
+        private Set<String> flowCodeSet;
+
+        FlowNodeValidateContextBuilder() {
+        }
+
+        public FlowNodeValidateContextBuilder illegalMsgMap(Map<String, List<String>> illegalMsgMap) {
+            this.illegalMsgMap = illegalMsgMap;
+            return this;
+        }
+
+        public FlowNodeValidateContextBuilder stepExecutor(StepExecutor stepExecutor) {
+            this.stepExecutor = stepExecutor;
+            return this;
+        }
+
+        public FlowNodeValidateContextBuilder flowCodeSet(Set<String> flowCodeSet) {
+            this.flowCodeSet = flowCodeSet;
+            return this;
+        }
+
+        public FlowNodeValidateContext build() {
+            return new FlowNodeValidateContext(this.illegalMsgMap, this.stepExecutor, this.flowCodeSet);
+        }
+
+        public String toString() {
+            return "FlowNodeValidateContext.FlowNodeValidateContextBuilder(illegalMsgMap=" + this.illegalMsgMap + ", stepExecutor=" + this.stepExecutor + ", flowCodeSet=" + this.flowCodeSet + ")";
         }
     }
 }

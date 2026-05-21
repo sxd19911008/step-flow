@@ -1,13 +1,12 @@
 package io.github.kentasun.stepflow.flow.dto.node;
 
-import io.github.kentasun.stepflow.dto.ExecutorsContext;
-import io.github.kentasun.stepflow.api.dto.StepFlowContext;
-import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import lombok.Getter;
+import io.github.kentasun.stepflow.api.dto.StepFlowContext;
+import io.github.kentasun.stepflow.dto.ExecutorsContext;
+import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +18,6 @@ import java.util.concurrent.ExecutorService;
 public class ParallelFlowNode extends FlowNode {
 
     @JsonSetter(nulls = Nulls.FAIL)
-    @Getter
     private final List<FlowNode> flowNodeList;
 
     @JsonCreator
@@ -51,5 +49,9 @@ public class ParallelFlowNode extends FlowNode {
         for (FlowNode flowNode : flowNodeList) {
             flowNode.validate(context, globalFlowCode);
         }
+    }
+
+    public List<FlowNode> getFlowNodeList() {
+        return this.flowNodeList;
     }
 }

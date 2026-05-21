@@ -1,17 +1,17 @@
 package io.github.kentasun.stepflow.flow;
 
-import io.github.kentasun.stepflow.dto.ExecutorsContext;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.kentasun.stepflow.api.dto.StepFlowContext;
+import io.github.kentasun.stepflow.api.flow.FlowProvider;
+import io.github.kentasun.stepflow.api.flow.dto.InputFlow;
+import io.github.kentasun.stepflow.dto.ExecutorsContext;
 import io.github.kentasun.stepflow.exception.StepFlowException;
 import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
-import io.github.kentasun.stepflow.api.flow.dto.InputFlow;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
-import io.github.kentasun.stepflow.api.flow.FlowProvider;
 import io.github.kentasun.stepflow.step.StepExecutor;
 import io.github.kentasun.stepflow.utils.StepFlowJsonUtils;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
-import com.fasterxml.jackson.core.type.TypeReference;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,8 +20,9 @@ import java.util.stream.Collectors;
 /**
  * flow 功能总入口
  */
-@Slf4j
 public class FlowExecutor {
+
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(FlowExecutor.class);
 
     private final Map<String, Flow> flowMap;
 
@@ -54,7 +55,8 @@ public class FlowExecutor {
                 // 校验流程信息是否合法
                 FlowNode flowNode = null;
                 try {
-                    flowNode = StepFlowJsonUtils.readValue(inputFlow.getContent(), new TypeReference<FlowNode>() {});
+                    flowNode = StepFlowJsonUtils.readValue(inputFlow.getContent(), new TypeReference<FlowNode>() {
+                    });
                     // 校验 flowNode
                     flowNode.validate(validateContext, inputFlow.getFlowCode());
                 } catch (Throwable e) {
@@ -89,8 +91,8 @@ public class FlowExecutor {
     /**
      * 执行流程
      *
-     * @param flowCode 流程代码
-     * @param stepFlowContext 上下文对象
+     * @param flowCode         流程代码
+     * @param stepFlowContext  上下文对象
      * @param executorsContext 用于随着上下文一起传递的各种执行器
      * @return 流程执行结果
      */

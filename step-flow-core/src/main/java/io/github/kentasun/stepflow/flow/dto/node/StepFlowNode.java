@@ -1,17 +1,16 @@
 package io.github.kentasun.stepflow.flow.dto.node;
 
 
-import io.github.kentasun.stepflow.dto.ExecutorsContext;
-import io.github.kentasun.stepflow.api.dto.OneOffParams;
-import io.github.kentasun.stepflow.api.dto.StepFlowContext;
-import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
-import io.github.kentasun.stepflow.step.dto.Step;
-import io.github.kentasun.stepflow.utils.StepFlowUtils;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import lombok.Getter;
+import io.github.kentasun.stepflow.api.dto.OneOffParams;
+import io.github.kentasun.stepflow.api.dto.StepFlowContext;
+import io.github.kentasun.stepflow.dto.ExecutorsContext;
+import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
+import io.github.kentasun.stepflow.step.dto.Step;
+import io.github.kentasun.stepflow.utils.StepFlowUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,6 @@ import java.util.Map;
 public class StepFlowNode extends FlowNode {
 
     @JsonSetter(nulls = Nulls.FAIL)
-    @Getter
     private final String stepCode;
     // 调用该步骤需要映射的参数，解决当前 contextMap 中的参数名与步骤需要的参数名对不上的问题。
     private final Map<String, String> paramNameMap;
@@ -117,5 +115,9 @@ public class StepFlowNode extends FlowNode {
     private String getStepName(ExecutorsContext executorsContext) {
         Step step = executorsContext.getStep(this.stepCode);
         return step.getStepData().getStepName();
+    }
+
+    public String getStepCode() {
+        return this.stepCode;
     }
 }
