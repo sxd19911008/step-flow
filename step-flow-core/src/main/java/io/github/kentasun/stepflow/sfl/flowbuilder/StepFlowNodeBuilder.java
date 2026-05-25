@@ -1,4 +1,4 @@
-package io.github.kentasun.stepflow.sfl.resolver;
+package io.github.kentasun.stepflow.sfl.flowbuilder;
 
 import io.github.kentasun.stepflow.flow.constants.FlowContentType;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
@@ -21,7 +21,7 @@ import java.util.Map;
  * 重复声明（如两次 .param）在解析期即失败。
  * </p>
  */
-public class StepKeywordResolver implements KeywordResolver {
+public class StepFlowNodeBuilder implements FlowNodeBuilder {
 
     @Override
     public FlowNode parse(SflParser parser, int keywordPos) {

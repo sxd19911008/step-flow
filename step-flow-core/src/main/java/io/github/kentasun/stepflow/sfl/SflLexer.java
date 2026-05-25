@@ -17,10 +17,10 @@ public class SflLexer {
     /**
      * 绑定完整 SFL 源文本并预读第一个记号。
      *
-     * @param text 流程字符串
+     * @param sflText slf字符串
      */
-    SflLexer(String text) {
-        this.text = text;
+    SflLexer(String sflText) {
+        this.text = sflText;
         this.pos = 0;
         this.lookahead = nextToken();
     }

@@ -1,4 +1,4 @@
-package io.github.kentasun.stepflow.sfl.resolver;
+package io.github.kentasun.stepflow.sfl.flowbuilder;
 
 import io.github.kentasun.stepflow.flow.constants.FlowContentType;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
@@ -13,7 +13,7 @@ import io.github.kentasun.stepflow.sfl.SflTokenType;
  * 括号内只允许出现单一标识符作为子流程编码，不支持嵌套 flow 语法。
  * </p>
  */
-public class SubFlowKeywordResolver implements KeywordResolver {
+public class SubFlowFlowNodeBuilder implements FlowNodeBuilder {
 
     @Override
     public FlowNode parse(SflParser parser, int keywordPos) {

@@ -1,4 +1,4 @@
-package io.github.kentasun.stepflow.sfl.resolver;
+package io.github.kentasun.stepflow.sfl.flowbuilder;
 
 import io.github.kentasun.stepflow.flow.constants.FlowContentType;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
@@ -15,7 +15,7 @@ import java.util.List;
  * 直接 new 对象，不依赖反射。
  * </p>
  */
-public class SeqKeywordResolver implements KeywordResolver {
+public class SeqFlowNodeBuilder implements FlowNodeBuilder {
 
     @Override
     public FlowNode parse(SflParser parser, int keywordPos) {

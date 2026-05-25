@@ -2,7 +2,7 @@ package io.github.kentasun.stepflow.sfl;
 
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
 import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
-import io.github.kentasun.stepflow.sfl.resolver.*;
+import io.github.kentasun.stepflow.sfl.flowbuilder.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,11 +13,11 @@ import java.util.Map;
 /**
  * SFL 语法分析器：基于 {@link SflLexer} 的记号流，用递归下降将编排文本构造成 {@link FlowNode} 树。
  * <p>
- * 每个顶层关键字通过 {@link #KEYWORD_PARSERS} 策略注册表分发给对应的 {@link KeywordResolver} 实现，
- * 避免 switch-case 扩张并完全消除反射。新增关键字只需实现 {@link KeywordResolver} 并在注册表中添加一行。
+ * 每个顶层关键字通过 {@link #KEYWORD_PARSERS} 策略注册表分发给对应的 {@link FlowNodeBuilder} 实现，
+ * 避免 switch-case 扩张并完全消除反射。新增关键字只需实现 {@link FlowNodeBuilder} 并在注册表中添加一行。
  * </p>
  * <p>
- * 容器节点（SEQ、PARALLEL）分别由 {@link SeqKeywordResolver} / {@link ParallelKeywordResolver} 构建，
+ * 容器节点（SEQ、PARALLEL）分别由 {@link SeqFlowNodeBuilder} / {@link ParallelFlowNodeBuilder} 构建，
  * 直接 new 对象，不再通过反射调用 protected 构造器。
  * </p>
  * <p>
@@ -31,61 +31,52 @@ public class SflParser {
      * 关键字 → 解析策略的不可变注册表。
      * <p>
      * 在类加载时一次性初始化，后续只读，天然线程安全。
-     * 扩展时在此添加新条目，无需修改 {@link #parseFlow()} 主逻辑。
+     * 扩展时在此添加新条目，无需修改 {@link #keywordToFlow()} 主逻辑。
      * </p>
      */
-    private static final Map<String, KeywordResolver> KEYWORD_PARSERS;
+    private static final Map<String, FlowNodeBuilder> KEYWORD_PARSERS;
 
     static {
-        Map<String, KeywordResolver> map = new HashMap<>();
-        map.put(SlfKeyWords.SEQ, new SeqKeywordResolver());
-        map.put(SlfKeyWords.PARALLEL, new ParallelKeywordResolver());
-        map.put(SlfKeyWords.STEP, new StepKeywordResolver());
-        map.put(SlfKeyWords.SUB_FLOW, new SubFlowKeywordResolver());
-        map.put(SlfKeyWords.IF, new IfKeywordResolver());
+        Map<String, FlowNodeBuilder> map = new HashMap<>();
+        map.put(SlfKeyWords.SEQ, new SeqFlowNodeBuilder());
+        map.put(SlfKeyWords.PARALLEL, new ParallelFlowNodeBuilder());
+        map.put(SlfKeyWords.STEP, new StepFlowNodeBuilder());
+        map.put(SlfKeyWords.SUB_FLOW, new SubFlowFlowNodeBuilder());
+        map.put(SlfKeyWords.IF, new IfFlowNodeBuilder());
         KEYWORD_PARSERS = Collections.unmodifiableMap(map);
     }
 
+    /** 词法解析器 */
     private final SflLexer lexer;
 
     /**
-     * @param lexer 已初始化且至少含一个前瞻记号的词法器
+     * @param sflText slf字符串
      */
-    public SflParser(SflLexer lexer) {
-        this.lexer = lexer;
+    public SflParser(String sflText) {
+        this.lexer = new SflLexer(sflText);
     }
 
     /**
-     * 解析一条 flow 产生式，入口为标识符关键字。
-     * <pre>
-     * flow ::= SEQ '(' argList ')'
-     *        | PARALLEL '(' argList ')'
-     *        | STEP '(' stepCode ')' stepSuffix
-     *        | SUB_FLOW '(' flowCode ')'
-     *        | IF '(' flow ')' ifSuffix
-     * </pre>
-     * <p>
-     * 通过 {@link #KEYWORD_PARSERS} 查找对应策略并委托，未知关键字立即报错。
-     * </p>
+     * 将一个关键字解析成对应的 {@link FlowNode}
      *
-     * @return 与关键字对应的流程节点
+     * @return 与关键字对应的 {@link FlowNode}
      * @throws SflException 未知关键字或子规则违反约束时
      */
-    public FlowNode parseFlow() {
+    public FlowNode keywordToFlow() {
         SflToken ident = expect(SflTokenType.IDENT);
         String keyword = ident.getText();
 
-        KeywordResolver keywordResolver = KEYWORD_PARSERS.get(keyword);
-        if (keywordResolver == null) {
+        FlowNodeBuilder flowNodeBuilder = KEYWORD_PARSERS.get(keyword);
+        if (flowNodeBuilder == null) {
             throw new SflException("未知的关键字 [" + keyword + "]，位置: " + ident.getPosition());
         }
-        return keywordResolver.parse(this, ident.getPosition());
+        return flowNodeBuilder.parse(this, ident.getPosition());
     }
 
     /**
      * 消费并校验下一个 token 的类型。
      * <p>
-     * 同时供各 {@link KeywordResolver} 实现调用；包内可见（package-private）。
+     * 同时供各 {@link FlowNodeBuilder} 实现调用；包内可见（package-private）。
      * </p>
      *
      * @param type 期望的记号类型，通常为 {@link SflTokenType#EOF}
@@ -103,7 +94,7 @@ public class SflParser {
     }
 
     /**
-     * 返回当前前瞻 token，不消费。供各 {@link KeywordResolver} 实现判断后续记号类型。
+     * 返回当前前瞻 token，不消费。供各 {@link FlowNodeBuilder} 实现判断后续记号类型。
      *
      * @return 当前前瞻记号
      */
@@ -113,7 +104,7 @@ public class SflParser {
 
     /**
      * 消费并返回当前 token，不做类型校验。
-     * 用于 {@link KeywordResolver} 实现在已知下一个 token 类型时直接跳过（如 '.' 分隔符）。
+     * 用于 {@link FlowNodeBuilder} 实现在已知下一个 token 类型时直接跳过（如 '.' 分隔符）。
      *
      * @return 被消费的记号
      */
@@ -124,7 +115,7 @@ public class SflParser {
     /**
      * 解析逗号分隔的子 flow 列表，至少包含一项；拒绝空列表与尾随逗号。
      * <p>
-     * 供 {@link SeqKeywordResolver}、{@link ParallelKeywordResolver} 及 IF 分支解析共享。
+     * 供 {@link SeqFlowNodeBuilder}、{@link ParallelFlowNodeBuilder} 及 IF 分支解析共享。
      * </p>
      *
      * @return 子节点列表，顺序与源文本一致，至少含一项
@@ -134,13 +125,13 @@ public class SflParser {
         if (lexer.peek().getType() == SflTokenType.RPAREN) {
             throw new SflException("参数列表不能为空，位置: " + lexer.peek().getPosition());
         }
-        list.add(parseFlow());
+        list.add(keywordToFlow());
         while (lexer.peek().getType() == SflTokenType.COMMA) {
             lexer.consume(); // 消费 ','
             if (lexer.peek().getType() == SflTokenType.RPAREN) {
                 throw new SflException("参数列表末尾不允许有多余逗号，位置: " + lexer.peek().getPosition());
             }
-            list.add(parseFlow());
+            list.add(keywordToFlow());
         }
         return list;
     }
@@ -152,17 +143,16 @@ public class SflParser {
      * 避免「只解析了前缀、后半段被静默忽略」类隐患。
      * </p>
      *
-     * @param sfl 存于 {@code InputFlow.content} 的 SFL 文本，不可为 null 或空白
+     * @param sflText 存于 {@code InputFlow.content} 的 SFL 文本，不可为 null 或空白
      * @return 流程节点树，类型为具体 {@link FlowNode} 子类
      * @throws SflException 文本为空、词法非法、语法不符合产生式或语义约束（如 IF 条件非 STEP）时
      */
-    public static FlowNode parse(String sfl) {
-        if (sfl == null || sfl.trim().isEmpty()) {
+    public static FlowNode parse(String sflText) {
+        if (sflText == null || sflText.trim().isEmpty()) {
             throw new SflException("SFL 不能为空");
         }
-        SflLexer sflLexer = new SflLexer(sfl);
-        SflParser parser = new SflParser(sflLexer);
-        FlowNode root = parser.parseFlow();
+        SflParser parser = new SflParser(sflText);
+        FlowNode root = parser.keywordToFlow();
         parser.expect(SflTokenType.EOF);
         return root;
     }

@@ -1,4 +1,4 @@
-package io.github.kentasun.stepflow.sfl.resolver;
+package io.github.kentasun.stepflow.sfl.flowbuilder;
 
 import io.github.kentasun.stepflow.flow.constants.FlowContentType;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
@@ -22,13 +22,13 @@ import io.github.kentasun.stepflow.sfl.SflTokenType;
  * </ul>
  * </p>
  */
-public class IfKeywordResolver implements KeywordResolver {
+public class IfFlowNodeBuilder implements FlowNodeBuilder {
 
     @Override
     public FlowNode parse(SflParser parser, int keywordPos) {
         // 解析条件节点：IF(条件)
         parser.expect(SflTokenType.LPAREN);
-        FlowNode conditionNode = parser.parseFlow();
+        FlowNode conditionNode = parser.keywordToFlow();
         parser.expect(SflTokenType.RPAREN);
 
         // 条件必须是 STEP 节点
@@ -54,7 +54,7 @@ public class IfKeywordResolver implements KeywordResolver {
                                 + "]，位置: " + falseToken.getPosition());
             }
             parser.expect(SflTokenType.LPAREN);
-            falseFlowNode = parser.parseFlow();
+            falseFlowNode = parser.keywordToFlow();
             parser.expect(SflTokenType.RPAREN);
         }
 
@@ -90,7 +90,7 @@ public class IfKeywordResolver implements KeywordResolver {
                             + branchToken.getPosition());
         }
         parser.expect(SflTokenType.LPAREN);
-        FlowNode branch = parser.parseFlow();
+        FlowNode branch = parser.keywordToFlow();
         parser.expect(SflTokenType.RPAREN);
         return branch;
     }
