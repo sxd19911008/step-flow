@@ -1,11 +1,11 @@
-package io.github.kentasun.stepflow.sfl.parser;
+package io.github.kentasun.stepflow.sfl.resolver;
 
 import io.github.kentasun.stepflow.flow.constants.FlowContentType;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
 import io.github.kentasun.stepflow.flow.dto.node.IfElseFlowNode;
 import io.github.kentasun.stepflow.flow.dto.node.StepFlowNode;
 import io.github.kentasun.stepflow.sfl.SflException;
-import io.github.kentasun.stepflow.sfl.SflSyntaxParser;
+import io.github.kentasun.stepflow.sfl.SflParser;
 import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
 import io.github.kentasun.stepflow.sfl.SflToken;
 import io.github.kentasun.stepflow.sfl.SflTokenType;
@@ -25,7 +25,7 @@ import io.github.kentasun.stepflow.sfl.SflTokenType;
 public class IfKeywordResolver implements KeywordResolver {
 
     @Override
-    public FlowNode parse(SflSyntaxParser parser, int keywordPos) {
+    public FlowNode parse(SflParser parser, int keywordPos) {
         // 解析条件节点：IF(条件)
         parser.expect(SflTokenType.LPAREN);
         FlowNode conditionNode = parser.parseFlow();
@@ -71,7 +71,7 @@ public class IfKeywordResolver implements KeywordResolver {
      * @param branchName 期望的后缀标识符字面量：{@code TRUE} 或 {@code FALSE}
      * @return 分支内的 flow 子树
      */
-    private FlowNode parseIfBranch(SflSyntaxParser parser, String branchName) {
+    private FlowNode parseIfBranch(SflParser parser, String branchName) {
         if (parser.peek().getType() != SflTokenType.DOT) {
             throw new SflException(
                     "IF 缺少 ." + branchName + "(...) 分支，位置: " + parser.peek().getPosition());

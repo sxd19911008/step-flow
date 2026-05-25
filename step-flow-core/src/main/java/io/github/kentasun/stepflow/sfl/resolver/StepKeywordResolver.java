@@ -1,10 +1,10 @@
-package io.github.kentasun.stepflow.sfl.parser;
+package io.github.kentasun.stepflow.sfl.resolver;
 
 import io.github.kentasun.stepflow.flow.constants.FlowContentType;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
 import io.github.kentasun.stepflow.flow.dto.node.StepFlowNode;
 import io.github.kentasun.stepflow.sfl.SflException;
-import io.github.kentasun.stepflow.sfl.SflSyntaxParser;
+import io.github.kentasun.stepflow.sfl.SflParser;
 import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
 import io.github.kentasun.stepflow.sfl.SflToken;
 import io.github.kentasun.stepflow.sfl.SflTokenType;
@@ -24,7 +24,7 @@ import java.util.Map;
 public class StepKeywordResolver implements KeywordResolver {
 
     @Override
-    public FlowNode parse(SflSyntaxParser parser, int keywordPos) {
+    public FlowNode parse(SflParser parser, int keywordPos) {
         parser.expect(SflTokenType.LPAREN);
         SflToken stepCodeToken = parser.expect(SflTokenType.IDENT);
         parser.expect(SflTokenType.RPAREN);
@@ -74,7 +74,7 @@ public class StepKeywordResolver implements KeywordResolver {
      * @param suffixName 后缀名，仅用于错误消息（param / result）
      * @return 非空映射，或括号内无任何条目时返回 {@code null}
      */
-    private Map<String, String> parseMappingList(SflSyntaxParser parser, String suffixName) {
+    private Map<String, String> parseMappingList(SflParser parser, String suffixName) {
         parser.expect(SflTokenType.LPAREN);
         Map<String, String> map = new LinkedHashMap<>();
 
@@ -105,7 +105,7 @@ public class StepKeywordResolver implements KeywordResolver {
      * @param map        目标映射
      * @param suffixName 后缀名，用于重复键错误消息
      */
-    private void parseMappingEntry(SflSyntaxParser parser, Map<String, String> map, String suffixName) {
+    private void parseMappingEntry(SflParser parser, Map<String, String> map, String suffixName) {
         SflToken key = parser.expect(SflTokenType.IDENT);
         parser.expect(SflTokenType.EQ);
         SflToken value = parser.expect(SflTokenType.IDENT);

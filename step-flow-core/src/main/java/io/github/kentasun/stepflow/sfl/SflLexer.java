@@ -17,7 +17,7 @@ public class SflLexer {
     /**
      * 绑定完整 SFL 源文本并预读第一个记号。
      *
-     * @param text 非 null 的编排字符串（空串由 {@link SflParser} 在入口拦截）
+     * @param text 流程字符串
      */
     SflLexer(String text) {
         this.text = text;

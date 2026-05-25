@@ -1,14 +1,14 @@
-package io.github.kentasun.stepflow.sfl.parser;
+package io.github.kentasun.stepflow.sfl.resolver;
 
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
 import io.github.kentasun.stepflow.sfl.SflException;
-import io.github.kentasun.stepflow.sfl.SflSyntaxParser;
+import io.github.kentasun.stepflow.sfl.SflParser;
 
 /**
  * SFL 关键字解析策略接口。
  * <p>
  * 每个实现对应一个顶层 SFL 关键字（SEQ、PARALLEL、STEP、SUB_FLOW、IF），
- * 在 {@link SflSyntaxParser#parseFlow()} 识别到关键字文本后，
+ * 在 {@link SflParser#parseFlow()} 识别到关键字文本后，
  * 从策略注册表中查找对应实现并委托执行具体的语法解析与节点构建。
  * </p>
  * <p>
@@ -26,5 +26,5 @@ public interface KeywordResolver {
      * @return 解析结果节点，不为 null
      * @throws SflException 语法或语义规则违反时
      */
-    FlowNode parse(SflSyntaxParser parser, int keywordPos);
+    FlowNode parse(SflParser parser, int keywordPos);
 }

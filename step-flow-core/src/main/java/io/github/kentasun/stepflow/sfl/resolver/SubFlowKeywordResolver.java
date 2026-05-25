@@ -1,9 +1,9 @@
-package io.github.kentasun.stepflow.sfl.parser;
+package io.github.kentasun.stepflow.sfl.resolver;
 
 import io.github.kentasun.stepflow.flow.constants.FlowContentType;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
 import io.github.kentasun.stepflow.flow.dto.node.SubFlowNode;
-import io.github.kentasun.stepflow.sfl.SflSyntaxParser;
+import io.github.kentasun.stepflow.sfl.SflParser;
 import io.github.kentasun.stepflow.sfl.SflToken;
 import io.github.kentasun.stepflow.sfl.SflTokenType;
 
@@ -16,7 +16,7 @@ import io.github.kentasun.stepflow.sfl.SflTokenType;
 public class SubFlowKeywordResolver implements KeywordResolver {
 
     @Override
-    public FlowNode parse(SflSyntaxParser parser, int keywordPos) {
+    public FlowNode parse(SflParser parser, int keywordPos) {
         // 消费左括号
         parser.expect(SflTokenType.LPAREN);
         // 解析子流程编码（单一标识符）

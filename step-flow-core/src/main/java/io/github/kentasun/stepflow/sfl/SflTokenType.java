@@ -4,7 +4,7 @@ package io.github.kentasun.stepflow.sfl;
  * SFL 词法单元类型枚举。
  * <p>
  * 将源文本中的符号与标识符分为有限集合，供 {@link SflLexer} 产出 {@link SflToken}、
- * 供 {@link SflSyntaxParser} 在递归下降中做期望匹配。{@link #IDENT} 的 {@link #getLiteral()}
+ * 供 {@link SflParser} 在递归下降中做期望匹配。{@link #IDENT} 的 {@link #getLiteral()}
  * 为 {@code null}，因其文本来自源文件而非固定字面量。
  * </p>
  */
