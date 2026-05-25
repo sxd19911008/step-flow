@@ -8,7 +8,7 @@ package io.github.kentasun.stepflow.sfl;
  * 从而允许在关键字与括号间自由换行，降低存储时的格式化约束。
  * </p>
  */
-final class SflLexer {
+public class SflLexer {
 
     private final String text;
     private int pos;

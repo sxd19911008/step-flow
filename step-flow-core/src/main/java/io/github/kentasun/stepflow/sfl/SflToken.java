@@ -7,7 +7,7 @@ package io.github.kentasun.stepflow.sfl;
  * 起始下标，用于构造带偏移的 {@link SflException}，避免仅报「语法错误」却无法对照库表字段。
  * </p>
  */
-final class SflToken {
+public class SflToken {
 
     private final SflTokenType type;
     private final String text;
@@ -36,21 +36,21 @@ final class SflToken {
      * @param text     标识符或路径片段，非 null
      * @param position 源文本起始偏移
      */
-    SflToken(SflTokenType type, String text, int position) {
+    public SflToken(SflTokenType type, String text, int position) {
         this.type = type;
         this.text = text;
         this.position = position;
     }
 
-    SflTokenType getType() {
+    public SflTokenType getType() {
         return type;
     }
 
-    String getText() {
+    public String getText() {
         return text;
     }
 
-    int getPosition() {
+    public int getPosition() {
         return position;
     }
 }

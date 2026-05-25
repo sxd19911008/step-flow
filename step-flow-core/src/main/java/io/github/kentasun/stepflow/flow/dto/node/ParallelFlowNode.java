@@ -21,8 +21,8 @@ public class ParallelFlowNode extends FlowNode {
     private final List<FlowNode> flowNodeList;
 
     @JsonCreator
-    protected ParallelFlowNode(@JsonProperty("type") String type,
-                               @JsonProperty("flowNodeList") List<FlowNode> flowNodeList) {
+    public ParallelFlowNode(@JsonProperty("type") String type,
+                            @JsonProperty("flowNodeList") List<FlowNode> flowNodeList) {
         super(type);
         this.flowNodeList = flowNodeList;
     }

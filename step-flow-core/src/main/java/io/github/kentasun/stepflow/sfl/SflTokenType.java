@@ -8,7 +8,7 @@ package io.github.kentasun.stepflow.sfl;
  * 为 {@code null}，因其文本来自源文件而非固定字面量。
  * </p>
  */
-enum SflTokenType {
+public enum SflTokenType {
 
     /** 标识符或关键字（SEQ、STEP、dto.num1 等），文本由词法器读取 */
     IDENT(null),

@@ -19,8 +19,8 @@ public class SequenceFlowNode extends FlowNode {
     private final List<FlowNode> flowNodeList;
 
     @JsonCreator
-    protected SequenceFlowNode(@JsonProperty("type") String type,
-                               @JsonProperty("flowNodeList") List<FlowNode> flowNodeList) {
+    public SequenceFlowNode(@JsonProperty("type") String type,
+                            @JsonProperty("flowNodeList") List<FlowNode> flowNodeList) {
         super(type);
         this.flowNodeList = flowNodeList;
     }
