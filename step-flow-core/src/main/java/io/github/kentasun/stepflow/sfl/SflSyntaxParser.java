@@ -38,11 +38,11 @@ public class SflSyntaxParser {
 
     static {
         Map<String, KeywordResolver> map = new HashMap<>();
-        map.put(SlfKeyWords.SEQ,        new SeqKeywordResolver());
-        map.put(SlfKeyWords.PARALLEL,   new ParallelKeywordResolver());
-        map.put(SlfKeyWords.STEP,       new StepKeywordResolver());
-        map.put(SlfKeyWords.SUB_FLOW,   new SubFlowKeywordResolver());
-        map.put(SlfKeyWords.IF,         new IfKeywordResolver());
+        map.put(SlfKeyWords.SEQ, new SeqKeywordResolver());
+        map.put(SlfKeyWords.PARALLEL, new ParallelKeywordResolver());
+        map.put(SlfKeyWords.STEP, new StepKeywordResolver());
+        map.put(SlfKeyWords.SUB_FLOW, new SubFlowKeywordResolver());
+        map.put(SlfKeyWords.IF, new IfKeywordResolver());
         KEYWORD_PARSERS = Collections.unmodifiableMap(map);
     }
 
