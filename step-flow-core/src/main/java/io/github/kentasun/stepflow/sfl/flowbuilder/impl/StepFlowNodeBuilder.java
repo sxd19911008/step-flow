@@ -33,8 +33,7 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
         Map<String, String> resultNameMap = null;
 
         // 循环消费可选的 .PARAM(...) / .result(...) 后缀
-        while (parser.nextTokenIsSymbol(SlfKeyWords.DOT_TEXT)) {
-            parser.consumeSymbol(SlfKeyWords.DOT_TEXT);
+        while (parser.tryConsumeSymbol(SlfKeyWords.DOT_TEXT)) {
             SflToken suffix = parser.consumeKeyword();
             if (suffix.isKeyword(SlfKeyWords.PARAM)) {
                 if (paramNameMap != null) {
@@ -76,14 +75,12 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
         Map<String, String> map = new LinkedHashMap<>();
 
         // 空括号 → 直接返回 null
-        if (parser.nextTokenIsSymbol(SlfKeyWords.RPAREN_TEXT)) {
-            parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
+        if (parser.tryConsumeSymbol(SlfKeyWords.RPAREN_TEXT)) {
             return null;
         }
 
         parseMappingEntry(parser, map, suffixName);
-        while (parser.nextTokenIsSymbol(SlfKeyWords.COMMA_TEXT)) {
-            parser.consumeSymbol(SlfKeyWords.COMMA_TEXT);
+        while (parser.tryConsumeSymbol(SlfKeyWords.COMMA_TEXT)) {
             if (parser.nextTokenIsSymbol(SlfKeyWords.RPAREN_TEXT)) {
                 throw new SflException(
                         suffixName + " 映射列表末尾不允许有多余逗号，位置: " + parser.peek().getPosition());

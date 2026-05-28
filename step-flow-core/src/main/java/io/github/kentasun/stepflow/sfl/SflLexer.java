@@ -102,6 +102,45 @@ public class SflLexer {
     }
 
     /**
+     * 若前瞻记号同时匹配 type 与 text 则消费并返回 {@code true}，否则不前进游标返回 {@code false}。
+     * <p>
+     * 供语法层实现 {@code while (tryConsume...)} 或 {@code if (tryConsume...)} 等可选/重复片段，
+     * 避免手写「先 {@link #nextTokenMatches} 再 {@link #consume()}」的两步调用。
+     * </p>
+     *
+     * @param type 期望的语法角色
+     * @param text 期望的文本字面量
+     * @return {@code true} 表示已消费匹配的记号；{@code false} 表示前瞻不匹配且游标未动
+     */
+    public boolean tryConsumeMatched(SflTokenType type, String text) {
+        if (!nextTokenMatches(type, text)) {
+            return false;
+        }
+        this.consume();
+        return true;
+    }
+
+    /**
+     * 若前瞻记号为指定符号则消费并返回 {@code true}，否则不前进游标返回 {@code false}。
+     *
+     * @param symbolText 符号字面量
+     * @return 是否已成功消费该符号
+     */
+    public boolean tryConsumeSymbol(String symbolText) {
+        return tryConsumeMatched(SflTokenType.SYMBOL, symbolText);
+    }
+
+    /**
+     * 若前瞻记号为指定关键字则消费并返回 {@code true}，否则不前进游标返回 {@code false}。
+     *
+     * @param keywordText 关键字字面量
+     * @return 是否已成功消费该关键字
+     */
+    public boolean tryConsumeKeyword(String keywordText) {
+        return tryConsumeMatched(SflTokenType.KEYWORD, keywordText);
+    }
+
+    /**
      * 消费当前记号，且必须同时匹配 type 与 text，否则抛出 {@link SflException}。
      *
      * @param type 期望的语法角色
@@ -111,6 +150,25 @@ public class SflLexer {
     public SflToken consumeMatched(SflTokenType type, String text) {
         if (!nextTokenMatches(type, text)) {
             throw unexpectedToken(type, text);
+        }
+        return consume();
+    }
+
+    /**
+     * 消费当前记号，且必须同时匹配 type 与 text；不匹配时使用调用方提供的语义化错误消息。
+     * <p>
+     * 用于 IF 条件、映射列表等场景：通用「期望 X 实际为 Y」不足以表达业务约束时，
+     * 由 {@link io.github.kentasun.stepflow.sfl.flowbuilder.FlowNodeBuilder} 传入上下文相关文案。
+     * </p>
+     *
+     * @param type         期望的语法角色
+     * @param text         期望的文本字面量；仅 type 约束时可传 {@code null}
+     * @param errorMessage 不匹配时抛出的 {@link SflException} 消息
+     * @return 已消费且校验通过的记号
+     */
+    public SflToken consumeMatched(SflTokenType type, String text, String errorMessage) {
+        if (!nextTokenMatches(type, text)) {
+            throw new SflException(errorMessage);
         }
         return consume();
     }
@@ -126,6 +184,17 @@ public class SflLexer {
     }
 
     /**
+     * 消费指定符号记号；不匹配时使用调用方提供的语义化错误消息。
+     *
+     * @param symbolText   符号字面量
+     * @param errorMessage 不匹配时抛出的 {@link SflException} 消息
+     * @return 已消费的符号记号
+     */
+    public SflToken consumeSymbol(String symbolText, String errorMessage) {
+        return consumeMatched(SflTokenType.SYMBOL, symbolText, errorMessage);
+    }
+
+    /**
      * 消费指定关键字记号。
      *
      * @param keywordText 关键字字面量
@@ -133,6 +202,17 @@ public class SflLexer {
      */
     public SflToken consumeKeyword(String keywordText) {
         return consumeMatched(SflTokenType.KEYWORD, keywordText);
+    }
+
+    /**
+     * 消费指定关键字记号；不匹配时使用调用方提供的语义化错误消息。
+     *
+     * @param keywordText  关键字字面量
+     * @param errorMessage 不匹配时抛出的 {@link SflException} 消息
+     * @return 已消费的关键字记号
+     */
+    public SflToken consumeKeyword(String keywordText, String errorMessage) {
+        return consumeMatched(SflTokenType.KEYWORD, keywordText, errorMessage);
     }
 
     /**
@@ -155,6 +235,19 @@ public class SflLexer {
     public SflToken consumeQuotedString() {
         if (!nextTokenIsQuotedString()) {
             throw unexpectedToken(SflTokenType.QUOTED_STRING, null);
+        }
+        return consume();
+    }
+
+    /**
+     * 消费双引号字符串记号；不匹配时使用调用方提供的语义化错误消息。
+     *
+     * @param errorMessage 不匹配时抛出的 {@link SflException} 消息
+     * @return 已消费的字符串记号
+     */
+    public SflToken consumeQuotedString(String errorMessage) {
+        if (!nextTokenIsQuotedString()) {
+            throw new SflException(errorMessage);
         }
         return consume();
     }

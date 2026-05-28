@@ -40,15 +40,13 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
         branches.add(this.parseIfConditionThenPair(parser, keywordPos));
 
         // 零个或多个 ELSIF(条件) THEN(体)
-        while (parser.nextTokenIsKeyword(SlfKeyWords.ELSIF)) {
-            parser.consumeKeyword(SlfKeyWords.ELSIF);
+        while (parser.tryConsumeKeyword(SlfKeyWords.ELSIF)) {
             branches.add(this.parseElsifConditionThen(parser));
         }
 
         // 可选 ELSE(体)
         FlowNode elseFlowNode = null;
-        if (parser.nextTokenIsKeyword(SlfKeyWords.ELSE)) {
-            parser.consumeKeyword(SlfKeyWords.ELSE);
+        if (parser.tryConsumeKeyword(SlfKeyWords.ELSE)) {
             elseFlowNode = this.parseParenWrappedFlow(parser);
         }
 
@@ -84,12 +82,12 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
      * 解析 {@code THEN(...)}：消费 THEN 关键字与括号内子 flow。
      */
     private FlowNode parseThenBlock(SflParser parser) {
-        if (!parser.nextTokenIsKeyword(SlfKeyWords.THEN)) {
-            throw new SflException(
-                    "IF 块在条件之后缺少 " + SlfKeyWords.THEN + "(...)，位置: "
-                            + parser.peek().getPosition());
-        }
-        parser.consumeKeyword(SlfKeyWords.THEN);
+        parser.consumeKeyword(
+                SlfKeyWords.THEN,
+                String.format("IF 块在条件之后缺少 %s(...)，位置: %s",
+                        SlfKeyWords.THEN,
+                        parser.peek().getPosition())
+        );
         return this.parseParenWrappedFlow(parser);
     }
 
@@ -125,28 +123,34 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
 
     /**
      * 解析 {@code TYPE("expression")} 形式的内联表达式条件。
-     * TODO 将判断与消费一起封装到 parser-SflLexer 中
      */
     private ConditionParts parseInlineExpressionCondition(SflParser parser, String blockKeyword, int position) {
         String expressionType = parser.consumeLiteral().getText();
-        if (!parser.nextTokenIsSymbol(SlfKeyWords.LPAREN_TEXT)) {
-            throw new SflException(
-                    blockKeyword + " 的内联表达式 " + expressionType
-                            + " 后缺少 '('，位置: " + position);
-        }
-        parser.consumeSymbol(SlfKeyWords.LPAREN_TEXT);
-        if (!parser.nextTokenIsQuotedString()) {
-            throw new SflException(
-                    blockKeyword + " 的内联表达式 " + expressionType
-                            + " 的参数须为双引号字符串，位置: " + parser.peek().getPosition());
-        }
-        String expression = parser.consumeQuotedString().getText();
-        if (!parser.nextTokenIsSymbol(SlfKeyWords.RPAREN_TEXT)) {
-            throw new SflException(
-                    blockKeyword + " 的内联表达式 " + expressionType
-                            + " 缺少 ')'，位置: " + parser.peek().getPosition());
-        }
-        parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
+        parser.consumeSymbol(
+                SlfKeyWords.LPAREN_TEXT,
+                String.format(
+                        "%s 的内联表达式 %s 后缺少 '('，位置: %s",
+                        blockKeyword,
+                        expressionType,
+                        position
+                )
+        );
+        SflToken expressionToken = parser.consumeQuotedString(String.format(
+                "%s 的内联表达式 %s 的参数须为双引号字符串，位置: %s",
+                blockKeyword,
+                expressionType,
+                parser.peek().getPosition()
+        ));
+        String expression = expressionToken.getText();
+        parser.consumeSymbol(
+                SlfKeyWords.RPAREN_TEXT,
+                String.format(
+                        "%s 的内联表达式 %s 缺少 ')'，位置: %s",
+                        blockKeyword,
+                        expressionType,
+                        parser.peek().getPosition()
+                )
+        );
         return ConditionParts.expression(expressionType, expression);
     }
 
