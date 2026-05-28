@@ -18,6 +18,16 @@ public final class SlfKeyWords {
     }
 
     // -------------------------------------------------------------------------
+    // token
+    // -------------------------------------------------------------------------
+
+    public static final char LPAREN = '(';
+    public static final char RPAREN = ')';
+    public static final char COMMA = ',';
+    public static final char DOT = '.';
+    public static final char EQ = '=';
+
+    // -------------------------------------------------------------------------
     // 顶层编排关键字（flow 产生式入口）
     // -------------------------------------------------------------------------
 

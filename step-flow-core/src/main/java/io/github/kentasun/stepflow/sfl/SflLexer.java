@@ -1,6 +1,7 @@
 package io.github.kentasun.stepflow.sfl;
 
 import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
+import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
 
 /**
  * SFL 词法分析器：将编排文本切分为 {@link SflToken} 流。
@@ -63,19 +64,19 @@ public class SflLexer {
         char c = text.charAt(pos);
         int start = pos;
         switch (c) {
-            case '(':
+            case SlfKeyWords.LPAREN:
                 pos++;
                 return new SflToken(SflTokenType.LPAREN, start);
-            case ')':
+            case SlfKeyWords.RPAREN:
                 pos++;
                 return new SflToken(SflTokenType.RPAREN, start);
-            case ',':
+            case SlfKeyWords.COMMA:
                 pos++;
                 return new SflToken(SflTokenType.COMMA, start);
-            case '.':
+            case SlfKeyWords.DOT:
                 pos++;
                 return new SflToken(SflTokenType.DOT, start);
-            case '=':
+            case SlfKeyWords.EQ:
                 pos++;
                 return new SflToken(SflTokenType.EQ, start);
             default:
