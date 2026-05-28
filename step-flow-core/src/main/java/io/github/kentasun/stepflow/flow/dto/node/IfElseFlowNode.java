@@ -39,7 +39,7 @@ public class IfElseFlowNode extends FlowNode {
     @Override
     public void execute(StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
         for (IfBranch branch : branches) {
-            if (evalConditionAsBoolean(branch.getCondition(), stepFlowContext, executorsContext)) {
+            if (evalConditionAsBoolean(branch, stepFlowContext, executorsContext)) {
                 branch.getThenFlowNode().execute(stepFlowContext, executorsContext);
                 return;
             }
@@ -50,22 +50,43 @@ public class IfElseFlowNode extends FlowNode {
     }
 
     /**
-     * 执行条件步骤并转为 boolean；null 或非 Boolean 类型抛 {@link StepFlowException}。
+     * 执行分支条件并转为 boolean。
+     *
+     * @param branch IF 分支信息
+     * @param stepFlowContext 上下文信息
+     * @param executorsContext 执行器上下文对象
+     * @return 条件判断结果 {@code boolean}
      */
-    private static boolean evalConditionAsBoolean(StepFlowNode condition,
+    private static boolean evalConditionAsBoolean(IfBranch branch,
                                                   StepFlowContext stepFlowContext,
                                                   ExecutorsContext executorsContext) {
-        Object res = condition.executeThenReturnRes(stepFlowContext, executorsContext);
+        /* 判断条件 */
+        Object res;
+        if (branch.isStepCondition()) {
+            res = branch.getCondition().executeThenReturnRes(stepFlowContext, executorsContext);
+        } else {
+            res = executorsContext.executeInlineExpression(
+                    branch.getExpressionType(),
+                    branch.getExpression(),
+                    stepFlowContext);
+        }
         if (res instanceof Boolean) {
             return (Boolean) res;
         }
+
+        /* 类型错误，抛出异常 */
+        String conditionDesc;
+        if (branch.isStepCondition()) {
+            conditionDesc = String.format("step[%s]", branch.getCondition().getStepCode());
+        } else {
+            conditionDesc = String.format("%s(\"%s\")", branch.getExpressionType(), branch.getExpression());
+        }
         if (res == null) {
-            throw new StepFlowException(
-                    String.format("执行step[%s]，返回null", condition.getStepCode()));
+            throw new StepFlowException(String.format("执行条件 %s，返回null", conditionDesc));
         }
         throw new StepFlowException(String.format(
-                "执行step[%s]，返回错误类型：%s",
-                condition.getStepCode(),
+                "执行条件 %s ，返回错误类型[%s]",
+                conditionDesc,
                 res.getClass().getName()));
     }
 

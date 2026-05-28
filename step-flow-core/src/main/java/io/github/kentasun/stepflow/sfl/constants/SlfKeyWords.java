@@ -43,6 +43,12 @@ public final class SlfKeyWords {
     /** 输入结束标记的文本 */
     public static final String EOF_TEXT = "";
 
+    /** 双引号字符，用于词法器扫描内联表达式字符串 */
+    public static final char DOUBLE_QUOTE = '"';
+
+    /** 转义符，双引号字符串内仅用于转义 {@link #DOUBLE_QUOTE} */
+    public static final char BACKSLASH = '\\';
+
     // -------------------------------------------------------------------------
     // 顶层编排关键字（flow 产生式入口）
     // -------------------------------------------------------------------------

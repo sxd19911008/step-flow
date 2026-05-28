@@ -23,7 +23,7 @@ import java.util.Map;
  * 直接 new 对象，不再通过反射调用 protected 构造器。
  * </p>
  * <p>
- * 解析期校验（空列表、尾随逗号、重复映射键、IF 条件必须为 STEP 等）在构建树之前失败，
+     * 解析期校验（空列表、尾随逗号、重复映射键、IF 条件格式等）在构建树之前失败，
  * 防止非法结构进入 {@link io.github.kentasun.stepflow.flow.FlowExecutor}。
  * </p>
  */
@@ -139,6 +139,15 @@ public class SflParser {
     }
 
     /**
+     * 消费双引号字符串记号（IF 内联表达式正文等）。
+     *
+     * @return 已消费的字符串记号
+     */
+    public SflToken consumeQuotedString() {
+        return lexer.consumeQuotedString();
+    }
+
+    /**
      * 返回当前前瞻 token，不消费。供各 {@link FlowNodeBuilder} 实现判断后续记号。
      *
      * @return 当前前瞻记号
@@ -179,6 +188,24 @@ public class SflParser {
     }
 
     /**
+     * 判断前瞻记号是否为用户字面量（{@link SflTokenType#LITERAL}）。
+     *
+     * @return {@code true} 表示下一个待消费记号为用户字面量
+     */
+    public boolean nextTokenIsLiteral() {
+        return lexer.nextTokenIsLiteral();
+    }
+
+    /**
+     * 判断前瞻记号是否为双引号字符串。
+     *
+     * @return {@code true} 表示下一个待消费记号为 QUOTED_STRING
+     */
+    public boolean nextTokenIsQuotedString() {
+        return lexer.nextTokenIsQuotedString();
+    }
+
+    /**
      * 解析逗号分隔的子 flow 列表，至少包含一项；拒绝空列表与尾随逗号。
      * <p>
      * 供 {@link SeqFlowNodeBuilder}、{@link ParallelFlowNodeBuilder} 及 IF 分支解析共享。
@@ -211,7 +238,7 @@ public class SflParser {
      *
      * @param sflText 存于 {@code InputFlow.content} 的 SFL 文本，不可为 null 或空白
      * @return 流程节点树，类型为具体 {@link FlowNode} 子类
-     * @throws SflException 文本为空、词法非法、语法不符合产生式或语义约束（如 IF 条件非 STEP）时
+     * @throws SflException 文本为空、词法非法、语法不符合产生式或语义约束（如 IF 条件格式非法）时
      */
     public static FlowNode parse(String sflText) {
         if (sflText == null || sflText.trim().isEmpty()) {

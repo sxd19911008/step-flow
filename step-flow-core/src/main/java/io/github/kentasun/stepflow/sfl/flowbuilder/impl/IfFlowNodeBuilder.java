@@ -15,13 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * IF 关键字解析策略：解析 PL/SQL 风格块
- * {@code IF(条件) THEN(...) [ELSIF(条件) THEN(...)]* [ELSE(...)] ENDIF}，
- * 并构造 {@link IfElseFlowNode}。
+ * IF 关键字解析策略
+ * <p>{@code IF(条件) THEN(...) [ELSIF(条件) THEN(...)]* [ELSE(...)] ENDIF}，
+ * 并构造 {@link IfElseFlowNode}。</p>
  * <p>
  * 语义约束：
  * <ul>
- *   <li>IF / ELSIF 括号内条件必须是 {@link StepFlowNode}。</li>
+ *   <li>IF / ELSIF 括号内条件为 {@link StepFlowNode}（{@code STEP(...)}）
+ *       或内联表达式 {@code TYPE("expression")}，TYPE 为 StepContentType。</li>
+ *   <li>表达式正文须用英文双引号包裹，内部双引号写作 {@code \"}。</li>
  *   <li>每个 IF 或 ELSIF 后必须有且仅有一个 {@code THEN(...)}。</li>
  *   <li>{@code ELSE(...)} 至多一次，位于所有 ELSIF 段之后、ENDIF 之前。</li>
  *   <li>{@code ENDIF} 必填，结束当前 IF 块。</li>
@@ -35,19 +37,19 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
         List<IfBranch> branches = new ArrayList<>();
 
         // 首段：IF(条件) THEN(体)
-        branches.add(parseConditionThenPair(parser, keywordPos));
+        branches.add(this.parseIfConditionThenPair(parser, keywordPos));
 
         // 零个或多个 ELSIF(条件) THEN(体)
         while (parser.nextTokenIsKeyword(SlfKeyWords.ELSIF)) {
             parser.consumeKeyword(SlfKeyWords.ELSIF);
-            branches.add(parseElsifConditionThen(parser));
+            branches.add(this.parseElsifConditionThen(parser));
         }
 
         // 可选 ELSE(体)
         FlowNode elseFlowNode = null;
         if (parser.nextTokenIsKeyword(SlfKeyWords.ELSE)) {
             parser.consumeKeyword(SlfKeyWords.ELSE);
-            elseFlowNode = parseParenWrappedFlow(parser);
+            elseFlowNode = this.parseParenWrappedFlow(parser);
         }
 
         parser.consumeKeyword(SlfKeyWords.ENDIF);
@@ -58,12 +60,12 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
     /**
      * 解析 {@code IF(条件)} 后紧跟的 {@code THEN(体)}，返回一条分支。
      */
-    private IfBranch parseConditionThenPair(SflParser parser, int keywordPos) {
+    private IfBranch parseIfConditionThenPair(SflParser parser, int keywordPos) {
         parser.consumeSymbol(SlfKeyWords.LPAREN_TEXT);
-        StepFlowNode condition = parseConditionStep(parser, SlfKeyWords.IF, keywordPos);
+        ConditionParts conditionParts = this.parseCondition(parser, SlfKeyWords.IF, keywordPos);
         parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
-        FlowNode thenFlowNode = parseThenBlock(parser);
-        return new IfBranch(condition, thenFlowNode);
+        FlowNode thenFlowNode = this.parseThenBlock(parser);
+        return conditionParts.toIfBranch(thenFlowNode);
     }
 
     /**
@@ -72,10 +74,10 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
     private IfBranch parseElsifConditionThen(SflParser parser) {
         parser.consumeSymbol(SlfKeyWords.LPAREN_TEXT);
         SflToken elsifToken = parser.peek();
-        StepFlowNode condition = parseConditionStep(parser, SlfKeyWords.ELSIF, elsifToken.getPosition());
+        ConditionParts conditionParts = this.parseCondition(parser, SlfKeyWords.ELSIF, elsifToken.getPosition());
         parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
-        FlowNode thenFlowNode = parseThenBlock(parser);
-        return new IfBranch(condition, thenFlowNode);
+        FlowNode thenFlowNode = this.parseThenBlock(parser);
+        return conditionParts.toIfBranch(thenFlowNode);
     }
 
     /**
@@ -88,7 +90,7 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
                             + parser.peek().getPosition());
         }
         parser.consumeKeyword(SlfKeyWords.THEN);
-        return parseParenWrappedFlow(parser);
+        return this.parseParenWrappedFlow(parser);
     }
 
     /**
@@ -102,15 +104,83 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
     }
 
     /**
-     * 解析 IF / ELSIF 括号内的条件，必须为 STEP 节点。
+     * 解析 IF / ELSIF 括号内的条件：{@code STEP(...)} 或 {@code TYPE("expression")}。
      */
-    private StepFlowNode parseConditionStep(SflParser parser, String blockKeyword, int position) {
-        FlowNode conditionNode = parser.keywordToFlow();
-        if (!(conditionNode instanceof StepFlowNode)) {
-            throw new SflException(
-                    blockKeyword + " 的条件必须是 " + SlfKeyWords.STEP + "(...)，实际为 ["
-                            + conditionNode.getType() + "]，位置: " + position);
+    private ConditionParts parseCondition(SflParser parser, String blockKeyword, int position) {
+        if (parser.nextTokenIsKeyword(SlfKeyWords.STEP)) {
+            FlowNode conditionNode = parser.keywordToFlow();
+            if (!(conditionNode instanceof StepFlowNode)) {
+                throw new SflException(
+                        blockKeyword + " 的条件必须是 " + SlfKeyWords.STEP + "(...)，实际为 ["
+                                + conditionNode.getType() + "]，位置: " + position);
+            }
+            return ConditionParts.step((StepFlowNode) conditionNode);
+        } else if (parser.nextTokenIsLiteral()) {
+            return this.parseInlineExpressionCondition(parser, blockKeyword, position);
         }
-        return (StepFlowNode) conditionNode;
+        throw new SflException(
+                blockKeyword + " 的条件必须是 " + SlfKeyWords.STEP
+                        + "(...) 或 TYPE(\"expression\")，位置: " + position);
+    }
+
+    /**
+     * 解析 {@code TYPE("expression")} 形式的内联表达式条件。
+     * TODO 将判断与消费一起封装到 parser-SflLexer 中
+     */
+    private ConditionParts parseInlineExpressionCondition(SflParser parser, String blockKeyword, int position) {
+        String expressionType = parser.consumeLiteral().getText();
+        if (!parser.nextTokenIsSymbol(SlfKeyWords.LPAREN_TEXT)) {
+            throw new SflException(
+                    blockKeyword + " 的内联表达式 " + expressionType
+                            + " 后缺少 '('，位置: " + position);
+        }
+        parser.consumeSymbol(SlfKeyWords.LPAREN_TEXT);
+        if (!parser.nextTokenIsQuotedString()) {
+            throw new SflException(
+                    blockKeyword + " 的内联表达式 " + expressionType
+                            + " 的参数须为双引号字符串，位置: " + parser.peek().getPosition());
+        }
+        String expression = parser.consumeQuotedString().getText();
+        if (!parser.nextTokenIsSymbol(SlfKeyWords.RPAREN_TEXT)) {
+            throw new SflException(
+                    blockKeyword + " 的内联表达式 " + expressionType
+                            + " 缺少 ')'，位置: " + parser.peek().getPosition());
+        }
+        parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
+        return ConditionParts.expression(expressionType, expression);
+    }
+
+    /**
+     * IF / ELSIF 条件解析中间结果，便于在消费 THEN 体后再组装 {@link IfBranch}。
+     */
+    private static final class ConditionParts {
+
+        /** STEP 条件节点；与 expression 字段互斥 */
+        private final StepFlowNode stepCondition;
+        /** 内联表达式类型（StepContentType） */
+        private final String expressionType;
+        /** 内联表达式正文 */
+        private final String expression;
+
+        private ConditionParts(StepFlowNode stepCondition, String expressionType, String expression) {
+            this.stepCondition = stepCondition;
+            this.expressionType = expressionType;
+            this.expression = expression;
+        }
+
+        static ConditionParts step(StepFlowNode stepCondition) {
+            return new ConditionParts(stepCondition, null, null);
+        }
+
+        static ConditionParts expression(String expressionType, String expression) {
+            return new ConditionParts(null, expressionType, expression);
+        }
+
+        IfBranch toIfBranch(FlowNode thenFlowNode) {
+            if (stepCondition != null) {
+                return new IfBranch(stepCondition, thenFlowNode);
+            }
+            return new IfBranch(expressionType, expression, thenFlowNode);
+        }
     }
 }

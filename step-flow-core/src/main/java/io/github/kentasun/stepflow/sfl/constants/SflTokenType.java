@@ -12,5 +12,8 @@ public enum SflTokenType {
     KEYWORD,
 
     /** 用户自定义字面量：stepCode、flowCode、映射键值中的表达式路径等 */
-    LITERAL
+    LITERAL,
+
+    /** 双引号字符串字面量：IF 条件内联表达式正文，内部双引号须写作 {@code \"} */
+    QUOTED_STRING
 }

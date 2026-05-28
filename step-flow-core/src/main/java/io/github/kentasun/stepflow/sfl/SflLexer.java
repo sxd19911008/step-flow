@@ -93,6 +93,15 @@ public class SflLexer {
     }
 
     /**
+     * 判断前瞻记号是否为双引号字符串（{@link SflTokenType#QUOTED_STRING}）。
+     *
+     * @return {@code true} 表示下一个待消费记号为双引号字符串
+     */
+    public boolean nextTokenIsQuotedString() {
+        return nextToken.getType() == SflTokenType.QUOTED_STRING;
+    }
+
+    /**
      * 消费当前记号，且必须同时匹配 type 与 text，否则抛出 {@link SflException}。
      *
      * @param type 期望的语法角色
@@ -139,6 +148,18 @@ public class SflLexer {
     }
 
     /**
+     * 消费双引号字符串记号（内联表达式正文）。
+     *
+     * @return 已消费的字符串记号，{@link SflToken#getText()} 为转义还原后的内容
+     */
+    public SflToken consumeQuotedString() {
+        if (!nextTokenIsQuotedString()) {
+            throw unexpectedToken(SflTokenType.QUOTED_STRING, null);
+        }
+        return consume();
+    }
+
+    /**
      * 从当前 {@link #pos} 扫描并生成下一个记号。
      * <p>
      * 遇非法字符立即失败，避免将脏数据传入语法层产生误导性「期望 RPAREN」类消息。
@@ -169,6 +190,8 @@ public class SflLexer {
             case SlfKeyWords.EQ:
                 pos++;
                 return symbolToken(SlfKeyWords.EQ_TEXT, start);
+            case SlfKeyWords.DOUBLE_QUOTE:
+                return readQuotedString(start);
             default:
                 if (isIdentStart(c)) {
                     return readWord(start);
@@ -207,6 +230,47 @@ public class SflLexer {
                 ? SflTokenType.KEYWORD
                 : SflTokenType.LITERAL;
         return new SflToken(type, word, start);
+    }
+
+    /**
+     * 读取双引号字符串：{@code "..."}，内部双引号须写作 {@code \"}，其它字符按字面保留。
+     * <p>
+     * 产出 {@link SflTokenType#QUOTED_STRING}，{@link SflToken#getText()} 为去掉转义后的正文。
+     * </p>
+     *
+     * @param start 起始双引号在源文本中的下标
+     * @return 字符串记号
+     */
+    private SflToken readQuotedString(int start) {
+        pos++; // 跳过起始 "
+        StringBuilder sb = new StringBuilder();
+        while (pos < text.length()) {
+            char c = text.charAt(pos);
+            if (c == SlfKeyWords.BACKSLASH) {
+                pos++;
+                if (pos >= text.length()) {
+                    throw new SflException(String.format("字符串转义不完整，位置: %s", pos - 1));
+                }
+                char escaped = text.charAt(pos);
+                if (escaped != SlfKeyWords.DOUBLE_QUOTE) {
+                    throw new SflException(String.format(
+                            "字符串内仅支持转义双引号（\\\"），实际为 '\\%s'，位置: %s",
+                            escaped,
+                            pos - 1
+                    ));
+                }
+                sb.append(SlfKeyWords.DOUBLE_QUOTE);
+                pos++;
+                continue;
+            }
+            if (c == SlfKeyWords.DOUBLE_QUOTE) {
+                pos++; // 跳过结束 "
+                return new SflToken(SflTokenType.QUOTED_STRING, sb.toString(), start);
+            }
+            sb.append(c);
+            pos++;
+        }
+        throw new SflException(String.format("字符串缺少结束双引号，位置: %s", start));
     }
 
     /**

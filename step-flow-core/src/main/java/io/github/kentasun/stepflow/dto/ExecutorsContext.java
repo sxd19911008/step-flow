@@ -54,6 +54,20 @@ public class ExecutorsContext {
         return stepExecutor.getStep(stepCode);
     }
 
+    /**
+     * 使用已注册 StepHandler 执行 IF 内联表达式条件。
+     *
+     * @param contentType     StepContentType，如 AVIATOR
+     * @param expression      表达式正文
+     * @param stepFlowContext 流程上下文
+     * @return 表达式执行结果
+     */
+    public Object executeInlineExpression(String contentType,
+                                          String expression,
+                                          StepFlowContext stepFlowContext) {
+        return stepExecutor.executeInlineExpression(contentType, expression, stepFlowContext);
+    }
+
     public ExecutorService getStepFlowParallelThreadPool() {
         return this.stepFlowParallelThreadPool;
     }

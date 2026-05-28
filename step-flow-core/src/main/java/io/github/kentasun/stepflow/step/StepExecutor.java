@@ -22,7 +22,14 @@ public class StepExecutor {
 
     private static final Logger log = LoggerFactory.getLogger(StepExecutor.class);
 
+    /** stepCode → 已注册步骤 */
     private final Map<String, Step> stepMap;
+
+    /**
+     * StepContentType → StepHandler，供步骤组装与 IF 内联表达式执行共用。
+     * key 与 {@link StepHandler#getStepContentType()} 一致，例如 AVIATOR、JEXL。
+     */
+    private final Map<String, StepHandler> stepHandlerMap;
 
     public StepExecutor(StepDataProvider stepDataProvider, List<StepHandler> stepHandlers) {
         /* 初始化 stepMap */
@@ -32,16 +39,17 @@ public class StepExecutor {
         if (stepDataProvider != null) {
             stepDataList = stepDataProvider.loadStepDataList();
         }
-        /* 组装 stepHandlerMap，用于后续组装 step 对象 */
-        Map<String, StepHandler> stepHandlerMap = new HashMap<>();
+        /* 组装 stepHandlerMap，构建后保留供运行时按 contentType 查找 Handler */
+        Map<String, StepHandler> handlerMap = new HashMap<>();
         if (StepFlowUtils.isNotEmpty(stepHandlers)) {
             for (StepHandler stepHandler : stepHandlers) {
-                if (stepHandlerMap.containsKey(stepHandler.getStepContentType())) {
+                if (handlerMap.containsKey(stepHandler.getStepContentType())) {
                     log.warn("StepHandler {} 被覆盖", stepHandler.getStepContentType());
                 }
-                stepHandlerMap.put(stepHandler.getStepContentType(), stepHandler);
+                handlerMap.put(stepHandler.getStepContentType(), stepHandler);
             }
         }
+        this.stepHandlerMap = Collections.unmodifiableMap(handlerMap);
         /* 组装 step 对象 */
         if (StepFlowUtils.isNotEmpty(stepDataList)) {
             Set<String> duplicateSet = new HashSet<>();
@@ -54,7 +62,7 @@ public class StepExecutor {
                     continue;
                 }
                 // 查找对应的 StepHandler
-                StepHandler stepHandler = stepHandlerMap.get(stepData.getContentType());
+                StepHandler stepHandler = this.stepHandlerMap.get(stepData.getContentType());
                 if (stepHandler == null) {
                     illegalList.add(String.format("Step[%s] 的 contentType[%s] 不存在", stepData.getStepCode(), stepData.getContentType()));
                     continue;
@@ -109,5 +117,74 @@ public class StepExecutor {
 
     public Step getStep(String stepCode) {
         return stepMap.get(stepCode);
+    }
+
+    /**
+     * 是否已注册指定 {@link StepHandler#getStepContentType()} 对应的 Handler。
+     *
+     * @param contentType 步骤内容类型，如 AVIATOR
+     * @return true 表示存在对应 Handler
+     */
+    public boolean containsStepContentType(String contentType) {
+        return stepHandlerMap.containsKey(contentType);
+    }
+
+    /**
+     * 是否未注册指定 {@link StepHandler#getStepContentType()} 对应的 Handler。
+     *
+     * @param contentType 步骤内容类型，如 AVIATOR
+     * @return true 表示不存在对应 Handler
+     */
+    public boolean isMissingStepContentType(String contentType) {
+        return !this.containsStepContentType(contentType);
+    }
+
+    /**
+     * 按 contentType 获取 StepHandler。
+     *
+     * @param contentType 步骤内容类型
+     * @return 对应 Handler；不存在时返回 null
+     */
+    public StepHandler getStepHandler(String contentType) {
+        return stepHandlerMap.get(contentType);
+    }
+
+    /**
+     * 获取已注册的 StepContentType → StepHandler 映射（只读）。
+     *
+     * @return 不可变映射，key 为 StepContentType
+     */
+    public Map<String, StepHandler> getStepHandlerMap() {
+        return stepHandlerMap;
+    }
+
+    /**
+     * 使用指定 contentType 的 StepHandler 执行内联表达式（如 IF 条件中的 AVIATOR("a > b")）。
+     * <p>
+     * 将当前 {@link StepFlowContext#getContextMap()} 作为表达式变量传入 Handler。
+     * </p>
+     *
+     * @param contentType     StepHandler 对应的 StepContentType
+     * @param expression      表达式正文（已去除外围双引号并完成转义还原）
+     * @param stepFlowContext 流程上下文
+     * @return Handler 执行结果
+     */
+    public Object executeInlineExpression(String contentType,
+                                          String expression,
+                                          StepFlowContext stepFlowContext) {
+        StepHandler stepHandler = stepHandlerMap.get(contentType);
+        if (stepHandler == null) {
+            throw new StepFlowException(String.format("表达式类型[%s]不存在", contentType));
+        }
+        StepData stepData = StepData.builder()
+                .contentType(contentType)
+                .content(expression)
+                .build();
+        return stepHandler.execute(
+                stepData,
+                stepFlowContext,
+                OneOffParams.builder()
+                        .vars(stepFlowContext.getContextMap())
+                        .build());
     }
 }
