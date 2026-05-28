@@ -5,7 +5,7 @@ import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
 import io.github.kentasun.stepflow.flow.dto.node.SubFlowNode;
 import io.github.kentasun.stepflow.sfl.SflParser;
 import io.github.kentasun.stepflow.sfl.SflToken;
-import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
+import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
 import io.github.kentasun.stepflow.sfl.flowbuilder.FlowNodeBuilder;
 
 /**
@@ -18,12 +18,9 @@ public class SubFlowFlowNodeBuilder implements FlowNodeBuilder {
 
     @Override
     public FlowNode parse(SflParser parser, int keywordPos) {
-        // 消费左括号
-        parser.consumeTokenByType(SflTokenType.LPAREN);
-        // 解析子流程编码（单一标识符）
-        SflToken flowCodeToken = parser.consumeTokenByType(SflTokenType.IDENT);
-        // 消费右括号
-        parser.consumeTokenByType(SflTokenType.RPAREN);
+        parser.consumeSymbol(SlfKeyWords.LPAREN_TEXT);
+        SflToken flowCodeToken = parser.consumeLiteral();
+        parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
         return new SubFlowNode(FlowContentType.SUB_FLOW, flowCodeToken.getText());
     }
 }

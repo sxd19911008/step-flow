@@ -7,7 +7,6 @@ import io.github.kentasun.stepflow.sfl.SflException;
 import io.github.kentasun.stepflow.sfl.SflParser;
 import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
 import io.github.kentasun.stepflow.sfl.SflToken;
-import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
 import io.github.kentasun.stepflow.sfl.flowbuilder.FlowNodeBuilder;
 
 import java.util.LinkedHashMap;
@@ -26,39 +25,36 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
 
     @Override
     public FlowNode parse(SflParser parser, int keywordPos) {
-        parser.consumeTokenByType(SflTokenType.LPAREN);
-        SflToken stepCodeToken = parser.consumeTokenByType(SflTokenType.IDENT);
-        parser.consumeTokenByType(SflTokenType.RPAREN);
+        parser.consumeSymbol(SlfKeyWords.LPAREN_TEXT);
+        SflToken stepCodeToken = parser.consumeLiteral();
+        parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
 
         Map<String, String> paramNameMap = null;
         Map<String, String> resultNameMap = null;
 
         // 循环消费可选的 .param(...) / .result(...) 后缀
-        while (parser.isCurrentTokenType(SflTokenType.DOT)) {
-            parser.consumeTokenByType(SflTokenType.DOT); // 消费 '.'
-            SflToken suffix = parser.consumeTokenByType(SflTokenType.IDENT);
-            switch (suffix.getText()) {
-                case SlfKeyWords.STEP_PARAM:
-                    if (paramNameMap != null) {
-                        throw new SflException(
-                                SlfKeyWords.STEP + " 不允许重复声明 ." + SlfKeyWords.STEP_PARAM
-                                        + "(...)，位置: " + suffix.getPosition());
-                    }
-                    paramNameMap = parseMappingList(parser, SlfKeyWords.STEP_PARAM);
-                    break;
-                case SlfKeyWords.STEP_RESULT:
-                    if (resultNameMap != null) {
-                        throw new SflException(
-                                SlfKeyWords.STEP + " 不允许重复声明 ." + SlfKeyWords.STEP_RESULT
-                                        + "(...)，位置: " + suffix.getPosition());
-                    }
-                    resultNameMap = parseMappingList(parser, SlfKeyWords.STEP_RESULT);
-                    break;
-                default:
+        while (parser.isLookaheadSymbol(SlfKeyWords.DOT_TEXT)) {
+            parser.consumeSymbol(SlfKeyWords.DOT_TEXT);
+            SflToken suffix = parser.consumeKeyword();
+            if (suffix.isKeyword(SlfKeyWords.STEP_PARAM)) {
+                if (paramNameMap != null) {
                     throw new SflException(
-                            SlfKeyWords.STEP + " 后缀未知 [" + suffix.getText() + "]，仅支持 "
-                                    + SlfKeyWords.STEP_PARAM + " / " + SlfKeyWords.STEP_RESULT
-                                    + "，位置: " + suffix.getPosition());
+                            SlfKeyWords.STEP + " 不允许重复声明 ." + SlfKeyWords.STEP_PARAM
+                                    + "(...)，位置: " + suffix.getPosition());
+                }
+                paramNameMap = parseMappingList(parser, SlfKeyWords.STEP_PARAM);
+            } else if (suffix.isKeyword(SlfKeyWords.STEP_RESULT)) {
+                if (resultNameMap != null) {
+                    throw new SflException(
+                            SlfKeyWords.STEP + " 不允许重复声明 ." + SlfKeyWords.STEP_RESULT
+                                    + "(...)，位置: " + suffix.getPosition());
+                }
+                resultNameMap = parseMappingList(parser, SlfKeyWords.STEP_RESULT);
+            } else {
+                throw new SflException(
+                        SlfKeyWords.STEP + " 后缀未知 [" + suffix.getText() + "]，仅支持 "
+                                + SlfKeyWords.STEP_PARAM + " / " + SlfKeyWords.STEP_RESULT
+                                + "，位置: " + suffix.getPosition());
             }
         }
 
@@ -76,26 +72,26 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
      * @return 非空映射，或括号内无任何条目时返回 {@code null}
      */
     private Map<String, String> parseMappingList(SflParser parser, String suffixName) {
-        parser.consumeTokenByType(SflTokenType.LPAREN);
+        parser.consumeSymbol(SlfKeyWords.LPAREN_TEXT);
         Map<String, String> map = new LinkedHashMap<>();
 
         // 空括号 → 直接返回 null
-        if (parser.isCurrentTokenType(SflTokenType.RPAREN)) {
-            parser.consumeTokenByType(SflTokenType.RPAREN);
+        if (parser.isLookaheadSymbol(SlfKeyWords.RPAREN_TEXT)) {
+            parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
             return null;
         }
 
         parseMappingEntry(parser, map, suffixName);
-        while (parser.isCurrentTokenType(SflTokenType.COMMA)) {
-            parser.consumeTokenByType(SflTokenType.COMMA); // 消费 ','
-            if (parser.isCurrentTokenType(SflTokenType.RPAREN)) {
+        while (parser.isLookaheadSymbol(SlfKeyWords.COMMA_TEXT)) {
+            parser.consumeSymbol(SlfKeyWords.COMMA_TEXT);
+            if (parser.isLookaheadSymbol(SlfKeyWords.RPAREN_TEXT)) {
                 throw new SflException(
                         suffixName + " 映射列表末尾不允许有多余逗号，位置: " + parser.peek().getPosition());
             }
             parseMappingEntry(parser, map, suffixName);
         }
 
-        parser.consumeTokenByType(SflTokenType.RPAREN);
+        parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
         return map.isEmpty() ? null : map;
     }
 
@@ -107,9 +103,9 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
      * @param suffixName 后缀名，用于重复键错误消息
      */
     private void parseMappingEntry(SflParser parser, Map<String, String> map, String suffixName) {
-        SflToken key = parser.consumeTokenByType(SflTokenType.IDENT);
-        parser.consumeTokenByType(SflTokenType.EQ);
-        SflToken value = parser.consumeTokenByType(SflTokenType.IDENT);
+        SflToken key = parser.consumeLiteral();
+        parser.consumeSymbol(SlfKeyWords.EQ_TEXT);
+        SflToken value = parser.consumeLiteral();
         if (map.containsKey(key.getText())) {
             throw new SflException(
                     suffixName + " 映射键重复: " + key.getText() + "，位置: " + key.getPosition());

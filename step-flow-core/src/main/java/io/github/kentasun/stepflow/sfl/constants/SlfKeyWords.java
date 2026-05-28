@@ -1,14 +1,18 @@
 package io.github.kentasun.stepflow.sfl.constants;
 
+import io.github.kentasun.stepflow.sfl.SflLexer;
 import io.github.kentasun.stepflow.sfl.SflParser;
 import io.github.kentasun.stepflow.sfl.flowbuilder.FlowNodeBuilder;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * SFL（Step Flow Language）语法关键字字面量常量集。
+ * SFL（Step Flow Language）语法关键字与符号字面量常量集。
  * <p>
- * 取值与源文本中的标识符完全一致，供 {@link SflParser}
- * 注册表及各 {@link FlowNodeBuilder} 实现统一引用，
- * 避免魔法字符串分散在解析逻辑中。
+ * 取值与源文本中的标识符或符号完全一致，供 {@link SflLexer}、{@link SflParser}
+ * 注册表及各 {@link FlowNodeBuilder} 实现统一引用，避免魔法字符串分散在解析逻辑中。
  * </p>
  */
 public final class SlfKeyWords {
@@ -18,14 +22,26 @@ public final class SlfKeyWords {
     }
 
     // -------------------------------------------------------------------------
-    // token
+    // 符号（char 供词法器单字符扫描，String 供 type+text 匹配）
     // -------------------------------------------------------------------------
 
     public static final char LPAREN = '(';
+    public static final String LPAREN_TEXT = String.valueOf(LPAREN);
+
     public static final char RPAREN = ')';
+    public static final String RPAREN_TEXT = String.valueOf(RPAREN);
+
     public static final char COMMA = ',';
+    public static final String COMMA_TEXT = String.valueOf(COMMA);
+
     public static final char DOT = '.';
+    public static final String DOT_TEXT = String.valueOf(DOT);
+
     public static final char EQ = '=';
+    public static final String EQ_TEXT = String.valueOf(EQ);
+
+    /** 输入结束标记的文本 */
+    public static final String EOF_TEXT = "";
 
     // -------------------------------------------------------------------------
     // 顶层编排关键字（flow 产生式入口）
@@ -65,4 +81,34 @@ public final class SlfKeyWords {
 
     /** STEP 出参映射后缀：{@code .result(k=v,...)} */
     public static final String STEP_RESULT = "result";
+
+    // -------------------------------------------------------------------------
+    // 关键字集合（供词法器区分 KEYWORD 与 LITERAL）
+    // -------------------------------------------------------------------------
+
+    private static final Set<String> KEYWORD_TEXTS;
+
+    static {
+        Set<String> set = new HashSet<>();
+        set.add(SEQ);
+        set.add(PARALLEL);
+        set.add(STEP);
+        set.add(SUB_FLOW);
+        set.add(IF);
+        set.add(IF_TRUE);
+        set.add(IF_FALSE);
+        set.add(STEP_PARAM);
+        set.add(STEP_RESULT);
+        KEYWORD_TEXTS = Collections.unmodifiableSet(set);
+    }
+
+    /**
+     * 判断给定文本是否为 SFL 保留关键字。
+     *
+     * @param text 词法器读出的标识符文本
+     * @return {@code true} 表示应产出 {@link SflTokenType#KEYWORD}
+     */
+    public static boolean isKeywordText(String text) {
+        return KEYWORD_TEXTS.contains(text);
+    }
 }

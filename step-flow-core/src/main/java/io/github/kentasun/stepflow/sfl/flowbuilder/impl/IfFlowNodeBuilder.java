@@ -8,7 +8,6 @@ import io.github.kentasun.stepflow.sfl.SflException;
 import io.github.kentasun.stepflow.sfl.SflParser;
 import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
 import io.github.kentasun.stepflow.sfl.SflToken;
-import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
 import io.github.kentasun.stepflow.sfl.flowbuilder.FlowNodeBuilder;
 
 /**
@@ -28,9 +27,9 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
     @Override
     public FlowNode parse(SflParser parser, int keywordPos) {
         // 解析条件节点：IF(条件)
-        parser.consumeTokenByType(SflTokenType.LPAREN);
+        parser.consumeSymbol(SlfKeyWords.LPAREN_TEXT);
         FlowNode conditionNode = parser.keywordToFlow();
-        parser.consumeTokenByType(SflTokenType.RPAREN);
+        parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
 
         // 条件必须是 STEP 节点
         if (!(conditionNode instanceof StepFlowNode)) {
@@ -45,18 +44,18 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
 
         // 解析可选的 .FALSE(...) 分支
         FlowNode falseFlowNode = null;
-        if (parser.isCurrentTokenType(SflTokenType.DOT)) {
-            parser.consumeTokenByType(SflTokenType.DOT); // 消费 '.'
-            SflToken falseToken = parser.consumeTokenByType(SflTokenType.IDENT);
-            if (!SlfKeyWords.IF_FALSE.equals(falseToken.getText())) {
+        if (parser.isLookaheadSymbol(SlfKeyWords.DOT_TEXT)) {
+            parser.consumeSymbol(SlfKeyWords.DOT_TEXT);
+            SflToken falseToken = parser.consumeKeyword();
+            if (!falseToken.isKeyword(SlfKeyWords.IF_FALSE)) {
                 throw new SflException(
                         "IF 在 ." + SlfKeyWords.IF_TRUE + "(...) 之后仅允许 ."
                                 + SlfKeyWords.IF_FALSE + "(...)，实际为 [." + falseToken.getText()
                                 + "]，位置: " + falseToken.getPosition());
             }
-            parser.consumeTokenByType(SflTokenType.LPAREN);
+            parser.consumeSymbol(SlfKeyWords.LPAREN_TEXT);
             falseFlowNode = parser.keywordToFlow();
-            parser.consumeTokenByType(SflTokenType.RPAREN);
+            parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
         }
 
         return new IfElseFlowNode(FlowContentType.IF_ELSE, condition, trueFlowNode, falseFlowNode);
@@ -73,26 +72,15 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
      * @return 分支内的 flow 子树
      */
     private FlowNode parseIfBranch(SflParser parser, String branchName) {
-        if (parser.isNotCurrentTokenType(SflTokenType.DOT)) {
+        if (!parser.isLookaheadSymbol(SlfKeyWords.DOT_TEXT)) {
             throw new SflException(
                     "IF 缺少 ." + branchName + "(...) 分支，位置: " + parser.peek().getPosition());
         }
-        parser.consumeTokenByType(SflTokenType.DOT); // 消费 '.'
-        SflToken branchToken = parser.consumeTokenByType(SflTokenType.IDENT);
-        if (!branchName.equals(branchToken.getText())) {
-            if (SlfKeyWords.IF_TRUE.equals(branchName)) {
-                throw new SflException(
-                        "IF 必须包含 ." + SlfKeyWords.IF_TRUE + "(...)，当前为 [."
-                                + branchToken.getText() + "]，位置: "
-                                + branchToken.getPosition());
-            }
-            throw new SflException(
-                    "IF 期望 ." + branchName + "(...)，实际为 [." + branchToken.getText() + "]，位置: "
-                            + branchToken.getPosition());
-        }
-        parser.consumeTokenByType(SflTokenType.LPAREN);
+        parser.consumeSymbol(SlfKeyWords.DOT_TEXT);
+        parser.consumeKeyword(branchName);
+        parser.consumeSymbol(SlfKeyWords.LPAREN_TEXT);
         FlowNode branch = parser.keywordToFlow();
-        parser.consumeTokenByType(SflTokenType.RPAREN);
+        parser.consumeSymbol(SlfKeyWords.RPAREN_TEXT);
         return branch;
     }
 }
