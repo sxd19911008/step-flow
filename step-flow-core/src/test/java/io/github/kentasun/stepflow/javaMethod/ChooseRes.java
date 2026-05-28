@@ -9,7 +9,7 @@ import io.github.kentasun.stepflow.utils.StepFlowUtils;
 import java.math.BigDecimal;
 
 /**
- * 根据 IF_ELSE 分支结果选择最终返回值：优先取 {@code calc_multiply}，否则取 {@code calc_divide}。
+ * 根据 IF_ELSE 的 THEN/ELSE 分支结果选择最终返回值：优先取 {@code calc_multiply}，否则取 {@code calc_divide}。
  * <p>与 Aviator/Jexl 模块中的 {@link ChooseRes} 逻辑一致，从流程上下文中读取变量。</p>
  */
 public class ChooseRes implements JavaStep {

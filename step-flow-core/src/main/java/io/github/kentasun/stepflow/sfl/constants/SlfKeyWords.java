@@ -53,34 +53,42 @@ public final class SlfKeyWords {
     /** 并行执行容器：{@code PARALLEL(child, child, ...)} */
     public static final String PARALLEL = "PARALLEL";
 
-    /** 单步执行：{@code STEP(stepCode)[.param(...)][.result(...)]} */
+    /** 单步执行：{@code STEP(stepCode)[.PARAM(...)][.result(...)]} */
     public static final String STEP = "STEP";
 
     /** 子流程引用：{@code SUB_FLOW(flowCode)} */
     public static final String SUB_FLOW = "SUB_FLOW";
 
-    /** 条件分支：{@code IF(条件).TRUE(真分支)[.FALSE(假分支)]} */
+    /**
+     * 条件分支块入口：{@code IF(条件) THEN(...) [ELSIF(条件) THEN(...)]* [ELSE(...)] ENDIF}
+     */
     public static final String IF = "IF";
 
     // -------------------------------------------------------------------------
-    // IF 后缀分支标识符
+    // IF 块内关键字（THEN / ELSIF / ELSE / ENDIF）
     // -------------------------------------------------------------------------
 
-    /** IF 真分支后缀：{@code .TRUE(...)}，必填 */
-    public static final String IF_TRUE = "TRUE";
+    /** IF 块真分支：{@code THEN(...)}，在 IF 或每个 ELSIF 之后必填 */
+    public static final String THEN = "THEN";
 
-    /** IF 假分支后缀：{@code .FALSE(...)}，可省略 */
-    public static final String IF_FALSE = "FALSE";
+    /** IF 块 elsif：{@code ELSIF(条件)}，可重复 */
+    public static final String ELSIF = "ELSIF";
+
+    /** IF 块默认分支：{@code ELSE(...)}，可省略 */
+    public static final String ELSE = "ELSE";
+
+    /** IF 块结束：{@code ENDIF}，必填 */
+    public static final String ENDIF = "ENDIF";
 
     // -------------------------------------------------------------------------
     // STEP 后缀标识符
     // -------------------------------------------------------------------------
 
-    /** STEP 入参映射后缀：{@code .param(k=v,...)} */
-    public static final String STEP_PARAM = "param";
+    /** STEP 入参映射后缀：{@code .PARAM(k=v,...)} */
+    public static final String PARAM = "PARAM";
 
     /** STEP 出参映射后缀：{@code .result(k=v,...)} */
-    public static final String STEP_RESULT = "result";
+    public static final String RESULT = "result";
 
     // -------------------------------------------------------------------------
     // 关键字集合（供词法器区分 KEYWORD 与 LITERAL）
@@ -95,10 +103,12 @@ public final class SlfKeyWords {
         set.add(STEP);
         set.add(SUB_FLOW);
         set.add(IF);
-        set.add(IF_TRUE);
-        set.add(IF_FALSE);
-        set.add(STEP_PARAM);
-        set.add(STEP_RESULT);
+        set.add(THEN);
+        set.add(ELSIF);
+        set.add(ELSE);
+        set.add(ENDIF);
+        set.add(PARAM);
+        set.add(RESULT);
         KEYWORD_TEXTS = Collections.unmodifiableSet(set);
     }
 

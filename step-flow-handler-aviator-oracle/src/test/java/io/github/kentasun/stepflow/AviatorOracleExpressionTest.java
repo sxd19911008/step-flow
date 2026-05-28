@@ -46,7 +46,7 @@ public class AviatorOracleExpressionTest {
                         .content("abs(signedValue)")
                         .paramNameList(Collections.singletonList("signedValue"))
                         .build(),
-                // DC003: IF_ELSE true 分支——floor 向下取整 * 本金 + ceil 向上取整
+                // DC003: IF_ELSE THEN 分支——floor 向下取整 * 本金 + ceil 向上取整
                 StepData.builder()
                         .stepCode("DC003")
                         .stepName("calc_base")
@@ -55,7 +55,7 @@ public class AviatorOracleExpressionTest {
                         .content("floor(calc_months_raw) * principal + ceil(rateInput * calc_abs_val)")
                         .paramNameList(Arrays.asList("calc_months_raw", "principal", "rateInput", "calc_abs_val"))
                         .build(),
-                // DC004: IF_ELSE false 分支——round 四舍五入 * 本金 - floor 向下取整（本例不会执行）
+                // DC004: IF_ELSE ELSE 分支——round 四舍五入 * 本金 - floor 向下取整（本例不会执行）
                 StepData.builder()
                         .stepCode("DC004")
                         .stepName("calc_base")
@@ -166,13 +166,13 @@ public class AviatorOracleExpressionTest {
                                 + "{\"type\":\"STEP\",\"stepCode\":\"DC002\","
                                 + "\"paramNameMap\":{\"signedValue\":\"dto.signedValue\"}}"
                                 + "]},"
-                                // [IF_ELSE] calc_months_raw < 18.16121 → true 走 DC003，false 走 DC004
-                                // Oracle: trunc(months_between(...), 4) = 18.1612 < 18.16121 → true 分支
+                                // [IF_ELSE] calc_months_raw < 18.16121 → THEN 走 DC003，ELSE 走 DC004
+                                // Oracle: trunc(months_between(...), 4) = 18.1612 < 18.16121 → THEN 分支
                                 + "{\"type\":\"IF_ELSE\","
-                                + "\"condition\":{\"type\":\"STEP\",\"stepCode\":\"CONDITION001\"},"
-                                + "\"trueFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"DC003\","
-                                + "\"paramNameMap\":{\"principal\":\"dto.principal\",\"rateInput\":\"dto.rateInput\"}},"
-                                + "\"falseFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"DC004\","
+                                + "\"branches\":[{\"condition\":{\"type\":\"STEP\",\"stepCode\":\"CONDITION001\"},"
+                                + "\"thenFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"DC003\","
+                                + "\"paramNameMap\":{\"principal\":\"dto.principal\",\"rateInput\":\"dto.rateInput\"}}}],"
+                                + "\"elseFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"DC004\","
                                 + "\"paramNameMap\":{\"principal\":\"dto.principal\",\"rateInput\":\"dto.rateInput\"}}},"
                                 // [SUB_FLOW] 调用子流程执行日期相关计算（add_months / last_day / 日期相减）
                                 + "{\"type\":\"SUB_FLOW\",\"flowCode\":\"CALC_DATE_SUB\"},"

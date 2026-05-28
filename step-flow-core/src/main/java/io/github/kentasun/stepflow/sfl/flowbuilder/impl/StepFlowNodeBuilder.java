@@ -13,12 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * STEP 关键字解析策略：解析 {@code STEP(stepCode)[.param(k=v,...)][.result(k=v,...)]}
+ * STEP 关键字解析策略：解析 {@code STEP(stepCode)[.PARAM(k=v,...)][.result(k=v,...)]}
  * 并构造 {@link StepFlowNode}。
  * <p>
- * param / result 后缀各最多出现一次；空映射列表规范化为 {@code null}，与 JSON 路径下
+ * PARAM / result 后缀各最多出现一次；空映射列表规范化为 {@code null}，与 JSON 路径下
  * "无映射" 语义一致，避免下游需要区分空 map 与 null 的双重判断。
- * 重复声明（如两次 .param）在解析期即失败。
+ * 重复声明（如两次 .PARAM）在解析期即失败。
  * </p>
  */
 public class StepFlowNodeBuilder implements FlowNodeBuilder {
@@ -32,28 +32,28 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
         Map<String, String> paramNameMap = null;
         Map<String, String> resultNameMap = null;
 
-        // 循环消费可选的 .param(...) / .result(...) 后缀
+        // 循环消费可选的 .PARAM(...) / .result(...) 后缀
         while (parser.nextTokenIsSymbol(SlfKeyWords.DOT_TEXT)) {
             parser.consumeSymbol(SlfKeyWords.DOT_TEXT);
             SflToken suffix = parser.consumeKeyword();
-            if (suffix.isKeyword(SlfKeyWords.STEP_PARAM)) {
+            if (suffix.isKeyword(SlfKeyWords.PARAM)) {
                 if (paramNameMap != null) {
                     throw new SflException(
-                            SlfKeyWords.STEP + " 不允许重复声明 ." + SlfKeyWords.STEP_PARAM
+                            SlfKeyWords.STEP + " 不允许重复声明 ." + SlfKeyWords.PARAM
                                     + "(...)，位置: " + suffix.getPosition());
                 }
-                paramNameMap = parseMappingList(parser, SlfKeyWords.STEP_PARAM);
-            } else if (suffix.isKeyword(SlfKeyWords.STEP_RESULT)) {
+                paramNameMap = parseMappingList(parser, SlfKeyWords.PARAM);
+            } else if (suffix.isKeyword(SlfKeyWords.RESULT)) {
                 if (resultNameMap != null) {
                     throw new SflException(
-                            SlfKeyWords.STEP + " 不允许重复声明 ." + SlfKeyWords.STEP_RESULT
+                            SlfKeyWords.STEP + " 不允许重复声明 ." + SlfKeyWords.RESULT
                                     + "(...)，位置: " + suffix.getPosition());
                 }
-                resultNameMap = parseMappingList(parser, SlfKeyWords.STEP_RESULT);
+                resultNameMap = parseMappingList(parser, SlfKeyWords.RESULT);
             } else {
                 throw new SflException(
                         SlfKeyWords.STEP + " 后缀未知 [" + suffix.getText() + "]，仅支持 "
-                                + SlfKeyWords.STEP_PARAM + " / " + SlfKeyWords.STEP_RESULT
+                                + SlfKeyWords.PARAM + " / " + SlfKeyWords.RESULT
                                 + "，位置: " + suffix.getPosition());
             }
         }
@@ -62,13 +62,13 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
     }
 
     /**
-     * 解析 {@code .param(a=b,c=d)} 或 {@code .result(x=y)} 括号内的键值映射列表。
+     * 解析 {@code .PARAM(a=b,c=d)} 或 {@code .result(x=y)} 括号内的键值映射列表。
      * <p>
      * 使用 {@link LinkedHashMap} 保持声明顺序；重复键在解析期拒绝；空括号返回 {@code null}。
      * </p>
      *
      * @param parser     当前语法分析器
-     * @param suffixName 后缀名，仅用于错误消息（param / result）
+     * @param suffixName 后缀名，仅用于错误消息（PARAM / result）
      * @return 非空映射，或括号内无任何条目时返回 {@code null}
      */
     private Map<String, String> parseMappingList(SflParser parser, String suffixName) {

@@ -81,9 +81,10 @@ public class JexlExpressionTest {
                                 "[{\"type\":\"STEP\",\"stepCode\":\"COMMON001\",\"paramNameMap\":{\"a\":\"dto.num1\",\"b\":\"dto.num2\"}," +
                                 "\"resultNameMap\":{\"add\":\"calc_add\"}},{\"type\":\"STEP\",\"stepCode\":\"COMMON002\"," +
                                 "\"paramNameMap\":{\"a\":\"dto.num3\",\"b\":\"dto.num4\"},\"resultNameMap\":{\"subtract\":\"calc_subtract\"}}]}," +
-                                "{\"type\":\"IF_ELSE\",\"condition\":{\"type\":\"STEP\",\"stepCode\":\"CONDITION001\"}," +
-                                "\"trueFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"COMMON003\",\"paramNameMap\":{\"a\":\"calc_add\",\"b\":\"calc_subtract\"}," +
-                                "\"resultNameMap\":{\"multiply\":\"calc_multiply\"}},\"falseFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"COMMON004\"," +
+                                "{\"type\":\"IF_ELSE\",\"branches\":[{\"condition\":{\"type\":\"STEP\",\"stepCode\":\"CONDITION001\"}," +
+                                "\"thenFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"COMMON003\",\"paramNameMap\":{\"a\":\"calc_add\",\"b\":\"calc_subtract\"}," +
+                                "\"resultNameMap\":{\"multiply\":\"calc_multiply\"}}}]," +
+                                "\"elseFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"COMMON004\"," +
                                 "\"paramNameMap\":{\"a\":\"calc_add\",\"b\":\"calc_subtract\"},\"resultNameMap\":{\"divide\":\"calc_divide\"}}}," +
                                 "{\"type\":\"STEP\",\"stepCode\":\"JAVA001\"}]}")
                         .returnFieldList(Arrays.asList("calc_Hades_res", "add"))

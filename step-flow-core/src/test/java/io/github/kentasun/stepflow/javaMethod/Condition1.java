@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 /**
  * 对应原 Aviator 条件表达式 {@code calc_add > 100 && calc_subtract < 100} 的 Java 实现。
- * <p>用于 IF_ELSE 分支判断，返回 {@link Boolean}。</p>
+ * <p>用于 IF_ELSE 的 IF/ELSIF 条件判断，返回 {@link Boolean}。</p>
  */
 public class Condition1 implements JavaStep {
 

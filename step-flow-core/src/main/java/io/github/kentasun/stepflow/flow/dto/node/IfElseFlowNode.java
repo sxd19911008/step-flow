@@ -9,70 +9,81 @@ import io.github.kentasun.stepflow.dto.ExecutorsContext;
 import io.github.kentasun.stepflow.exception.StepFlowException;
 import io.github.kentasun.stepflow.flow.dto.FlowNodeValidateContext;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
- * 条件判断 FlowNode。
- * <p>if (condition) {trueFlowNode} else {falseFlowNode}</p>
+ * IF_ELSE 流程节点。
  */
 public class IfElseFlowNode extends FlowNode {
 
+    /** 至少包含首段 IF...THEN；后续项对应 ELSIF...THEN */
     @JsonSetter(nulls = Nulls.FAIL)
-    private final StepFlowNode condition;
+    private final List<IfBranch> branches;
 
-    @JsonSetter(nulls = Nulls.FAIL)
-    private final FlowNode trueFlowNode;
-
-    private final FlowNode falseFlowNode;
+    /** 对应 SFL {@code ELSE(...)}；省略 ELSE 时为 null */
+    private final FlowNode elseFlowNode;
 
     @JsonCreator
     public IfElseFlowNode(@JsonProperty("type") String type,
-                          @JsonProperty("condition") StepFlowNode condition,
-                          @JsonProperty("trueFlowNode") FlowNode trueFlowNode,
-                          @JsonProperty("falseFlowNode") FlowNode falseFlowNode) {
+                          @JsonProperty("branches") List<IfBranch> branches,
+                          @JsonProperty("elseFlowNode") FlowNode elseFlowNode) {
         super(type);
-        this.condition = condition;
-        this.trueFlowNode = trueFlowNode;
-        this.falseFlowNode = falseFlowNode;
+        if (branches == null || branches.isEmpty()) {
+            throw new IllegalArgumentException("IF_ELSE 的 branches 不能为空");
+        }
+        this.branches = Collections.unmodifiableList(branches);
+        this.elseFlowNode = elseFlowNode;
     }
 
     @Override
     public void execute(StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
-        Object res = condition.executeThenReturnRes(stepFlowContext, executorsContext);
-        Boolean isTrue;
-        if (res instanceof Boolean) {
-            isTrue = (Boolean) res;
-        } else if (res == null) {
-            throw new StepFlowException(String.format("执行step[%s]，返回null", condition.getStepCode()));
-        } else {
-            throw new StepFlowException(String.format("执行step[%s]，返回错误类型：%s", condition.getStepCode(), res.getClass().getName()));
-        }
-        if (isTrue) {
-            trueFlowNode.execute(stepFlowContext, executorsContext);
-        } else {
-            // falseFlowNode 为null表示不需要任何操作
-            if (falseFlowNode != null) {
-                falseFlowNode.execute(stepFlowContext, executorsContext);
+        for (IfBranch branch : branches) {
+            if (evalConditionAsBoolean(branch.getCondition(), stepFlowContext, executorsContext)) {
+                branch.getThenFlowNode().execute(stepFlowContext, executorsContext);
+                return;
             }
         }
+        if (elseFlowNode != null) {
+            elseFlowNode.execute(stepFlowContext, executorsContext);
+        }
+    }
+
+    /**
+     * 执行条件步骤并转为 boolean；null 或非 Boolean 类型抛 {@link StepFlowException}。
+     */
+    private static boolean evalConditionAsBoolean(StepFlowNode condition,
+                                                  StepFlowContext stepFlowContext,
+                                                  ExecutorsContext executorsContext) {
+        Object res = condition.executeThenReturnRes(stepFlowContext, executorsContext);
+        if (res instanceof Boolean) {
+            return (Boolean) res;
+        }
+        if (res == null) {
+            throw new StepFlowException(
+                    String.format("执行step[%s]，返回null", condition.getStepCode()));
+        }
+        throw new StepFlowException(String.format(
+                "执行step[%s]，返回错误类型：%s",
+                condition.getStepCode(),
+                res.getClass().getName()));
     }
 
     @Override
     public void validate(FlowNodeValidateContext context, String globalFlowCode) {
-        // 校验条件节点
-        condition.validate(context, globalFlowCode);
-        // 校验2个子节点
-        trueFlowNode.validate(context, globalFlowCode);
-        falseFlowNode.validate(context, globalFlowCode);
+        for (IfBranch branch : branches) {
+            branch.validate(context, globalFlowCode);
+        }
+        if (elseFlowNode != null) {
+            elseFlowNode.validate(context, globalFlowCode);
+        }
     }
 
-    public StepFlowNode getCondition() {
-        return this.condition;
+    public List<IfBranch> getBranches() {
+        return branches;
     }
 
-    public FlowNode getTrueFlowNode() {
-        return this.trueFlowNode;
-    }
-
-    public FlowNode getFalseFlowNode() {
-        return this.falseFlowNode;
+    public FlowNode getElseFlowNode() {
+        return elseFlowNode;
     }
 }

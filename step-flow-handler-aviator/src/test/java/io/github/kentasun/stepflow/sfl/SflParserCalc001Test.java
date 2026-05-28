@@ -25,9 +25,10 @@ class SflParserCalc001Test {
                     + "[{\"type\":\"STEP\",\"stepCode\":\"COMMON001\",\"paramNameMap\":{\"a\":\"dto.num1\",\"b\":\"dto.num2\"},"
                     + "\"resultNameMap\":{\"add\":\"calc_add\"}},{\"type\":\"STEP\",\"stepCode\":\"COMMON002\","
                     + "\"paramNameMap\":{\"a\":\"dto.num3\",\"b\":\"dto.num4\"},\"resultNameMap\":{\"subtract\":\"calc_subtract\"}}]},"
-                    + "{\"type\":\"IF_ELSE\",\"condition\":{\"type\":\"STEP\",\"stepCode\":\"CONDITION001\"},"
-                    + "\"trueFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"COMMON003\",\"paramNameMap\":{\"a\":\"calc_add\",\"b\":\"calc_subtract\"},"
-                    + "\"resultNameMap\":{\"multiply\":\"calc_multiply\"}},\"falseFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"COMMON004\","
+                    + "{\"type\":\"IF_ELSE\",\"branches\":[{\"condition\":{\"type\":\"STEP\",\"stepCode\":\"CONDITION001\"},"
+                    + "\"thenFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"COMMON003\",\"paramNameMap\":{\"a\":\"calc_add\",\"b\":\"calc_subtract\"},"
+                    + "\"resultNameMap\":{\"multiply\":\"calc_multiply\"}}}],"
+                    + "\"elseFlowNode\":{\"type\":\"STEP\",\"stepCode\":\"COMMON004\","
                     + "\"paramNameMap\":{\"a\":\"calc_add\",\"b\":\"calc_subtract\"},\"resultNameMap\":{\"divide\":\"calc_divide\"}}},"
                     + "{\"type\":\"STEP\",\"stepCode\":\"JAVA001\"}]}";
 
@@ -36,18 +37,20 @@ class SflParserCalc001Test {
      * <ul>
      *   <li>{@code SEQ} — 对应 JSON {@code SEQUENCE}</li>
      *   <li>{@code PARALLEL} — 并行子流程列表</li>
-     *   <li>{@code STEP(code).param(k=v,...).result(k=v,...)} — 单步及参数/结果映射</li>
-     *   <li>{@code IF(STEP(...)).TRUE(...).FALSE(...)} — 条件分支</li>
+     *   <li>{@code STEP(code).PARAM(k=v,...).result(k=v,...)} — 单步及参数/结果映射</li>
+     *   <li>{@code IF(cond) THEN(...) [ELSIF(cond) THEN(...)]* [ELSE(...)] ENDIF} — 条件分支</li>
      * </ul>
      */
     private static final String CALC001_SFL =
             "SEQ("
                     + "PARALLEL("
-                    + "STEP(COMMON001).param(a=dto.num1,b=dto.num2).result(add=calc_add),"
-                    + "STEP(COMMON002).param(a=dto.num3,b=dto.num4).result(subtract=calc_subtract)"
+                    + "STEP(COMMON001).PARAM(a=dto.num1,b=dto.num2).result(add=calc_add),"
+                    + "STEP(COMMON002).PARAM(a=dto.num3,b=dto.num4).result(subtract=calc_subtract)"
                     + "),"
-                    + "IF(STEP(CONDITION001)).TRUE(STEP(COMMON003).param(a=calc_add,b=calc_subtract).result(multiply=calc_multiply))"
-                    + ".FALSE(STEP(COMMON004).param(a=calc_add,b=calc_subtract).result(divide=calc_divide)),"
+                    + "IF(STEP(CONDITION001))"
+                    + "THEN(STEP(COMMON003).PARAM(a=calc_add,b=calc_subtract).result(multiply=calc_multiply))"
+                    + "ELSE(STEP(COMMON004).PARAM(a=calc_add,b=calc_subtract).result(divide=calc_divide))"
+                    + "ENDIF,"
                     + "STEP(JAVA001)"
                     + ")";
 
