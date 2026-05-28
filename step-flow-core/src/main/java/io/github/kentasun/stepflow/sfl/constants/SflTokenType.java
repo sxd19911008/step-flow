@@ -1,4 +1,8 @@
-package io.github.kentasun.stepflow.sfl;
+package io.github.kentasun.stepflow.sfl.constants;
+
+import io.github.kentasun.stepflow.sfl.SflLexer;
+import io.github.kentasun.stepflow.sfl.SflParser;
+import io.github.kentasun.stepflow.sfl.SflToken;
 
 /**
  * SFL 词法单元类型枚举。
@@ -42,7 +46,7 @@ public enum SflTokenType {
      *
      * @return 单字符或空串字面量，标识符类型为 {@code null}
      */
-    String getLiteral() {
+    public String getLiteral() {
         return literal;
     }
 }

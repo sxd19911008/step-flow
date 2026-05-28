@@ -1,5 +1,7 @@
 package io.github.kentasun.stepflow.sfl;
 
+import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
+
 /**
  * 词法分析产出的不可变记号。
  * <p>

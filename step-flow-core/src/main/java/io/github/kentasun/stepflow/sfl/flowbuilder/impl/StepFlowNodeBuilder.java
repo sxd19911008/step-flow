@@ -1,4 +1,4 @@
-package io.github.kentasun.stepflow.sfl.flowbuilder;
+package io.github.kentasun.stepflow.sfl.flowbuilder.impl;
 
 import io.github.kentasun.stepflow.flow.constants.FlowContentType;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
@@ -7,7 +7,8 @@ import io.github.kentasun.stepflow.sfl.SflException;
 import io.github.kentasun.stepflow.sfl.SflParser;
 import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
 import io.github.kentasun.stepflow.sfl.SflToken;
-import io.github.kentasun.stepflow.sfl.SflTokenType;
+import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
+import io.github.kentasun.stepflow.sfl.flowbuilder.FlowNodeBuilder;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,8 +34,8 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
         Map<String, String> resultNameMap = null;
 
         // 循环消费可选的 .param(...) / .result(...) 后缀
-        while (parser.peek().getType() == SflTokenType.DOT) {
-            parser.consume(); // 消费 '.'
+        while (parser.isCurrentTokenType(SflTokenType.DOT)) {
+            parser.consumeTokenByType(SflTokenType.DOT); // 消费 '.'
             SflToken suffix = parser.consumeTokenByType(SflTokenType.IDENT);
             switch (suffix.getText()) {
                 case SlfKeyWords.STEP_PARAM:
@@ -79,15 +80,15 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
         Map<String, String> map = new LinkedHashMap<>();
 
         // 空括号 → 直接返回 null
-        if (parser.peek().getType() == SflTokenType.RPAREN) {
+        if (parser.isCurrentTokenType(SflTokenType.RPAREN)) {
             parser.consumeTokenByType(SflTokenType.RPAREN);
             return null;
         }
 
         parseMappingEntry(parser, map, suffixName);
-        while (parser.peek().getType() == SflTokenType.COMMA) {
-            parser.consume(); // 消费 ','
-            if (parser.peek().getType() == SflTokenType.RPAREN) {
+        while (parser.isCurrentTokenType(SflTokenType.COMMA)) {
+            parser.consumeTokenByType(SflTokenType.COMMA); // 消费 ','
+            if (parser.isCurrentTokenType(SflTokenType.RPAREN)) {
                 throw new SflException(
                         suffixName + " 映射列表末尾不允许有多余逗号，位置: " + parser.peek().getPosition());
             }

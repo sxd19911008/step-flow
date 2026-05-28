@@ -1,5 +1,7 @@
 package io.github.kentasun.stepflow.sfl;
 
+import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
+
 /**
  * SFL 词法分析器：将编排文本切分为 {@link SflToken} 流。
  * <p>

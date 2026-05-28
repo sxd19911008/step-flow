@@ -1,10 +1,11 @@
-package io.github.kentasun.stepflow.sfl.flowbuilder;
+package io.github.kentasun.stepflow.sfl.flowbuilder.impl;
 
 import io.github.kentasun.stepflow.flow.constants.FlowContentType;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
 import io.github.kentasun.stepflow.flow.dto.node.SequenceFlowNode;
 import io.github.kentasun.stepflow.sfl.SflParser;
-import io.github.kentasun.stepflow.sfl.SflTokenType;
+import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
+import io.github.kentasun.stepflow.sfl.flowbuilder.FlowNodeBuilder;
 
 import java.util.List;
 

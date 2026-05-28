@@ -1,4 +1,4 @@
-package io.github.kentasun.stepflow.sfl.flowbuilder;
+package io.github.kentasun.stepflow.sfl.flowbuilder.impl;
 
 import io.github.kentasun.stepflow.flow.constants.FlowContentType;
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
@@ -8,7 +8,8 @@ import io.github.kentasun.stepflow.sfl.SflException;
 import io.github.kentasun.stepflow.sfl.SflParser;
 import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
 import io.github.kentasun.stepflow.sfl.SflToken;
-import io.github.kentasun.stepflow.sfl.SflTokenType;
+import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
+import io.github.kentasun.stepflow.sfl.flowbuilder.FlowNodeBuilder;
 
 /**
  * IF 关键字解析策略：解析 {@code IF(条件).TRUE(真分支)[.FALSE(假分支)]}
@@ -44,8 +45,8 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
 
         // 解析可选的 .FALSE(...) 分支
         FlowNode falseFlowNode = null;
-        if (parser.peek().getType() == SflTokenType.DOT) {
-            parser.consume(); // 消费 '.'
+        if (parser.isCurrentTokenType(SflTokenType.DOT)) {
+            parser.consumeTokenByType(SflTokenType.DOT); // 消费 '.'
             SflToken falseToken = parser.consumeTokenByType(SflTokenType.IDENT);
             if (!SlfKeyWords.IF_FALSE.equals(falseToken.getText())) {
                 throw new SflException(
@@ -72,11 +73,11 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
      * @return 分支内的 flow 子树
      */
     private FlowNode parseIfBranch(SflParser parser, String branchName) {
-        if (parser.peek().getType() != SflTokenType.DOT) {
+        if (parser.isNotCurrentTokenType(SflTokenType.DOT)) {
             throw new SflException(
                     "IF 缺少 ." + branchName + "(...) 分支，位置: " + parser.peek().getPosition());
         }
-        parser.consume(); // 消费 '.'
+        parser.consumeTokenByType(SflTokenType.DOT); // 消费 '.'
         SflToken branchToken = parser.consumeTokenByType(SflTokenType.IDENT);
         if (!branchName.equals(branchToken.getText())) {
             if (SlfKeyWords.IF_TRUE.equals(branchName)) {

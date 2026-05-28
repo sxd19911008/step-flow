@@ -1,8 +1,10 @@
 package io.github.kentasun.stepflow.sfl;
 
 import io.github.kentasun.stepflow.flow.dto.node.FlowNode;
+import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
 import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
 import io.github.kentasun.stepflow.sfl.flowbuilder.*;
+import io.github.kentasun.stepflow.sfl.flowbuilder.impl.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +15,7 @@ import java.util.Map;
 /**
  * SFL 语法分析器：基于 {@link SflLexer} 的记号流，用递归下降将编排文本构造成 {@link FlowNode} 树。
  * <p>
- * 每个顶层关键字通过 {@link #KEYWORD_PARSERS} 策略注册表分发给对应的 {@link FlowNodeBuilder} 实现，
+ * 每个顶层关键字通过 {@link #FLOW_NODE_BUILDERS} 策略注册表分发给对应的 {@link FlowNodeBuilder} 实现，
  * 避免 switch-case 扩张并完全消除反射。新增关键字只需实现 {@link FlowNodeBuilder} 并在注册表中添加一行。
  * </p>
  * <p>
@@ -34,7 +36,7 @@ public class SflParser {
      * 扩展时在此添加新条目，无需修改 {@link #keywordToFlow()} 主逻辑。
      * </p>
      */
-    private static final Map<String, FlowNodeBuilder> KEYWORD_PARSERS;
+    private static final Map<String, FlowNodeBuilder> FLOW_NODE_BUILDERS;
 
     static {
         Map<String, FlowNodeBuilder> map = new HashMap<>();
@@ -43,7 +45,7 @@ public class SflParser {
         map.put(SlfKeyWords.STEP, new StepFlowNodeBuilder());
         map.put(SlfKeyWords.SUB_FLOW, new SubFlowFlowNodeBuilder());
         map.put(SlfKeyWords.IF, new IfFlowNodeBuilder());
-        KEYWORD_PARSERS = Collections.unmodifiableMap(map);
+        FLOW_NODE_BUILDERS = Collections.unmodifiableMap(map);
     }
 
     /** 词法解析器 */
@@ -66,9 +68,13 @@ public class SflParser {
         SflToken ident = this.consumeTokenByType(SflTokenType.IDENT);
         String keyword = ident.getText();
 
-        FlowNodeBuilder flowNodeBuilder = KEYWORD_PARSERS.get(keyword);
+        FlowNodeBuilder flowNodeBuilder = FLOW_NODE_BUILDERS.get(keyword);
         if (flowNodeBuilder == null) {
-            throw new SflException("未知的关键字 [" + keyword + "]，位置: " + ident.getPosition());
+            throw new SflException(String.format(
+                    "未知的关键字[%s]，位置: [%s]",
+                    keyword,
+                    ident.getPosition()
+            ));
         }
         return flowNodeBuilder.parse(this, ident.getPosition());
     }
@@ -103,13 +109,23 @@ public class SflParser {
     }
 
     /**
-     * 消费并返回当前 token，不做类型校验。
-     * 用于 {@link FlowNodeBuilder} 实现在已知下一个 token 类型时直接跳过（如 '.' 分隔符）。
+     * 校验当前 {@link SflToken} 的 {@code type} 是否是指定 {@link SflTokenType} 类型
      *
-     * @return 被消费的记号
+     * @param type 指定的 {@link SflTokenType} 类型
+     * @return  {@code true} -当前token的type与指定类型一致；{@code false}-不一致
      */
-    public SflToken consume() {
-        return lexer.consume();
+    public boolean isCurrentTokenType(SflTokenType type) {
+        return lexer.peek().getType() == type;
+    }
+
+    /**
+     * 校验当前 {@link SflToken} 的 {@code type} 是否不是指定 {@link SflTokenType} 类型
+     *
+     * @param type 指定的 {@link SflTokenType} 类型
+     * @return  {@code true} -当前token的type与指定类型不一致；{@code false}-一致
+     */
+    public boolean isNotCurrentTokenType(SflTokenType type) {
+        return !this.isCurrentTokenType(type);
     }
 
     /**
