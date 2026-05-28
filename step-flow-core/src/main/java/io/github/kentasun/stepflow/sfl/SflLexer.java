@@ -83,7 +83,7 @@ public class SflLexer {
                 if (isIdentStart(c)) {
                     return readIdent(start);
                 }
-                throw lexError("无法识别的字符: '" + c + "'", start);
+                throw new SflException(String.format("无法识别的字符: '%s'，位置: %s", c, start));
         }
     }
 
@@ -124,9 +124,5 @@ public class SflLexer {
 
     private static boolean isIdentPart(char c) {
         return Character.isLetterOrDigit(c) || c == '_' || c == '.';
-    }
-
-    private static SflException lexError(String msg, int position) {
-        return new SflException(msg + "，位置: " + position);
     }
 }
