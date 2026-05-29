@@ -9,12 +9,15 @@ import io.github.kentasun.stepflow.sfl.constants.SlfKeyWords;
  */
 public class SflLexer {
 
+    /** sfl脚本全文 */
     private final String text;
+    /** 当前游标位置 */
     private int pos;
     /** 当前游标所在行号，从 1 起计 */
     private int line;
     /** 当前游标所在列号（该行第几个字符），从 1 起计 */
     private int column;
+    /** 下个 token */
     private SflToken nextToken;
 
     /**
