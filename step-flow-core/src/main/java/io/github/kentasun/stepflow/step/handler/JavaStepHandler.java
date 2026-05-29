@@ -35,7 +35,7 @@ public class JavaStepHandler implements StepHandler {
     @Override
     public Object execute(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
         String beanName = stepData.getContent();
-        JavaStep javaStep = methodMap.get(beanName);
+        JavaStep javaStep = this.methodMap.get(beanName);
         if (javaStep == null) {
             throw new StepFlowException(String.format("【%s】不存在", beanName));
         }

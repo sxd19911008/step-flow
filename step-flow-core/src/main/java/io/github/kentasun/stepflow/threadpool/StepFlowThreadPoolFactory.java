@@ -34,7 +34,7 @@ public class StepFlowThreadPoolFactory {
         threadFactory.setThreadPriority(Thread.NORM_PRIORITY);
 
         /* 线程池配置项 */
-        StepFlowConfigProperties.ThreadPoolProperty properties = Optional.ofNullable(configProperties.getParallelThreadPool()).orElse(new StepFlowConfigProperties.ThreadPoolProperty());
+        StepFlowConfigProperties.ThreadPoolProperty properties = Optional.ofNullable(this.configProperties.getParallelThreadPool()).orElse(new StepFlowConfigProperties.ThreadPoolProperty());
 
         /* 创建线程池 */
         return new ThreadPoolExecutor(

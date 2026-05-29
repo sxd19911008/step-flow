@@ -63,12 +63,12 @@ public class SflToken {
 
     /** @return {@code true} 表示当前记号为 {@link SflTokenType#SYMBOL} 且 text 等于 {@code symbolText} */
     public boolean isSymbol(String symbolText) {
-        return matches(SflTokenType.SYMBOL, symbolText);
+        return this.matches(SflTokenType.SYMBOL, symbolText);
     }
 
     /** @return {@code true} 表示当前记号为 {@link SflTokenType#KEYWORD} 且 text 等于 {@code keywordText} */
     public boolean isKeyword(String keywordText) {
-        return matches(SflTokenType.KEYWORD, keywordText);
+        return this.matches(SflTokenType.KEYWORD, keywordText);
     }
 
     /** @return {@code true} 表示当前记号为 {@link SflTokenType#LITERAL}（不校验具体文本） */

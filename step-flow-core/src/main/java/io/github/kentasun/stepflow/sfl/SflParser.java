@@ -70,7 +70,7 @@ public class SflParser {
      * @return 当前前瞻记号
      */
     public SflToken peek() {
-        return lexer.peek();
+        return this.lexer.peek();
     }
 
     /**
@@ -80,7 +80,7 @@ public class SflParser {
      * @return {@code true} 表示当前前瞻记号与期望一致
      */
     public boolean nextTokenMatches(SflTokenType type) {
-        return nextTokenMatches(type, null);
+        return this.nextTokenMatches(type, null);
     }
 
     /**
@@ -91,7 +91,7 @@ public class SflParser {
      * @return {@code true} 表示当前前瞻记号与期望一致
      */
     public boolean nextTokenMatches(SflTokenType type, String text) {
-        SflToken token = lexer.peek();
+        SflToken token = this.lexer.peek();
         if (token.getType() != type) {
             return false;
         }
@@ -109,10 +109,10 @@ public class SflParser {
      * @return 是否已成功消费匹配的记号
      */
     public boolean tryConsumeToken(SflTokenType type, String text) {
-        if (!nextTokenMatches(type, text)) {
+        if (!this.nextTokenMatches(type, text)) {
             return false;
         }
-        lexer.consume();
+        this.lexer.consume();
         return true;
     }
 
@@ -123,7 +123,7 @@ public class SflParser {
      * @return 已消费且校验通过的记号
      */
     public SflToken consumeMatched(SflTokenType type) {
-        return consumeMatched(type, null);
+        return this.consumeMatched(type, null);
     }
 
     /**
@@ -134,17 +134,17 @@ public class SflParser {
      * @return 已消费且校验通过的记号
      */
     public SflToken consumeMatched(SflTokenType type, String text) {
-        if (!nextTokenMatches(type, text)) {
-            throw unexpectedToken(type, text);
+        if (!this.nextTokenMatches(type, text)) {
+            throw this.unexpectedToken(type, text);
         }
-        return lexer.consume();
+        return this.lexer.consume();
     }
 
     /**
      * 构造「期望记号与实际不符」的通用错误，供 {@link #consumeMatched(SflTokenType, String)} 使用。
      */
     private SflException unexpectedToken(SflTokenType expectedType, String expectedText) {
-        SflToken actual = lexer.peek();
+        SflToken actual = this.lexer.peek();
         String expected = expectedText == null
                 ? String.valueOf(expectedType)
                 : expectedType + " [" + expectedText + "]";
@@ -165,7 +165,7 @@ public class SflParser {
      * @throws SflException 未知关键字或子规则违反约束时
      */
     public FlowNode keywordToFlow() {
-        SflToken keywordToken = consumeMatched(SflTokenType.KEYWORD);
+        SflToken keywordToken = this.consumeMatched(SflTokenType.KEYWORD);
         String keyword = keywordToken.getText();
 
         FlowNodeBuilder flowNodeBuilder = FLOW_NODE_BUILDERS.get(keyword);
@@ -189,15 +189,15 @@ public class SflParser {
      */
     public List<FlowNode> parseFlowList() {
         List<FlowNode> list = new ArrayList<>();
-        if (nextTokenMatches(SflTokenType.SYMBOL, SlfKeyWords.RPAREN)) {
-            throw new SflException("参数列表不能为空，位置: " + lexer.peek().getPosition());
+        if (this.nextTokenMatches(SflTokenType.SYMBOL, SlfKeyWords.RPAREN)) {
+            throw new SflException("参数列表不能为空，位置: " + this.lexer.peek().getPosition());
         }
-        list.add(keywordToFlow());
-        while (tryConsumeToken(SflTokenType.SYMBOL, SlfKeyWords.COMMA)) {
-            if (nextTokenMatches(SflTokenType.SYMBOL, SlfKeyWords.RPAREN)) {
-                throw new SflException("参数列表末尾不允许有多余逗号，位置: " + lexer.peek().getPosition());
+        list.add(this.keywordToFlow());
+        while (this.tryConsumeToken(SflTokenType.SYMBOL, SlfKeyWords.COMMA)) {
+            if (this.nextTokenMatches(SflTokenType.SYMBOL, SlfKeyWords.RPAREN)) {
+                throw new SflException("参数列表末尾不允许有多余逗号，位置: " + this.lexer.peek().getPosition());
             }
-            list.add(keywordToFlow());
+            list.add(this.keywordToFlow());
         }
         return list;
     }

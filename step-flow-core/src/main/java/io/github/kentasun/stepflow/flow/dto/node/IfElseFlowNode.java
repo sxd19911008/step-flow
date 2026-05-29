@@ -38,14 +38,14 @@ public class IfElseFlowNode extends FlowNode {
 
     @Override
     public void execute(StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
-        for (IfBranch branch : branches) {
+        for (IfBranch branch : this.branches) {
             if (evalConditionAsBoolean(branch, stepFlowContext, executorsContext)) {
                 branch.getThenFlowNode().execute(stepFlowContext, executorsContext);
                 return;
             }
         }
-        if (elseFlowNode != null) {
-            elseFlowNode.execute(stepFlowContext, executorsContext);
+        if (this.elseFlowNode != null) {
+            this.elseFlowNode.execute(stepFlowContext, executorsContext);
         }
     }
 
@@ -92,11 +92,11 @@ public class IfElseFlowNode extends FlowNode {
 
     @Override
     public void validate(FlowNodeValidateContext context, String globalFlowCode) {
-        for (IfBranch branch : branches) {
+        for (IfBranch branch : this.branches) {
             branch.validate(context, globalFlowCode);
         }
-        if (elseFlowNode != null) {
-            elseFlowNode.validate(context, globalFlowCode);
+        if (this.elseFlowNode != null) {
+            this.elseFlowNode.validate(context, globalFlowCode);
         }
     }
 

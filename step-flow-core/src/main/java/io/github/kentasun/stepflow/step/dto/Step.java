@@ -34,7 +34,7 @@ public class Step {
     public Object execute(StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
         /* 准备参数 */
         // 该步骤用到的参数名称
-        List<String> paramNameList = stepData.getParamNameList();
+        List<String> paramNameList = this.stepData.getParamNameList();
         // 参数集合
         Map<String, Object> contextMap = stepFlowContext.getContextMap();
         // 参数名称在参数集合中的映射
@@ -60,8 +60,8 @@ public class Step {
         }
 
         /* 执行步骤并返回 */
-        return stepHandler.execute(
-                stepData,
+        return this.stepHandler.execute(
+                this.stepData,
                 stepFlowContext,
                 OneOffParams.builder()
                         .vars(vars)

@@ -36,7 +36,7 @@ public class ExecutorsContext {
      * @return 步骤执行结果
      */
     public Object executeByStepCode(final String stepCode, StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
-        return stepExecutor.executeByStepCode(stepCode, stepFlowContext, oneOffParams);
+        return this.stepExecutor.executeByStepCode(stepCode, stepFlowContext, oneOffParams);
     }
 
     /**
@@ -47,11 +47,11 @@ public class ExecutorsContext {
      * @return 流程执行结果
      */
     public Map<String, Object> executeByFlowCode(final String flowCode, StepFlowContext stepFlowContext) {
-        return flowExecutor.executeByFlowCode(flowCode, stepFlowContext, this);
+        return this.flowExecutor.executeByFlowCode(flowCode, stepFlowContext, this);
     }
 
     public Step getStep(String stepCode) {
-        return stepExecutor.getStep(stepCode);
+        return this.stepExecutor.getStep(stepCode);
     }
 
     /**
@@ -65,7 +65,7 @@ public class ExecutorsContext {
     public Object executeInlineExpression(String contentType,
                                           String expression,
                                           StepFlowContext stepFlowContext) {
-        return stepExecutor.executeInlineExpression(contentType, expression, stepFlowContext);
+        return this.stepExecutor.executeInlineExpression(contentType, expression, stepFlowContext);
     }
 
     public ExecutorService getStepFlowParallelThreadPool() {

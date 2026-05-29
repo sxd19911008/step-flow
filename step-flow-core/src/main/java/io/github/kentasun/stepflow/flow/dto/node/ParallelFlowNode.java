@@ -32,7 +32,7 @@ public class ParallelFlowNode extends FlowNode {
         ExecutorService stepFlowParallelThreadPool = executorsContext.getStepFlowParallelThreadPool();
 
         // 异步执行所有任务 flowNode
-        CompletableFuture<?>[] futures = flowNodeList.stream()
+        CompletableFuture<?>[] futures = this.flowNodeList.stream()
                 .map(flowNode -> CompletableFuture.runAsync(
                         () -> flowNode.execute(stepFlowContext, executorsContext),
                         stepFlowParallelThreadPool
@@ -46,7 +46,7 @@ public class ParallelFlowNode extends FlowNode {
     @Override
     public void validate(FlowNodeValidateContext context, String globalFlowCode) {
         // 校验所有子节点
-        for (FlowNode flowNode : flowNodeList) {
+        for (FlowNode flowNode : this.flowNodeList) {
             flowNode.validate(context, globalFlowCode);
         }
     }

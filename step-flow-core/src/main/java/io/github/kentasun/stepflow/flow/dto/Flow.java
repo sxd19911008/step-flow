@@ -46,12 +46,12 @@ public class Flow {
      */
     public Map<String, Object> execute(StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
         /* 执行 flow */
-        content.execute(stepFlowContext, executorsContext);
+        this.content.execute(stepFlowContext, executorsContext);
 
         /* flow 如果配置了返回值，则直接从上下文中获取 */
-        if (StepFlowUtils.isNotEmpty(returnFieldList)) {
+        if (StepFlowUtils.isNotEmpty(this.returnFieldList)) {
             Map<String, Object> returnMap = new HashMap<>();
-            for (String key : returnFieldList) {
+            for (String key : this.returnFieldList) {
                 Object value = stepFlowContext.get(key);
                 returnMap.put(key, value);
             }

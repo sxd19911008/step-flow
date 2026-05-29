@@ -39,7 +39,7 @@ public class StepFlowExecutor {
      * @return 执行结果上下文映射
      */
     public Map<String, Object> executeByFlowCode(String flowCode, Map<String, Object> contextMap) {
-        return executorsContext.executeByFlowCode(
+        return this.executorsContext.executeByFlowCode(
                 flowCode,
                 StepFlowContext.builder().contextMap(contextMap).build()
         );
@@ -104,12 +104,12 @@ public class StepFlowExecutor {
             // 构建 step 执行器
             StepExecutor stepExecutor = this.buildStepExecutor();
             // 构建 flow 执行器
-            FlowExecutor flowExecutor = new FlowExecutor(flowProvider, stepExecutor);
+            FlowExecutor flowExecutor = new FlowExecutor(this.flowProvider, stepExecutor);
 
             return new StepFlowExecutor(ExecutorsContext.builder()
                     .stepExecutor(stepExecutor)
                     .flowExecutor(flowExecutor)
-                    .stepFlowParallelThreadPool(parallelThreadPool)
+                    .stepFlowParallelThreadPool(this.parallelThreadPool)
                     .build());
         }
 
@@ -123,7 +123,7 @@ public class StepFlowExecutor {
             }
 
             if (this.parallelThreadPool == null) {
-                StepFlowThreadPoolFactory factory = new StepFlowThreadPoolFactory(configProperties);
+                StepFlowThreadPoolFactory factory = new StepFlowThreadPoolFactory(this.configProperties);
                 this.parallelThreadPool = factory.getStepFlowParallelThreadPool();
             }
 
@@ -142,8 +142,8 @@ public class StepFlowExecutor {
             List<StepHandler> stepHandlers = new ArrayList<>();
             stepHandlers.add(javaStepHandler);
             // 注册用户自定义 StepHandler，同 StepContentType 时覆盖内置实现
-            if (StepFlowUtils.isNotEmpty(stepHandlerList)) {
-                stepHandlers.addAll(stepHandlerList);
+            if (StepFlowUtils.isNotEmpty(this.stepHandlerList)) {
+                stepHandlers.addAll(this.stepHandlerList);
             }
 
             /* 创建 StepExecutor 对象并返回 */

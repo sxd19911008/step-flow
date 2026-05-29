@@ -61,7 +61,7 @@ public class StepFlowSoftCacheTest {
      * @param key       需要模拟 GC 回收的缓存键
      */
     private <K, V> void simulateGc(StepFlowSoftCache<K, V> softCache, K key) throws Exception {
-        ConcurrentHashMap<K, Reference<V>> cache = getInternalCache(softCache);
+        ConcurrentHashMap<K, Reference<V>> cache = this.getInternalCache(softCache);
         Reference<V> ref = cache.get(key);
         assertNotNull(ref, "simulateGc 前该 key 必须已存在于缓存中，key=" + key);
 

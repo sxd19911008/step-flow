@@ -80,13 +80,13 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
             return null;
         }
 
-        parseMappingEntry(parser, map, suffixName);
+        this.parseMappingEntry(parser, map, suffixName);
         while (parser.tryConsumeToken(SflTokenType.SYMBOL, SlfKeyWords.COMMA)) {
             if (parser.nextTokenMatches(SflTokenType.SYMBOL, SlfKeyWords.RPAREN)) {
                 throw new SflException(
                         suffixName + " 映射列表末尾不允许有多余逗号，位置: " + parser.peek().getPosition());
             }
-            parseMappingEntry(parser, map, suffixName);
+            this.parseMappingEntry(parser, map, suffixName);
         }
 
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.RPAREN);

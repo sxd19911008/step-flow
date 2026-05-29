@@ -27,7 +27,7 @@ public class SequenceFlowNode extends FlowNode {
 
     @Override
     public void execute(StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
-        for (FlowNode flowNode : flowNodeList) {
+        for (FlowNode flowNode : this.flowNodeList) {
             flowNode.execute(stepFlowContext, executorsContext);
         }
     }
@@ -35,7 +35,7 @@ public class SequenceFlowNode extends FlowNode {
     @Override
     public void validate(FlowNodeValidateContext context, String globalFlowCode) {
         // 校验所有子节点
-        for (FlowNode flowNode : flowNodeList) {
+        for (FlowNode flowNode : this.flowNodeList) {
             flowNode.validate(context, globalFlowCode);
         }
     }

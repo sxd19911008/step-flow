@@ -28,7 +28,7 @@ public class FlowExecutor {
     private final Map<String, Flow> flowMap;
 
     public FlowExecutor(FlowProvider flowProvider, StepExecutor stepExecutor) {
-        flowMap = new ConcurrentHashMap<>();
+        this.flowMap = new ConcurrentHashMap<>();
         List<InputFlow> inputFlowList = null;
         if (flowProvider != null) {
             inputFlowList = flowProvider.loadFlowList();
@@ -69,7 +69,7 @@ public class FlowExecutor {
                 }
 
                 // 放入 flowMap
-                flowMap.put(
+                this.flowMap.put(
                         inputFlow.getFlowCode(),
                         Flow.builder()
                                 .flowCode(inputFlow.getFlowCode())
@@ -85,7 +85,7 @@ public class FlowExecutor {
             if (StepFlowUtils.isNotBlank(errMsg)) {
                 throw new StepFlowException(errMsg);
             }
-            log.info("FlowExecutor has been created, {} flows has been loaded.", flowMap.size());
+            log.info("FlowExecutor has been created, {} flows has been loaded.", this.flowMap.size());
         }
     }
 
@@ -98,7 +98,7 @@ public class FlowExecutor {
      * @return 流程执行结果
      */
     public Map<String, Object> executeByFlowCode(final String flowCode, StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
-        Flow flow = flowMap.get(flowCode);
+        Flow flow = this.flowMap.get(flowCode);
         if (flow == null) {
             throw new StepFlowException(String.format("【%s】流程不存在", flowCode));
         }

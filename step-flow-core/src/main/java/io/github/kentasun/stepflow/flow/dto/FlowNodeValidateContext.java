@@ -35,7 +35,7 @@ public class FlowNodeValidateContext {
      * @return true-不存在; false-存在
      */
     public boolean flowCodeNotExist(String flowCode) {
-        return !flowCodeSet.contains(flowCode);
+        return !this.flowCodeSet.contains(flowCode);
     }
 
     /**
@@ -45,7 +45,7 @@ public class FlowNodeValidateContext {
      * @return true-不存在; false-存在
      */
     public boolean stepCodeNotExist(String stepCode) {
-        return !stepExecutor.hasStepCode(stepCode);
+        return !this.stepExecutor.hasStepCode(stepCode);
     }
 
     /**
@@ -55,7 +55,7 @@ public class FlowNodeValidateContext {
      * @param errMsg         异常信息
      */
     public void saveErrMsg(String globalFlowCode, String errMsg) {
-        List<String> list = illegalMsgMap.computeIfAbsent(globalFlowCode, k -> new ArrayList<>());
+        List<String> list = this.illegalMsgMap.computeIfAbsent(globalFlowCode, k -> new ArrayList<>());
         list.add(errMsg);
     }
 
@@ -65,12 +65,12 @@ public class FlowNodeValidateContext {
      * @return 最终的信息字符串
      */
     public String buildErrMsg() {
-        if (StepFlowUtils.isEmpty(illegalMsgMap)) {
+        if (StepFlowUtils.isEmpty(this.illegalMsgMap)) {
             return null;
         } else {
             StringBuilder sb = new StringBuilder();
             sb.append("========== 以下flow不合法 ==========").append("\n");
-            for (Map.Entry<String, List<String>> entry : illegalMsgMap.entrySet()) {
+            for (Map.Entry<String, List<String>> entry : this.illegalMsgMap.entrySet()) {
                 String flowCode = entry.getKey();
                 List<String> msgList = entry.getValue();
                 sb.append(flowCode).append(":\n");

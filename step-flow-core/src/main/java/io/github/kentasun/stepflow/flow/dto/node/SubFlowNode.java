@@ -26,7 +26,7 @@ public class SubFlowNode extends FlowNode {
     @Override
     public void execute(StepFlowContext stepFlowContext, ExecutorsContext executorsContext) {
         // 执行流程
-        executorsContext.executeByFlowCode(flowCode, stepFlowContext);
+        executorsContext.executeByFlowCode(this.flowCode, stepFlowContext);
     }
 
     @Override

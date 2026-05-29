@@ -56,7 +56,7 @@ public class StepExecutor {
             List<String> illegalList = new ArrayList<>();
             // 组装 Step
             for (StepData stepData : stepDataList) {
-                Step existingStep = stepMap.get(stepData.getStepCode());
+                Step existingStep = this.stepMap.get(stepData.getStepCode());
                 if (existingStep != null) {
                     duplicateSet.add(stepData.getStepCode());
                     continue;
@@ -78,7 +78,7 @@ public class StepExecutor {
                     continue;
                 }
                 // 放入 stepMap
-                stepMap.put(stepData.getStepCode(), new Step(stepData, stepHandler));
+                this.stepMap.put(stepData.getStepCode(), new Step(stepData, stepHandler));
             }
             if (StepFlowUtils.isNotEmpty(duplicateSet)) {
                 throw new StepFlowException("这些stepCode重复了：" + StepFlowJsonUtils.writeValueAsString(duplicateSet));
@@ -98,7 +98,7 @@ public class StepExecutor {
      * @return 步骤执行结果
      */
     public Object executeByStepCode(final String stepCode, StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
-        Step step = stepMap.get(stepCode);
+        Step step = this.stepMap.get(stepCode);
         if (step == null) {
             throw new StepFlowException(String.format("【%s】步骤不存在", stepCode));
         }
@@ -112,11 +112,11 @@ public class StepExecutor {
      * @return true-存在; false-不存在
      */
     public boolean hasStepCode(String stepCode) {
-        return stepMap.containsKey(stepCode);
+        return this.stepMap.containsKey(stepCode);
     }
 
     public Step getStep(String stepCode) {
-        return stepMap.get(stepCode);
+        return this.stepMap.get(stepCode);
     }
 
     /**
@@ -126,7 +126,7 @@ public class StepExecutor {
      * @return true 表示存在对应 Handler
      */
     public boolean containsStepContentType(String contentType) {
-        return stepHandlerMap.containsKey(contentType);
+        return this.stepHandlerMap.containsKey(contentType);
     }
 
     /**
@@ -146,7 +146,7 @@ public class StepExecutor {
      * @return 对应 Handler；不存在时返回 null
      */
     public StepHandler getStepHandler(String contentType) {
-        return stepHandlerMap.get(contentType);
+        return this.stepHandlerMap.get(contentType);
     }
 
     /**
@@ -172,7 +172,7 @@ public class StepExecutor {
     public Object executeInlineExpression(String contentType,
                                           String expression,
                                           StepFlowContext stepFlowContext) {
-        StepHandler stepHandler = stepHandlerMap.get(contentType);
+        StepHandler stepHandler = this.stepHandlerMap.get(contentType);
         if (stepHandler == null) {
             throw new StepFlowException(String.format("表达式类型[%s]不存在", contentType));
         }

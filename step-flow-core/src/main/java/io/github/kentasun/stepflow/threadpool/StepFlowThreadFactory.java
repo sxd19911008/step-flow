@@ -20,7 +20,7 @@ public class StepFlowThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable runnable) {
-        return createThread(runnable);
+        return this.createThread(runnable);
     }
 
     public Thread createThread(Runnable runnable) {

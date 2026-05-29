@@ -22,7 +22,7 @@ public class SflLexer {
     public SflLexer(String sflText) {
         this.text = sflText;
         this.pos = 0;
-        this.nextToken = nextToken();
+        this.nextToken = this.nextToken();
     }
 
     /**
@@ -31,7 +31,7 @@ public class SflLexer {
      * @return 下一个待消费的记号
      */
     public SflToken peek() {
-        return nextToken;
+        return this.nextToken;
     }
 
     /**
@@ -40,8 +40,8 @@ public class SflLexer {
      * @return 本次消费掉的记号
      */
     public SflToken consume() {
-        SflToken current = nextToken;
-        nextToken = nextToken();
+        SflToken current = this.nextToken;
+        this.nextToken = this.nextToken();
         return current;
     }
 
@@ -54,33 +54,33 @@ public class SflLexer {
      * @return 新记号，输入耗尽时返回 type={@link SflTokenType#SYMBOL}、text 为空串的 EOF 记号
      */
     private SflToken nextToken() {
-        skipWhitespace();
-        if (pos >= text.length()) {
-            return new SflToken(SflTokenType.SYMBOL, SlfKeyWords.EOF_TEXT, pos);
+        this.skipWhitespace();
+        if (this.pos >= this.text.length()) {
+            return new SflToken(SflTokenType.SYMBOL, SlfKeyWords.EOF_TEXT, this.pos);
         }
-        char c = text.charAt(pos);
-        int start = pos;
+        char c = this.text.charAt(this.pos);
+        int start = this.pos;
         switch (c) {
             case SlfKeyWords.CHAR_LPAREN:
-                pos++;
+                this.pos++;
                 return symbolToken(SlfKeyWords.LPAREN, start);
             case SlfKeyWords.CHAR_RPAREN:
-                pos++;
+                this.pos++;
                 return symbolToken(SlfKeyWords.RPAREN, start);
             case SlfKeyWords.CHAR_COMMA:
-                pos++;
+                this.pos++;
                 return symbolToken(SlfKeyWords.COMMA, start);
             case SlfKeyWords.CHAR_DOT:
-                pos++;
+                this.pos++;
                 return symbolToken(SlfKeyWords.DOT, start);
             case SlfKeyWords.CHAR_EQ:
-                pos++;
+                this.pos++;
                 return symbolToken(SlfKeyWords.EQ, start);
             case SlfKeyWords.CHAR_DOUBLE_QUOTE:
-                return readQuotedString(start);
+                return this.readQuotedString(start);
             default:
                 if (isIdentStart(c)) {
-                    return readWord(start);
+                    return this.readWord(start);
                 }
                 throw new SflException(String.format("无法识别的字符: '%s'，位置: %s", c, start));
         }
@@ -109,9 +109,9 @@ public class SflLexer {
      */
     private SflToken readWord(int start) {
         do {
-            pos++;
-        } while (pos < text.length() && isIdentPart(text.charAt(pos)));
-        String word = text.substring(start, pos);
+            this.pos++;
+        } while (this.pos < this.text.length() && isIdentPart(this.text.charAt(this.pos)));
+        String word = this.text.substring(start, this.pos);
         SflTokenType type = SlfKeyWords.isKeywordText(word)
                 ? SflTokenType.KEYWORD
                 : SflTokenType.LITERAL;
@@ -128,33 +128,33 @@ public class SflLexer {
      * @return 字符串记号
      */
     private SflToken readQuotedString(int start) {
-        pos++; // 跳过起始 "
+        this.pos++; // 跳过起始 "
         StringBuilder sb = new StringBuilder();
-        while (pos < text.length()) {
-            char c = text.charAt(pos);
+        while (this.pos < this.text.length()) {
+            char c = this.text.charAt(this.pos);
             if (c == SlfKeyWords.CHAR_BACKSLASH) {
-                pos++;
-                if (pos >= text.length()) {
-                    throw new SflException(String.format("字符串转义不完整，位置: %s", pos - 1));
+                this.pos++;
+                if (this.pos >= this.text.length()) {
+                    throw new SflException(String.format("字符串转义不完整，位置: %s", this.pos - 1));
                 }
-                char escaped = text.charAt(pos);
+                char escaped = this.text.charAt(this.pos);
                 if (escaped != SlfKeyWords.CHAR_DOUBLE_QUOTE) {
                     throw new SflException(String.format(
                             "字符串内仅支持转义双引号（\\\"），实际为 '\\%s'，位置: %s",
                             escaped,
-                            pos - 1
+                            this.pos - 1
                     ));
                 }
                 sb.append(SlfKeyWords.CHAR_DOUBLE_QUOTE);
-                pos++;
+                this.pos++;
                 continue;
             }
             if (c == SlfKeyWords.CHAR_DOUBLE_QUOTE) {
-                pos++; // 跳过结束 "
+                this.pos++; // 跳过结束 "
                 return new SflToken(SflTokenType.QUOTED_STRING, sb.toString(), start);
             }
             sb.append(c);
-            pos++;
+            this.pos++;
         }
         throw new SflException(String.format("字符串缺少结束双引号，位置: %s", start));
     }
@@ -163,10 +163,10 @@ public class SflLexer {
      * 跳过空格、制表符及换行，不生成空白类 Token。
      */
     private void skipWhitespace() {
-        while (pos < text.length()) {
-            char c = text.charAt(pos);
+        while (this.pos < this.text.length()) {
+            char c = this.text.charAt(this.pos);
             if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
-                pos++;
+                this.pos++;
             } else {
                 break;
             }

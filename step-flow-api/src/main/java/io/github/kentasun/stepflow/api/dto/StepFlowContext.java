@@ -18,15 +18,15 @@ public class StepFlowContext {
     }
 
     public void putAll(Map<String, Object> map) {
-        contextMap.putAll(map);
+        this.contextMap.putAll(map);
     }
 
     public void put(String key, Object value) {
-        contextMap.put(key, value);
+        this.contextMap.put(key, value);
     }
 
     public Object get(String key) {
-        return contextMap.get(key);
+        return this.contextMap.get(key);
     }
 
     public Map<String, Object> getContextMap() {

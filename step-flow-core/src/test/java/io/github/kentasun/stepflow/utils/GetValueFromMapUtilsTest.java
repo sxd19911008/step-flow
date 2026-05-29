@@ -427,8 +427,8 @@ public class GetValueFromMapUtilsTest {
         @Override
         public String toString() {
             return "SampleBean{" +
-                    "name='" + name + '\'' +
-                    ", active=" + active +
+                    "name='" + this.name + '\'' +
+                    ", active=" + this.active +
                     '}';
         }
     }
@@ -450,7 +450,7 @@ public class GetValueFromMapUtilsTest {
         @Override
         public String toString() {
             return "IsFlagBean{" +
-                    "isFlag=" + isFlag +
+                    "isFlag=" + this.isFlag +
                     '}';
         }
     }
@@ -472,7 +472,7 @@ public class GetValueFromMapUtilsTest {
         @Override
         public String toString() {
             return "UrlBean{" +
-                    "url='" + url + '\'' +
+                    "url='" + this.url + '\'' +
                     '}';
         }
     }
@@ -494,7 +494,7 @@ public class GetValueFromMapUtilsTest {
         @Override
         public String toString() {
             return "NestedBeanHolder{" +
-                    "bean=" + bean +
+                    "bean=" + this.bean +
                     '}';
         }
     }

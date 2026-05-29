@@ -65,10 +65,10 @@ public class StepFlowSoftCache<K, V> {
      * @throws IllegalStateException 若未在构造时提供 {@code mappingFunction}
      */
     public V getOrPut(K key) {
-        if (mappingFunction == null) {
+        if (this.mappingFunction == null) {
             throw new IllegalStateException("未提供 mappingFunction，请使用 getOrPut(key, mappingFunction)");
         }
-        return getOrPut(key, mappingFunction);
+        return this.getOrPut(key, this.mappingFunction);
     }
 
     /**
@@ -85,10 +85,10 @@ public class StepFlowSoftCache<K, V> {
         // 虽然可以使用递归代替 while-true，但是每次重试都吃一帧栈空间，理论上有栈溢出风险，不建议使用递归。
         while (true) {
             // computeIfAbsent 保证同一 key 的映射函数在并发场景下只执行一次
-            Reference<V> ref = cache.computeIfAbsent(key, k -> {
+            Reference<V> ref = this.cache.computeIfAbsent(key, k -> {
                 // 在构造新值前先清理已失效的条目，避免缓存无限膨胀
-                evictStaleEntries();
-                return new SoftReference<>(mappingFunction.apply(k), referenceQueue);
+                this.evictStaleEntries();
+                return new SoftReference<>(mappingFunction.apply(k), this.referenceQueue);
             });
 
             V value = ref.get();
@@ -98,7 +98,7 @@ public class StepFlowSoftCache<K, V> {
 
             // referent 已被 GC 回收：key 仍在 map 中，computeIfAbsent 不会重算，
             // 需手动移除失效条目后循环重试
-            cache.remove(key, ref);
+            this.cache.remove(key, ref);
         }
     }
 
@@ -108,14 +108,14 @@ public class StepFlowSoftCache<K, V> {
      * @param key 需要失效的缓存键
      */
     public void invalidate(K key) {
-        cache.remove(key);
+        this.cache.remove(key);
     }
 
     /**
      * 清空所有缓存条目。
      */
     public void invalidateAll() {
-        cache.clear();
+        this.cache.clear();
     }
 
     /**
@@ -126,16 +126,16 @@ public class StepFlowSoftCache<K, V> {
      * 确认后排空队列，防止 {@link SoftReference} 壳子对象持续积压。
      */
     private void evictStaleEntries() {
-        if (referenceQueue.poll() != null) {
+        if (this.referenceQueue.poll() != null) {
             // 该队列仅用来感知 GC，需排空队列释放所有已无用的 SoftReference 壳子对象
             //noinspection StatementWithEmptyBody
-            while (referenceQueue.poll() != null) {
+            while (this.referenceQueue.poll() != null) {
             }
             // 扫描缓存，移除 referent 已被 GC 回收的失效条目
-            for (Map.Entry<K, Reference<V>> entry : cache.entrySet()) {
+            for (Map.Entry<K, Reference<V>> entry : this.cache.entrySet()) {
                 Reference<V> ref = entry.getValue();
                 if (ref != null && ref.get() == null) {
-                    cache.remove(entry.getKey(), ref);
+                    this.cache.remove(entry.getKey(), ref);
                 }
             }
         }

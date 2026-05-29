@@ -54,7 +54,7 @@ public class AviatorStepHandler implements StepHandler {
         // 表达式
         String expression = stepData.getContent();
         // 执行表达式并返回
-        return aviator.execute(expression, oneOffParams.getVars());
+        return this.aviator.execute(expression, oneOffParams.getVars());
     }
 
     @Override

@@ -58,7 +58,7 @@ public class AviatorOracleStepHandler implements StepHandler {
         // 表达式
         String expression = stepData.getContent();
         // 执行表达式并返回
-        return aviatorOra.execute(expression, oneOffParams.getVars());
+        return this.aviatorOra.execute(expression, oneOffParams.getVars());
     }
 
     @Override

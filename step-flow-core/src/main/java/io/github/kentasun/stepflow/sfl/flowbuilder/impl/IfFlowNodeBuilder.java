@@ -168,10 +168,10 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
         }
 
         IfBranch toIfBranch(FlowNode thenFlowNode) {
-            if (stepCondition != null) {
-                return new IfBranch(stepCondition, thenFlowNode);
+            if (this.stepCondition != null) {
+                return new IfBranch(this.stepCondition, thenFlowNode);
             }
-            return new IfBranch(expressionType, expression, thenFlowNode);
+            return new IfBranch(this.expressionType, this.expression, thenFlowNode);
         }
     }
 }
