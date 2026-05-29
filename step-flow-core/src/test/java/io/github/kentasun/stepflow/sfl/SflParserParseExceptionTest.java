@@ -72,14 +72,14 @@ class SflParserParseExceptionTest {
                 c("root_not_keyword", "(STEP(a))",
                         "期望 KEYWORD，实际为 SYMBOL [(]，位置: 第 1 行第 1 列（偏移 0）"),
                 c("unknown_keyword", "THEN(STEP(a))",
-                        "未知的关键字[THEN]，位置: [0]"),
+                        "未知的关键字[THEN]，位置: 第 1 行第 1 列（偏移 0）"),
 
                 // ----- parseFlowList：SEQ / PARALLEL 子列表约束 -----
-                c("seq_empty_list", "SEQ()", "参数列表不能为空，位置: 4"),
-                c("seq_trailing_comma", "SEQ(STEP(a),)", "参数列表末尾不允许有多余逗号，位置: 12"),
-                c("parallel_empty_list", "PARALLEL()", "参数列表不能为空，位置: 9"),
+                c("seq_empty_list", "SEQ()", "参数列表不能为空，位置: 第 1 行第 5 列（偏移 4）"),
+                c("seq_trailing_comma", "SEQ(STEP(a),)", "参数列表末尾不允许有多余逗号，位置: 第 1 行第 13 列（偏移 12）"),
+                c("parallel_empty_list", "PARALLEL()", "参数列表不能为空，位置: 第 1 行第 10 列（偏移 9）"),
                 c("parallel_trailing_comma", "PARALLEL(STEP(a),)",
-                        "参数列表末尾不允许有多余逗号，位置: 17"),
+                        "参数列表末尾不允许有多余逗号，位置: 第 1 行第 18 列（偏移 17）"),
                 c("seq_missing_rparen", "SEQ(STEP(a)",
                         "期望 SYMBOL [)]，实际为 SYMBOL，位置: 第 1 行第 12 列（偏移 11）"),
 
@@ -88,17 +88,17 @@ class SflParserParseExceptionTest {
                 c("step_missing_rparen", "STEP(a", "期望 SYMBOL [)]，实际为 SYMBOL，位置: 第 1 行第 7 列（偏移 6）"),
                 c("step_empty_code", "STEP()", "期望 LITERAL，实际为 SYMBOL [)]，位置: 第 1 行第 6 列（偏移 5）"),
                 c("step_dup_param", "STEP(a).PARAM(x=y).PARAM(z=w)",
-                        "STEP 不允许重复声明 .PARAM(...)，位置: 19"),
+                        "STEP 不允许重复声明 .PARAM(...)，位置: 第 1 行第 20 列（偏移 19）"),
                 c("step_dup_result", "STEP(a).result(x=y).result(z=w)",
-                        "STEP 不允许重复声明 .result(...)，位置: 20"),
+                        "STEP 不允许重复声明 .result(...)，位置: 第 1 行第 21 列（偏移 20）"),
                 c("step_unknown_suffix", "STEP(a).THEN(x=y)",
-                        "STEP 后缀未知 [THEN]，仅支持 PARAM / result，位置: 8"),
+                        "STEP 后缀未知 [THEN]，仅支持 PARAM / result，位置: 第 1 行第 9 列（偏移 8）"),
                 c("step_param_trailing_comma", "STEP(a).PARAM(x=y,)",
-                        "PARAM 映射列表末尾不允许有多余逗号，位置: 18"),
-                c("step_param_dup_key", "STEP(a).PARAM(x=y,x=z)", "PARAM 映射键重复: x，位置: 18"),
+                        "PARAM 映射列表末尾不允许有多余逗号，位置: 第 1 行第 19 列（偏移 18）"),
+                c("step_param_dup_key", "STEP(a).PARAM(x=y,x=z)", "PARAM 映射键重复: x，位置: 第 1 行第 19 列（偏移 18）"),
                 c("step_result_trailing_comma", "STEP(a).result(x=y,)",
-                        "result 映射列表末尾不允许有多余逗号，位置: 19"),
-                c("step_result_dup_key", "STEP(a).result(x=y,x=z)", "result 映射键重复: x，位置: 19"),
+                        "result 映射列表末尾不允许有多余逗号，位置: 第 1 行第 20 列（偏移 19）"),
+                c("step_result_dup_key", "STEP(a).result(x=y,x=z)", "result 映射键重复: x，位置: 第 1 行第 20 列（偏移 19）"),
 
                 // ----- SubFlowFlowNodeBuilder -----
                 c("subflow_not_literal", "SUB_FLOW(STEP)",
@@ -110,9 +110,9 @@ class SflParserParseExceptionTest {
                 c("if_missing_endif", "IF(STEP(a))THEN(STEP(b))",
                         "期望 KEYWORD [ENDIF]，实际为 SYMBOL，位置: 第 1 行第 25 列（偏移 24）"),
                 c("if_invalid_condition_seq", "IF(SEQ(STEP(a)))THEN(STEP(b))ENDIF",
-                        "IF 的条件必须是 STEP(...) 或 TYPE(\"expression\")，位置: 0"),
+                        "IF 的条件必须是 STEP(...) 或 TYPE(\"expression\")，位置: 第 1 行第 1 列（偏移 0）"),
                 c("if_invalid_condition_reserved_kw", "IF(THEN)THEN(STEP(a))ENDIF",
-                        "IF 的条件必须是 STEP(...) 或 TYPE(\"expression\")，位置: 0"),
+                        "IF 的条件必须是 STEP(...) 或 TYPE(\"expression\")，位置: 第 1 行第 1 列（偏移 0）"),
                 c("if_missing_then", "IF(STEP(a))STEP(b)ENDIF",
                         "期望 KEYWORD [THEN]，实际为 KEYWORD [STEP]，位置: 第 1 行第 12 列（偏移 11）"),
                 c("if_inline_not_quoted", "IF(AVIATOR(expr))THEN(STEP(a))ENDIF",
@@ -121,7 +121,7 @@ class SflParserParseExceptionTest {
                         "期望 SYMBOL [(]，实际为 KEYWORD [STEP]，位置: 第 1 行第 4 列（偏移 3）"),
                 c("if_missing_rparen_condition", "IF(STEP(a)THEN(STEP(b))ENDIF",
                         "期望 SYMBOL [)]，实际为 KEYWORD [THEN]，位置: 第 1 行第 11 列（偏移 10）"),
-                c("if_then_empty_seq", "IF(STEP(a))THEN(SEQ())ENDIF", "参数列表不能为空，位置: 20"),
+                c("if_then_empty_seq", "IF(STEP(a))THEN(SEQ())ENDIF", "参数列表不能为空，位置: 第 1 行第 21 列（偏移 20）"),
                 c("if_elsif_missing_then", "IF(STEP(a))THEN(STEP(b))ELSIF(STEP(c))ENDIF",
                         "期望 KEYWORD [THEN]，实际为 KEYWORD [ENDIF]，位置: 第 1 行第 39 列（偏移 38）"),
                 // THEN(...) 内仅允许单个子 flow，逗号导致期望右括号时遇到逗号
@@ -129,7 +129,7 @@ class SflParserParseExceptionTest {
                         "期望 SYMBOL [)]，实际为 SYMBOL [,]，位置: 第 1 行第 24 列（偏移 23）"),
                 // THEN 内嵌 SEQ 时走 parseFlowList，触发列表尾随逗号校验
                 c("if_then_seq_trailing_comma", "IF(STEP(a))THEN(SEQ(STEP(b),))ENDIF",
-                        "参数列表末尾不允许有多余逗号，位置: 28")
+                        "参数列表末尾不允许有多余逗号，位置: 第 1 行第 29 列（偏移 28）")
         );
     }
 

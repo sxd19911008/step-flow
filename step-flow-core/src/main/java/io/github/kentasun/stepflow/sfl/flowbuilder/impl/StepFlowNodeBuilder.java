@@ -25,7 +25,7 @@ import java.util.Map;
 public class StepFlowNodeBuilder implements FlowNodeBuilder {
 
     @Override
-    public FlowNode parse(SflParser parser, int keywordPos) {
+    public FlowNode parse(SflParser parser, String keywordLocation) {
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.LPAREN);
         SflToken stepCodeToken = parser.consumeMatched(SflTokenType.LITERAL);
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.RPAREN);
@@ -40,21 +40,21 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
                 if (paramNameMap != null) {
                     throw new SflException(
                             SlfKeyWords.STEP + " 不允许重复声明 ." + SlfKeyWords.PARAM
-                                    + "(...)，位置: " + suffix.getPosition());
+                                    + "(...)，位置: " + suffix.formatLocation());
                 }
                 paramNameMap = parseMappingList(parser, SlfKeyWords.PARAM);
             } else if (suffix.isKeyword(SlfKeyWords.RESULT)) {
                 if (resultNameMap != null) {
                     throw new SflException(
                             SlfKeyWords.STEP + " 不允许重复声明 ." + SlfKeyWords.RESULT
-                                    + "(...)，位置: " + suffix.getPosition());
+                                    + "(...)，位置: " + suffix.formatLocation());
                 }
                 resultNameMap = parseMappingList(parser, SlfKeyWords.RESULT);
             } else {
                 throw new SflException(
                         SlfKeyWords.STEP + " 后缀未知 [" + suffix.getText() + "]，仅支持 "
                                 + SlfKeyWords.PARAM + " / " + SlfKeyWords.RESULT
-                                + "，位置: " + suffix.getPosition());
+                                + "，位置: " + suffix.formatLocation());
             }
         }
 
@@ -84,7 +84,7 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
         while (parser.tryConsumeToken(SflTokenType.SYMBOL, SlfKeyWords.COMMA)) {
             if (parser.nextTokenMatches(SflTokenType.SYMBOL, SlfKeyWords.RPAREN)) {
                 throw new SflException(
-                        suffixName + " 映射列表末尾不允许有多余逗号，位置: " + parser.peek().getPosition());
+                        suffixName + " 映射列表末尾不允许有多余逗号，位置: " + parser.peek().formatLocation());
             }
             this.parseMappingEntry(parser, map, suffixName);
         }
@@ -106,7 +106,7 @@ public class StepFlowNodeBuilder implements FlowNodeBuilder {
         SflToken value = parser.consumeMatched(SflTokenType.LITERAL);
         if (map.containsKey(key.getText())) {
             throw new SflException(
-                    suffixName + " 映射键重复: " + key.getText() + "，位置: " + key.getPosition());
+                    suffixName + " 映射键重复: " + key.getText() + "，位置: " + key.formatLocation());
         }
         map.put(key.getText(), value.getText());
     }

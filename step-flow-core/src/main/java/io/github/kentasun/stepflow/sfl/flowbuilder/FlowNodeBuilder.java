@@ -22,9 +22,9 @@ public interface FlowNodeBuilder {
      * 解析关键字之后的语法片段，返回对应的流程节点。
      *
      * @param parser     当前语法分析器
-     * @param keywordPos 关键字在源文本中的字符偏移，用于错误定位
+     * @param keywordLocation 关键字在源文本中的可读位置描述，用于错误定位
      * @return 解析结果节点，不为 null
      * @throws SflException 语法或语义规则违反时
      */
-    FlowNode parse(SflParser parser, int keywordPos);
+    FlowNode parse(SflParser parser, String keywordLocation);
 }

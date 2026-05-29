@@ -171,12 +171,12 @@ public class SflParser {
         FlowNodeBuilder flowNodeBuilder = FLOW_NODE_BUILDERS.get(keyword);
         if (flowNodeBuilder == null) {
             throw new SflException(String.format(
-                    "未知的关键字[%s]，位置: [%s]",
+                    "未知的关键字[%s]，位置: %s",
                     keyword,
-                    keywordToken.getPosition()
+                    keywordToken.formatLocation()
             ));
         }
-        return flowNodeBuilder.parse(this, keywordToken.getPosition());
+        return flowNodeBuilder.parse(this, keywordToken.formatLocation());
     }
 
     /**
@@ -190,12 +190,12 @@ public class SflParser {
     public List<FlowNode> parseFlowList() {
         List<FlowNode> list = new ArrayList<>();
         if (this.nextTokenMatches(SflTokenType.SYMBOL, SlfKeyWords.RPAREN)) {
-            throw new SflException("参数列表不能为空，位置: " + this.lexer.peek().getPosition());
+            throw new SflException("参数列表不能为空，位置: " + this.lexer.peek().formatLocation());
         }
         list.add(this.keywordToFlow());
         while (this.tryConsumeToken(SflTokenType.SYMBOL, SlfKeyWords.COMMA)) {
             if (this.nextTokenMatches(SflTokenType.SYMBOL, SlfKeyWords.RPAREN)) {
-                throw new SflException("参数列表末尾不允许有多余逗号，位置: " + this.lexer.peek().getPosition());
+                throw new SflException("参数列表末尾不允许有多余逗号，位置: " + this.lexer.peek().formatLocation());
             }
             list.add(this.keywordToFlow());
         }

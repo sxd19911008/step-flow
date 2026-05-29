@@ -20,7 +20,7 @@ import java.util.List;
 public class ParallelFlowNodeBuilder implements FlowNodeBuilder {
 
     @Override
-    public FlowNode parse(SflParser parser, int keywordPos) {
+    public FlowNode parse(SflParser parser, String keywordLocation) {
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.LPAREN);
         List<FlowNode> children = parser.parseFlowList();
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.RPAREN);

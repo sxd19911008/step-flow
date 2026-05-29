@@ -34,11 +34,11 @@ import java.util.List;
 public class IfFlowNodeBuilder implements FlowNodeBuilder {
 
     @Override
-    public FlowNode parse(SflParser parser, int keywordPos) {
+    public FlowNode parse(SflParser parser, String keywordLocation) {
         List<IfBranch> branches = new ArrayList<>();
 
         // 首段：IF(条件) THEN(体)
-        branches.add(this.parseIfConditionThenPair(parser, keywordPos));
+        branches.add(this.parseIfConditionThenPair(parser, keywordLocation));
 
         // 零个或多个 ELSIF(条件) THEN(体)
         while (parser.tryConsumeToken(SflTokenType.KEYWORD, SlfKeyWords.ELSIF)) {
@@ -59,9 +59,9 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
     /**
      * 解析 {@code IF(条件)} 后紧跟的 {@code THEN(体)}，返回一条分支。
      */
-    private IfBranch parseIfConditionThenPair(SflParser parser, int keywordPos) {
+    private IfBranch parseIfConditionThenPair(SflParser parser, String keywordLocation) {
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.LPAREN);
-        ConditionParts conditionParts = this.parseCondition(parser, SlfKeyWords.IF, keywordPos);
+        ConditionParts conditionParts = this.parseCondition(parser, SlfKeyWords.IF, keywordLocation);
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.RPAREN);
         FlowNode thenFlowNode = this.parseThenBlock(parser);
         return conditionParts.toIfBranch(thenFlowNode);
@@ -73,7 +73,7 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
     private IfBranch parseElsifConditionThen(SflParser parser) {
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.LPAREN);
         SflToken elsifToken = parser.peek();
-        ConditionParts conditionParts = this.parseCondition(parser, SlfKeyWords.ELSIF, elsifToken.getPosition());
+        ConditionParts conditionParts = this.parseCondition(parser, SlfKeyWords.ELSIF, elsifToken.formatLocation());
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.RPAREN);
         FlowNode thenFlowNode = this.parseThenBlock(parser);
         return conditionParts.toIfBranch(thenFlowNode);
@@ -103,13 +103,13 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
     /**
      * 解析 IF / ELSIF 括号内的条件：{@code STEP(...)} 或 {@code TYPE("expression")}。
      */
-    private ConditionParts parseCondition(SflParser parser, String blockKeyword, int position) {
+    private ConditionParts parseCondition(SflParser parser, String blockKeyword, String location) {
         if (parser.nextTokenMatches(SflTokenType.KEYWORD, SlfKeyWords.STEP)) {
             FlowNode conditionNode = parser.keywordToFlow();
             if (!(conditionNode instanceof StepFlowNode)) {
                 throw new SflException(
                         blockKeyword + " 的条件必须是 " + SlfKeyWords.STEP + "(...)，实际为 ["
-                                + conditionNode.getType() + "]，位置: " + position);
+                                + conditionNode.getType() + "]，位置: " + location);
             }
             return ConditionParts.step((StepFlowNode) conditionNode);
         } else if (parser.nextTokenMatches(SflTokenType.LITERAL)) {
@@ -117,7 +117,7 @@ public class IfFlowNodeBuilder implements FlowNodeBuilder {
         }
         throw new SflException(
                 blockKeyword + " 的条件必须是 " + SlfKeyWords.STEP
-                        + "(...) 或 TYPE(\"expression\")，位置: " + position);
+                        + "(...) 或 TYPE(\"expression\")，位置: " + location);
     }
 
     /**

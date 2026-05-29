@@ -18,7 +18,7 @@ import io.github.kentasun.stepflow.sfl.flowbuilder.FlowNodeBuilder;
 public class SubFlowFlowNodeBuilder implements FlowNodeBuilder {
 
     @Override
-    public FlowNode parse(SflParser parser, int keywordPos) {
+    public FlowNode parse(SflParser parser, String keywordLocation) {
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.LPAREN);
         SflToken flowCodeToken = parser.consumeMatched(SflTokenType.LITERAL, null);
         parser.consumeMatched(SflTokenType.SYMBOL, SlfKeyWords.RPAREN);
