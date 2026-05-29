@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 /**
- * 校验 CALC001 流程的 SFL 文本经 {@link SflParser} 解析并 Jackson 序列化后，
+ * 校验 SFL 文本经 {@link SflParser} 解析
  */
-class SflParserCalc001Test {
+class SflParserTest {
 
     private static final String expected =
             "{\"type\":\"SEQUENCE\",\"flowNodeList\":[{\"type\":\"PARALLEL\",\"flowNodeList\":"
@@ -28,7 +28,7 @@ class SflParserCalc001Test {
                     + "\"paramNameMap\":{\"a\":\"calc_add\",\"b\":\"calc_subtract\"},\"resultNameMap\":{\"divide\":\"calc_divide\"}}},"
                     + "{\"type\":\"STEP\",\"stepCode\":\"JAVA001\"}]}";
 
-    private static final String CALC001_SFL =
+    private static final String SFL =
             "SEQ("
                     + "PARALLEL("
                     + "STEP(COMMON001).PARAM(a=dto.num1,b=dto.num2).result(add=calc_add),"
@@ -44,12 +44,12 @@ class SflParserCalc001Test {
                     + ")";
 
     /**
-     * 将 CALC001 的 SFL 文本解析为 {@link FlowNode}，经与 {@link FlowExecutor} 相同的
+     * 将 SFL 文本解析为 {@link FlowNode}，经与 {@link FlowExecutor} 相同的
      * {@link StepFlowJsonUtils} 序列化后，与既有 JSON content 做结构化比对。
      */
     @Test
-    void calc001SflParseShouldMatchJsonContent() {
-        FlowNode actual = SflParser.parse(CALC001_SFL);
+    void testSflParser() {
+        FlowNode actual = SflParser.parse(SFL);
         Map<String, String> diffMap = JsonUtils.compare(actual, expected);
         Assertions.assertTrue(
                 diffMap.isEmpty(),
