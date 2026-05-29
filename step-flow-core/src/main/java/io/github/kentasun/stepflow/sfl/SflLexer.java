@@ -11,8 +11,11 @@ public class SflLexer {
 
     private final String text;
     private int pos;
+    /** 当前游标所在行号，从 1 起计 */
+    private int line;
+    /** 当前游标所在列号（该行第几个字符），从 1 起计 */
+    private int column;
     private SflToken nextToken;
-    // TODO 记录 行数、列数，用于打印报错日志
 
     /**
      * 绑定完整 SFL 源文本并预读第一个记号。
@@ -22,6 +25,8 @@ public class SflLexer {
     public SflLexer(String sflText) {
         this.text = sflText;
         this.pos = 0;
+        this.line = 1;
+        this.column = 1;
         this.nextToken = this.nextToken();
     }
 
@@ -55,42 +60,49 @@ public class SflLexer {
      */
     private SflToken nextToken() {
         this.skipWhitespace();
+        // 记号起始处的行、列与偏移，供 SflToken 记录及异常定位
+        int tokenLine = this.line;
+        int tokenColumn = this.column;
         if (this.pos >= this.text.length()) {
-            return new SflToken(SflTokenType.SYMBOL, SlfKeyWords.EOF_TEXT, this.pos);
+            return new SflToken(SflTokenType.SYMBOL, SlfKeyWords.EOF_TEXT, this.pos, tokenLine, tokenColumn);
         }
         char c = this.text.charAt(this.pos);
         int start = this.pos;
         switch (c) {
             case SlfKeyWords.CHAR_LPAREN:
-                this.pos++;
-                return symbolToken(SlfKeyWords.LPAREN, start);
+                this.advance();
+                return this.symbolToken(SlfKeyWords.LPAREN, start, tokenLine, tokenColumn);
             case SlfKeyWords.CHAR_RPAREN:
-                this.pos++;
-                return symbolToken(SlfKeyWords.RPAREN, start);
+                this.advance();
+                return this.symbolToken(SlfKeyWords.RPAREN, start, tokenLine, tokenColumn);
             case SlfKeyWords.CHAR_COMMA:
-                this.pos++;
-                return symbolToken(SlfKeyWords.COMMA, start);
+                this.advance();
+                return this.symbolToken(SlfKeyWords.COMMA, start, tokenLine, tokenColumn);
             case SlfKeyWords.CHAR_DOT:
-                this.pos++;
-                return symbolToken(SlfKeyWords.DOT, start);
+                this.advance();
+                return this.symbolToken(SlfKeyWords.DOT, start, tokenLine, tokenColumn);
             case SlfKeyWords.CHAR_EQ:
-                this.pos++;
-                return symbolToken(SlfKeyWords.EQ, start);
+                this.advance();
+                return this.symbolToken(SlfKeyWords.EQ, start, tokenLine, tokenColumn);
             case SlfKeyWords.CHAR_DOUBLE_QUOTE:
-                return this.readQuotedString(start);
+                return this.readQuotedString(start, tokenLine, tokenColumn);
             default:
                 if (isIdentStart(c)) {
-                    return this.readWord(start);
+                    return this.readWord(start, tokenLine, tokenColumn);
                 }
-                throw new SflException(String.format("无法识别的字符: '%s'，位置: %s", c, start));
+                throw new SflException(String.format(
+                        "无法识别的字符: '%s'，位置: %s",
+                        c,
+                        this.formatLocation(start, tokenLine, tokenColumn)
+                ));
         }
     }
 
     /**
      * 构造符号类记号。
      */
-    private static SflToken symbolToken(String symbolText, int position) {
-        return new SflToken(SflTokenType.SYMBOL, symbolText, position);
+    private SflToken symbolToken(String symbolText, int position, int line, int column) {
+        return new SflToken(SflTokenType.SYMBOL, symbolText, position, line, column);
     }
 
     /**
@@ -104,18 +116,20 @@ public class SflLexer {
      * 否则产出 {@link SflTokenType#LITERAL}。
      * </p>
      *
-     * @param start 标识符在源文本中的起始下标
+     * @param start       标识符在源文本中的起始下标
+     * @param tokenLine   标识符起始行号
+     * @param tokenColumn 标识符起始列号
      * @return KEYWORD 或 LITERAL 记号
      */
-    private SflToken readWord(int start) {
+    private SflToken readWord(int start, int tokenLine, int tokenColumn) {
         do {
-            this.pos++;
+            this.advance();
         } while (this.pos < this.text.length() && isIdentPart(this.text.charAt(this.pos)));
         String word = this.text.substring(start, this.pos);
         SflTokenType type = SlfKeyWords.isKeywordText(word)
                 ? SflTokenType.KEYWORD
                 : SflTokenType.LITERAL;
-        return new SflToken(type, word, start);
+        return new SflToken(type, word, start, tokenLine, tokenColumn);
     }
 
     /**
@@ -124,39 +138,51 @@ public class SflLexer {
      * 产出 {@link SflTokenType#QUOTED_STRING}，{@link SflToken#getText()} 为去掉转义后的正文。
      * </p>
      *
-     * @param start 起始双引号在源文本中的下标
+     * @param start       起始双引号在源文本中的下标
+     * @param tokenLine   起始双引号所在行号
+     * @param tokenColumn 起始双引号所在列号
      * @return 字符串记号
      */
-    private SflToken readQuotedString(int start) {
-        this.pos++; // 跳过起始 "
+    private SflToken readQuotedString(int start, int tokenLine, int tokenColumn) {
+        this.advance(); // 跳过起始 "
         StringBuilder sb = new StringBuilder();
         while (this.pos < this.text.length()) {
             char c = this.text.charAt(this.pos);
             if (c == SlfKeyWords.CHAR_BACKSLASH) {
-                this.pos++;
+                // 记录反斜杠位置，便于转义错误时给出准确行、列
+                int escapeLine = this.line;
+                int escapeColumn = this.column;
+                int escapeOffset = this.pos;
+                this.advance();
                 if (this.pos >= this.text.length()) {
-                    throw new SflException(String.format("字符串转义不完整，位置: %s", this.pos - 1));
+                    throw new SflException(String.format(
+                            "字符串转义不完整，位置: %s",
+                            this.formatLocation(escapeOffset, escapeLine, escapeColumn)
+                    ));
                 }
                 char escaped = this.text.charAt(this.pos);
                 if (escaped != SlfKeyWords.CHAR_DOUBLE_QUOTE) {
                     throw new SflException(String.format(
-                            "字符串内仅支持转义双引号（\\\"），实际为 '\\%s'，位置: %s",
+                            "字符串内仅支持转义双引号[\\\"]，实际为[\\%s]，位置: %s",
                             escaped,
-                            this.pos - 1
+                            this.formatLocation(escapeOffset, escapeLine, escapeColumn)
                     ));
                 }
                 sb.append(SlfKeyWords.CHAR_DOUBLE_QUOTE);
-                this.pos++;
+                this.advance();
                 continue;
             }
             if (c == SlfKeyWords.CHAR_DOUBLE_QUOTE) {
-                this.pos++; // 跳过结束 "
-                return new SflToken(SflTokenType.QUOTED_STRING, sb.toString(), start);
+                this.advance(); // 跳过结束 "
+                return new SflToken(SflTokenType.QUOTED_STRING, sb.toString(), start, tokenLine, tokenColumn);
             }
             sb.append(c);
-            this.pos++;
+            this.advance();
         }
-        throw new SflException(String.format("字符串缺少结束双引号，位置: %s", start));
+        throw new SflException(String.format(
+                "字符串缺少结束双引号，位置: %s",
+                this.formatLocation(start, tokenLine, tokenColumn)
+        ));
     }
 
     /**
@@ -166,11 +192,42 @@ public class SflLexer {
         while (this.pos < this.text.length()) {
             char c = this.text.charAt(this.pos);
             if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
-                this.pos++;
+                this.advance();
             } else {
                 break;
             }
         }
+    }
+
+    /**
+     * 将游标前进一格，并同步更新 {@link #line}、{@link #column}。
+     * <p>
+     * {@code \r\n} 视为一次换行；单独的 {@code \r} 或 {@code \n} 同样换行。
+     * </p>
+     */
+    private void advance() {
+        char c = this.text.charAt(this.pos);
+        this.pos++;
+        if (c == '\r') {
+            this.line++;
+            this.column = 1;
+            // Windows 换行：吞掉紧随其后的 \n，避免重复换行
+            if (this.pos < this.text.length() && this.text.charAt(this.pos) == '\n') {
+                this.pos++;
+            }
+        } else if (c == '\n') {
+            this.line++;
+            this.column = 1;
+        } else {
+            this.column++;
+        }
+    }
+
+    /**
+     * 将指定偏移处的行、列与偏移格式化为可读位置描述。
+     */
+    private String formatLocation(int offset, int line, int column) {
+        return String.format("第 %d 行第 %d 列（偏移 %d）", line, column, offset);
     }
 
     private static boolean isIdentStart(char c) {

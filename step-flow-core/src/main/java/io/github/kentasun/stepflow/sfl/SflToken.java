@@ -14,12 +14,23 @@ import io.github.kentasun.stepflow.sfl.constants.SflTokenType;
  * {@link #getPosition()} 为记号在原始 SFL 串中的起始下标，
  * 用于构造带偏移的 {@link SflException}。
  * </p>
+ * <p>
+ * {@link #getLine()} / {@link #getColumn()} 为记号起始处的行号与列号（均从 1 起计），
+ * 便于在异常消息中给出可读位置；可用 {@link #formatLocation()} 一次性格式化为完整描述。
+ * </p>
  */
 public class SflToken {
 
+    /** token 类型 */
     private final SflTokenType type;
+    /** token 内容 */
     private final String text;
+    /** token 位置 */
     private final int position;
+    /** 行号，从 1 起计 */
+    private final int line;
+    /** 列号（该行第几个字符），从 1 起计 */
+    private final int column;
 
     /**
      * 构造词法记号。
@@ -27,11 +38,15 @@ public class SflToken {
      * @param type     语法角色，不可为 null
      * @param text     记号文本，不可为 null（EOF 使用空串）
      * @param position 源文本起始偏移
+     * @param line     记号起始行号（从 1 起计）
+     * @param column   记号起始列号（从 1 起计）
      */
-    SflToken(SflTokenType type, String text, int position) {
+    SflToken(SflTokenType type, String text, int position, int line, int column) {
         this.type = type;
         this.text = text;
         this.position = position;
+        this.line = line;
+        this.column = column;
     }
 
     public SflTokenType getType() {
@@ -44,6 +59,29 @@ public class SflToken {
 
     public int getPosition() {
         return position;
+    }
+
+    /**
+     * @return 记号在源文本中的起始行号，从 1 起计
+     */
+    public int getLine() {
+        return line;
+    }
+
+    /**
+     * @return 记号在起始行中的列号（第几个字符），从 1 起计
+     */
+    public int getColumn() {
+        return column;
+    }
+
+    /**
+     * 将行号、列号与字符偏移格式化为统一的位置描述，供 {@link SflException} 消息拼接。
+     *
+     * @return 形如「第 2 行第 5 列（偏移 12）」的可读字符串
+     */
+    public String formatLocation() {
+        return String.format("第 %d 行第 %d 列（偏移 %d）", this.line, this.column, this.position);
     }
 
     /**

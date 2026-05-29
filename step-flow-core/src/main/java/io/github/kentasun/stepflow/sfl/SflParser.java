@@ -152,7 +152,7 @@ public class SflParser {
                 "期望 %s，实际为 %s，位置: %s",
                 expected,
                 actual.getType() + (actual.getText().isEmpty() ? "" : " [" + actual.getText() + "]"),
-                actual.getPosition()
+                actual.formatLocation()
         ));
     }
 
