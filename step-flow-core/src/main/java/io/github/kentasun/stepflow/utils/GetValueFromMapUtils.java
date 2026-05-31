@@ -30,7 +30,7 @@ public class GetValueFromMapUtils {
      * @param env      参数map
      * @return 新参数map
      */
-    public static Map<String, Object> getRootValueFromContextMap(List<String> nameList, Map<String, Object> env) {
+    public static Map<String, Object> getStepVars(List<String> nameList, Map<String, Object> env) {
         if (StepFlowUtils.isEmpty(nameList) || StepFlowUtils.isEmpty(env)) {
             return new HashMap<>();
         }
