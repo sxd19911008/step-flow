@@ -1,7 +1,6 @@
 package io.github.kentasun.stepflow.api.step;
 
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
-import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 
 /**
@@ -9,5 +8,5 @@ import io.github.kentasun.stepflow.api.step.dto.StepData;
  */
 public interface JavaStep {
 
-    Object invoke(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams);
+    Object invoke(StepData stepData, OneOffParams oneOffParams);
 }

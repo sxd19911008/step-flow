@@ -2,7 +2,6 @@ package io.github.kentasun.stepflow.aviator.handler;
 
 import com.googlecode.aviator.AviatorEvaluatorInstance;
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
-import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.api.step.StepHandlerCustomizer;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
@@ -50,7 +49,7 @@ public class AviatorStepHandler implements StepHandler {
     }
 
     @Override
-    public Object execute(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
+    public Object execute(StepData stepData, OneOffParams oneOffParams) {
         // 表达式
         String expression = stepData.getContent();
         // 执行表达式并返回

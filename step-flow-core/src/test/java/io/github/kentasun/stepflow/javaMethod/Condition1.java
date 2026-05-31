@@ -1,7 +1,6 @@
 package io.github.kentasun.stepflow.javaMethod;
 
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
-import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.api.step.JavaStep;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
@@ -17,7 +16,7 @@ public class Condition1 implements JavaStep {
     private static final BigDecimal THRESHOLD = new BigDecimal("100");
 
     @Override
-    public Object invoke(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
+    public Object invoke(StepData stepData, OneOffParams oneOffParams) {
         BigDecimal calcAdd = StepFlowUtils.getValByMap("calc_add", oneOffParams.getVars(), BigDecimal.class);
         BigDecimal calcSubtract = StepFlowUtils.getValByMap("calc_subtract", oneOffParams.getVars(), BigDecimal.class);
         return calcAdd.compareTo(THRESHOLD) > 0 && calcSubtract.compareTo(THRESHOLD) < 0;

@@ -181,7 +181,6 @@ public class StepExecutor {
                 .build();
         return stepHandler.execute(
                 stepData,
-                stepFlowContext,
                 OneOffParams.builder()
                         .vars(stepFlowContext.getContextMap())
                         .build());

@@ -80,7 +80,7 @@ public class IfBranch {
                         globalFlowCode,
                         String.format("IF 条件表达式类型[%s]不存在", this.expressionType));
             }
-            if (StepFlowUtils.isNotBlank(this.expression)) {
+            if (StepFlowUtils.isBlank(this.expression)) {
                 context.saveErrMsg(globalFlowCode, "IF 条件表达式为空");
             }
         }

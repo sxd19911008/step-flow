@@ -62,7 +62,6 @@ public class Step {
         /* 执行步骤并返回 */
         return this.stepHandler.execute(
                 this.stepData,
-                stepFlowContext,
                 OneOffParams.builder()
                         .vars(vars)
                         .build()

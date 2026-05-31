@@ -1,7 +1,6 @@
 package io.github.kentasun.stepflow.api.step;
 
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
-import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 
 /**
@@ -20,11 +19,10 @@ public interface StepHandler {
      * step 行为的抽象方法
      *
      * @param stepData 步骤信息
-     * @param stepFlowContext 步骤上下文，用于传递
      * @param oneOffParams 1次性参数，仅供当前 step 使用
      * @return 计算结果
      */
-    Object execute(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams);
+    Object execute(StepData stepData, OneOffParams oneOffParams);
 
     /**
      * 校验 {@code StepData} 是否非法

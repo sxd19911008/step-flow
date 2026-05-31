@@ -1,7 +1,6 @@
 package io.github.kentasun.stepflow.javaMethod;
 
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
-import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.api.step.JavaStep;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
@@ -14,7 +13,7 @@ import java.math.BigDecimal;
 public class Subtract implements JavaStep {
 
     @Override
-    public Object invoke(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
+    public Object invoke(StepData stepData, OneOffParams oneOffParams) {
         BigDecimal a = StepFlowUtils.getValByMap("a", oneOffParams.getVars(), BigDecimal.class);
         BigDecimal b = StepFlowUtils.getValByMap("b", oneOffParams.getVars(), BigDecimal.class);
         return a.subtract(b);

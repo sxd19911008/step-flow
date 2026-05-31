@@ -1,12 +1,11 @@
 package io.github.kentasun.stepflow.step.handler;
 
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
-import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.api.step.JavaStep;
+import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.exception.StepFlowException;
 import io.github.kentasun.stepflow.step.constants.StepContentType;
-import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 
 import java.util.Map;
@@ -33,14 +32,14 @@ public class JavaStepHandler implements StepHandler {
     }
 
     @Override
-    public Object execute(StepData stepData, StepFlowContext stepFlowContext, OneOffParams oneOffParams) {
+    public Object execute(StepData stepData, OneOffParams oneOffParams) {
         String beanName = stepData.getContent();
         JavaStep javaStep = this.methodMap.get(beanName);
         if (javaStep == null) {
             throw new StepFlowException(String.format("【%s】不存在", beanName));
         }
         // 执行 Java 方法
-        return javaStep.invoke(stepData, stepFlowContext, oneOffParams);
+        return javaStep.invoke(stepData, oneOffParams);
     }
 
     @Override

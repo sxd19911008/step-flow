@@ -118,14 +118,6 @@ public class AviatorOracleExpressionTest {
                         .contentType(AviatorOracleStepContentType.AVIATOR_ORA)
                         .content("round(calc_base + calc_date_diff * calc_extra - power(calc_extra, 2) / calc_abs_val, 2)")
                         .paramNameList(Arrays.asList("calc_base", "calc_date_diff", "calc_extra", "calc_abs_val"))
-                        .build(),
-                StepData.builder()
-                        .stepCode("CONDITION001")
-                        .stepName("condition1")
-                        .stepType("CONDITION")
-                        .contentType(AviatorOracleStepContentType.AVIATOR_ORA)
-                        .content("calc_months_raw < 18.16121")
-                        .paramNameList(Collections.singletonList("calc_months_raw"))
                         .build()
         );
 
@@ -159,7 +151,7 @@ public class AviatorOracleExpressionTest {
                                 + "STEP(DC001).PARAM(endDate=dto.endDate,startDate=dto.startDate),"
                                 + "STEP(DC002).PARAM(signedValue=dto.signedValue)"
                                 + "),"
-                                + "IF(STEP(CONDITION001))"
+                                + "IF(AVIATOR_ORA(\"calc_months_raw < 18.16121\"))"
                                 + "THEN(STEP(DC003).PARAM(principal=dto.principal,rateInput=dto.rateInput))"
                                 + "ELSE(STEP(DC004).PARAM(principal=dto.principal,rateInput=dto.rateInput))"
                                 + "ENDIF,"
