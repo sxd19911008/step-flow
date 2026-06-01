@@ -1,11 +1,11 @@
 package io.github.kentasun.stepflow.starter;
 
 import io.github.kentasun.stepflow.StepFlowExecutor;
+import io.github.kentasun.stepflow.api.step.AbstractStepHandler;
 import io.github.kentasun.stepflow.config.StepFlowConfigProperties;
 import io.github.kentasun.stepflow.api.flow.FlowProvider;
 import io.github.kentasun.stepflow.api.step.AbstractJavaStep;
 import io.github.kentasun.stepflow.api.step.StepDataProvider;
-import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.threadpool.StepFlowThreadPoolFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,7 +44,7 @@ public class StepFlowAutoConfiguration {
                                              FlowProvider flowProvider,
                                              StepFlowConfigProperties stepFlowConfigProperties,
                                              @Nullable Map<String, AbstractJavaStep> javaStepMap,
-                                             @Nullable List<StepHandler> stepHandlerList,
+                                             @Nullable List<AbstractStepHandler> stepHandlerList,
                                              @Qualifier("stepFlowParallelThreadPool") ExecutorService stepFlowParallelThreadPool) {
         return StepFlowExecutor.builder(stepDataProvider, flowProvider)
                 .configProperties(stepFlowConfigProperties)

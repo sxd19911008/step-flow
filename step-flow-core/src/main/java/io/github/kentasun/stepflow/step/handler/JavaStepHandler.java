@@ -2,7 +2,7 @@ package io.github.kentasun.stepflow.step.handler;
 
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
 import io.github.kentasun.stepflow.api.step.AbstractJavaStep;
-import io.github.kentasun.stepflow.api.step.StepHandler;
+import io.github.kentasun.stepflow.api.step.AbstractStepHandler;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.api.exception.StepFlowException;
 import io.github.kentasun.stepflow.step.constants.StepContentType;
@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Java 步骤处理器
  * <P>执行 Java 方法
  */
-public class JavaStepHandler extends StepHandler {
+public class JavaStepHandler extends AbstractStepHandler {
 
     private final Map<String, AbstractJavaStep> methodMap;
 

@@ -3,10 +3,10 @@ package io.github.kentasun.stepflow.step;
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
 import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.api.exception.StepFlowException;
+import io.github.kentasun.stepflow.api.step.AbstractStepHandler;
 import io.github.kentasun.stepflow.step.dto.Step;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.api.step.StepDataProvider;
-import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +25,12 @@ public class StepExecutor {
     private final Map<String, Step> stepMap;
 
     /**
-     * StepContentType → StepHandler，供步骤组装与 IF 内联表达式执行共用。
-     * key 与 {@link StepHandler#getStepContentType()} 一致，例如 AVIATOR、JEXL。
+     * StepContentType → AbstractStepHandler，供步骤组装与 IF 内联表达式执行共用。
+     * key 与 {@link AbstractStepHandler#getStepContentType()} 一致，例如 AVIATOR、JEXL。
      */
-    private final Map<String, StepHandler> stepHandlerMap;
+    private final Map<String, AbstractStepHandler> stepHandlerMap;
 
-    public StepExecutor(StepDataProvider stepDataProvider, List<StepHandler> stepHandlers) {
+    public StepExecutor(StepDataProvider stepDataProvider, List<AbstractStepHandler> stepHandlers) {
         /* 初始化 stepMap */
         this.stepMap = new ConcurrentHashMap<>();
         /* 获取 step 数据 */
@@ -39,11 +39,11 @@ public class StepExecutor {
             stepDataList = stepDataProvider.loadStepDataList();
         }
         /* 组装 stepHandlerMap，构建后保留供运行时按 contentType 查找 Handler */
-        Map<String, StepHandler> handlerMap = new HashMap<>();
+        Map<String, AbstractStepHandler> handlerMap = new HashMap<>();
         if (StepFlowUtils.isNotEmpty(stepHandlers)) {
-            for (StepHandler stepHandler : stepHandlers) {
+            for (AbstractStepHandler stepHandler : stepHandlers) {
                 if (handlerMap.containsKey(stepHandler.getStepContentType())) {
-                    log.warn("StepHandler {} 被覆盖", stepHandler.getStepContentType());
+                    log.warn("AbstractStepHandler {} 被覆盖", stepHandler.getStepContentType());
                 }
                 handlerMap.put(stepHandler.getStepContentType(), stepHandler);
             }
@@ -60,8 +60,8 @@ public class StepExecutor {
                     duplicateSet.add(stepData.getStepCode());
                     continue;
                 }
-                // 查找对应的 StepHandler
-                StepHandler stepHandler = this.stepHandlerMap.get(stepData.getContentType());
+                // 查找对应的 AbstractStepHandler
+                AbstractStepHandler stepHandler = this.stepHandlerMap.get(stepData.getContentType());
                 if (stepHandler == null) {
                     illegalList.add(String.format("Step[%s] 的 contentType[%s] 不存在", stepData.getStepCode(), stepData.getContentType()));
                     continue;
@@ -119,7 +119,7 @@ public class StepExecutor {
     }
 
     /**
-     * 是否已注册指定 {@link StepHandler#getStepContentType()} 对应的 Handler。
+     * 是否已注册指定 {@link AbstractStepHandler#getStepContentType()} 对应的 Handler。
      *
      * @param contentType 步骤内容类型，如 AVIATOR
      * @return true 表示存在对应 Handler
@@ -129,7 +129,7 @@ public class StepExecutor {
     }
 
     /**
-     * 是否未注册指定 {@link StepHandler#getStepContentType()} 对应的 Handler。
+     * 是否未注册指定 {@link AbstractStepHandler#getStepContentType()} 对应的 Handler。
      *
      * @param contentType 步骤内容类型，如 AVIATOR
      * @return true 表示不存在对应 Handler
@@ -139,31 +139,31 @@ public class StepExecutor {
     }
 
     /**
-     * 按 contentType 获取 StepHandler。
+     * 按 contentType 获取 AbstractStepHandler。
      *
      * @param contentType 步骤内容类型
      * @return 对应 Handler；不存在时返回 null
      */
-    public StepHandler getStepHandler(String contentType) {
+    public AbstractStepHandler getStepHandler(String contentType) {
         return this.stepHandlerMap.get(contentType);
     }
 
     /**
-     * 获取已注册的 StepContentType → StepHandler 映射（只读）。
+     * 获取已注册的 StepContentType → AbstractStepHandler 映射（只读）。
      *
      * @return 不可变映射，key 为 StepContentType
      */
-    public Map<String, StepHandler> getStepHandlerMap() {
+    public Map<String, AbstractStepHandler> getStepHandlerMap() {
         return stepHandlerMap;
     }
 
     /**
-     * 使用指定 contentType 的 StepHandler 执行内联表达式（如 IF 条件中的 AVIATOR("a > b")）。
+     * 使用指定 contentType 的 AbstractStepHandler 执行内联表达式（如 IF 条件中的 AVIATOR("a > b")）。
      * <p>
      * 将当前 {@link StepFlowContext#getContextMap()} 作为表达式变量传入 Handler。
      * </p>
      *
-     * @param contentType     StepHandler 对应的 StepContentType
+     * @param contentType     AbstractStepHandler 对应的 StepContentType
      * @param expression      表达式
      * @param stepFlowContext 流程上下文
      * @return Handler 执行结果
@@ -171,7 +171,7 @@ public class StepExecutor {
     public Object executeInlineExpression(String contentType,
                                           String expression,
                                           StepFlowContext stepFlowContext) {
-        StepHandler stepHandler = this.stepHandlerMap.get(contentType);
+        AbstractStepHandler stepHandler = this.stepHandlerMap.get(contentType);
         if (stepHandler == null) {
             throw new StepFlowException(String.format("表达式类型[%s]不存在", contentType));
         }

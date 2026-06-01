@@ -3,7 +3,7 @@ package io.github.kentasun.stepflow.aviatororacle.handler;
 import com.googlecode.aviator.AviatorEvaluatorInstance;
 import io.github.kentasun.aviatororacle.AviatorOracleBuilder;
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
-import io.github.kentasun.stepflow.api.step.StepHandler;
+import io.github.kentasun.stepflow.api.step.AbstractStepHandler;
 import io.github.kentasun.stepflow.api.step.StepHandlerCustomizer;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.aviatororacle.constants.AviatorOracleStepContentType;
@@ -12,7 +12,7 @@ import io.github.kentasun.stepflow.aviatororacle.dto.AviatorOracleStepHandlerPro
 /**
  * aviator-oracle 表达式引擎 步骤处理器
  */
-public class AviatorOracleStepHandler extends StepHandler {
+public class AviatorOracleStepHandler extends AbstractStepHandler {
 
     // 表达式引擎
     private final AviatorEvaluatorInstance aviatorOra;

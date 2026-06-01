@@ -55,7 +55,7 @@ public class ExecutorsContext {
     }
 
     /**
-     * 使用已注册 StepHandler 执行 IF 内联表达式条件。
+     * 使用已注册 AbstractStepHandler 执行 IF 内联表达式条件。
      *
      * @param contentType     StepContentType，如 AVIATOR
      * @param expression      表达式正文

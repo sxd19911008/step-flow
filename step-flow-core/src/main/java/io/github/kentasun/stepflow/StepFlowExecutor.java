@@ -1,12 +1,12 @@
 package io.github.kentasun.stepflow;
 
+import io.github.kentasun.stepflow.api.step.AbstractStepHandler;
 import io.github.kentasun.stepflow.config.StepFlowConfigProperties;
 import io.github.kentasun.stepflow.dto.ExecutorsContext;
 import io.github.kentasun.stepflow.api.dto.StepFlowContext;
 import io.github.kentasun.stepflow.flow.FlowExecutor;
 import io.github.kentasun.stepflow.api.flow.FlowProvider;
 import io.github.kentasun.stepflow.step.StepExecutor;
-import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.step.handler.JavaStepHandler;
 import io.github.kentasun.stepflow.api.step.AbstractJavaStep;
 import io.github.kentasun.stepflow.api.step.StepDataProvider;
@@ -69,7 +69,7 @@ public class StepFlowExecutor {
 
         private Map<String, AbstractJavaStep> javaStepMap;
 
-        private List<StepHandler> stepHandlerList;
+        private List<AbstractStepHandler> stepHandlerList;
 
         private ExecutorService parallelThreadPool;
 
@@ -83,7 +83,7 @@ public class StepFlowExecutor {
             return this;
         }
 
-        public Builder stepHandlerList(List<StepHandler> stepHandlerList) {
+        public Builder stepHandlerList(List<AbstractStepHandler> stepHandlerList) {
             this.stepHandlerList = stepHandlerList;
             return this;
         }
@@ -133,15 +133,15 @@ public class StepFlowExecutor {
         }
 
         /**
-         * 构建 {@link StepExecutor}，注册所有 StepHandler。
+         * 构建 {@link StepExecutor}，注册所有 AbstractStepHandler。
          */
         private StepExecutor buildStepExecutor() {
-            /* StepHandler */
-            // 先注册内置的 StepHandler
+            /* AbstractStepHandler */
+            // 先注册内置的 AbstractStepHandler
             JavaStepHandler javaStepHandler = new JavaStepHandler(this.javaStepMap);
-            List<StepHandler> stepHandlers = new ArrayList<>();
+            List<AbstractStepHandler> stepHandlers = new ArrayList<>();
             stepHandlers.add(javaStepHandler);
-            // 注册用户自定义 StepHandler，同 StepContentType 时覆盖内置实现
+            // 注册用户自定义 AbstractStepHandler，同 StepContentType 时覆盖内置实现
             if (StepFlowUtils.isNotEmpty(this.stepHandlerList)) {
                 stepHandlers.addAll(this.stepHandlerList);
             }

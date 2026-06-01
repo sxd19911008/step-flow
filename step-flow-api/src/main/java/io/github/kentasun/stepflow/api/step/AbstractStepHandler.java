@@ -6,12 +6,12 @@ import io.github.kentasun.stepflow.api.step.dto.StepData;
 /**
  * step 的执行类型，每个 Handler 实现都对应一个 StepContentType。
  */
-public abstract class StepHandler {
+public abstract class AbstractStepHandler {
 
     /**
      * 该 Handler 对应的 StepContentType
      *
-     * @return {@code StepHandler} 对应的 StepContentType 类型
+     * @return {@code AbstractStepHandler} 对应的 StepContentType 类型
      */
     public abstract String getStepContentType();
 

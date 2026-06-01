@@ -11,7 +11,7 @@ import io.github.kentasun.stepflow.utils.StepFlowUtils;
  * <ul>
  *   <li>{@code STEP(stepCode)} — {@link #condition} 非空</li>
  *   <li>{@code TYPE("expression")} — {@link #expressionType} 与 {@link #expression} 非空，
- *       其中 TYPE 为已注册 StepHandler 的 StepContentType（如 AVIATOR）</li>
+ *       其中 TYPE 为已注册 AbstractStepHandler 的 StepContentType（如 AVIATOR）</li>
  * </ul>
  * </p>
  */

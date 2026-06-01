@@ -2,7 +2,7 @@ package io.github.kentasun.stepflow.step.dto;
 
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
 import io.github.kentasun.stepflow.api.dto.StepFlowContext;
-import io.github.kentasun.stepflow.api.step.StepHandler;
+import io.github.kentasun.stepflow.api.step.AbstractStepHandler;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.utils.GetValueFromMapUtils;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
@@ -17,9 +17,9 @@ import java.util.Map;
 public class Step {
 
     private final StepData stepData;
-    private final StepHandler stepHandler;
+    private final AbstractStepHandler stepHandler;
 
-    public Step(StepData stepData, StepHandler stepHandler) {
+    public Step(StepData stepData, AbstractStepHandler stepHandler) {
         this.stepData = stepData;
         this.stepHandler = stepHandler;
     }
