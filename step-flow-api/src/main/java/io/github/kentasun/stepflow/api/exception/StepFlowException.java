@@ -1,4 +1,4 @@
-package io.github.kentasun.stepflow.exception;
+package io.github.kentasun.stepflow.api.exception;
 
 public class StepFlowException extends RuntimeException {
 

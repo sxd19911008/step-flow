@@ -8,17 +8,18 @@ import java.util.Map;
 public class OneOffParams {
 
     // 调用该步骤需要映射的参数，解决当前 contextMap 中的参数名和步骤需要的参数名对不上的问题。
-    private Map<String, String> paramNameMap;
+    private final Map<String, String> paramNameMap;
 
     // 调用该步骤需要的参数，单独隔离可以防止参数污染。
-    private Map<String, Object> vars;
+    private final Map<String, Object> vars;
 
     public OneOffParams(Map<String, String> paramNameMap, Map<String, Object> vars) {
         this.paramNameMap = paramNameMap;
         this.vars = vars;
     }
 
-    public OneOffParams() {
+    public Object getVar(String varName) {
+        return vars.get(varName);
     }
 
     public Map<String, String> getParamNameMap() {
@@ -29,16 +30,8 @@ public class OneOffParams {
         return this.vars;
     }
 
-    public void setParamNameMap(Map<String, String> paramNameMap) {
-        this.paramNameMap = paramNameMap;
-    }
-
-    public void setVars(Map<String, Object> vars) {
-        this.vars = vars;
-    }
-
     public String toString() {
-        return "OneOffParams(paramNameMap=" + this.getParamNameMap() + ", vars=" + this.getVars() + ")";
+        return "OneOffParams(paramNameMap=" + this.paramNameMap + ", vars=" + this.vars + ")";
     }
 
     public static OneOffParamsBuilder builder() {

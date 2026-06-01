@@ -2,7 +2,7 @@ package io.github.kentasun.stepflow.step;
 
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
 import io.github.kentasun.stepflow.api.dto.StepFlowContext;
-import io.github.kentasun.stepflow.exception.StepFlowException;
+import io.github.kentasun.stepflow.api.exception.StepFlowException;
 import io.github.kentasun.stepflow.step.dto.Step;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.api.step.StepDataProvider;

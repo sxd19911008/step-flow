@@ -4,7 +4,7 @@ import io.github.kentasun.stepflow.api.dto.OneOffParams;
 import io.github.kentasun.stepflow.api.step.JavaStep;
 import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
-import io.github.kentasun.stepflow.exception.StepFlowException;
+import io.github.kentasun.stepflow.api.exception.StepFlowException;
 import io.github.kentasun.stepflow.step.constants.StepContentType;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
 

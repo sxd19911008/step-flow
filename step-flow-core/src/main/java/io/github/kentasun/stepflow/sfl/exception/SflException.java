@@ -3,7 +3,7 @@ package io.github.kentasun.stepflow.sfl.exception;
 /**
  * Step Flow Language（SFL）解析过程中抛出的运行时异常。
  * <p>
- * 用于区分「编排文本本身不合法」与「流程执行期」的 {@link io.github.kentasun.stepflow.exception.StepFlowException}：
+ * 用于区分「编排文本本身不合法」与「流程执行期」的 {@link io.github.kentasun.stepflow.api.exception.StepFlowException}：
  * 本异常仅在词法/语法分析阶段产生，消息中通常附带源文本中的字符偏移，便于在
  * {@code InputFlow.content} 中定位错误。
  * </p>

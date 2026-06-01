@@ -1,7 +1,5 @@
 package io.github.kentasun.stepflow.utils;
 
-import io.github.kentasun.stepflow.exception.StepFlowException;
-
 import java.util.Collection;
 import java.util.Map;
 
@@ -101,51 +99,6 @@ public class StepFlowUtils {
 
     public static boolean isNotEmpty(Object[] array) {
         return !isEmpty(array);
-    }
-
-    /**
-     * 从 map 中获取指定类型的参数
-     *
-     * @param key   参数 key
-     * @param map   参数集合
-     * @param clazz 参数期望类型
-     * @param <T>   参数期望类型
-     * @return 参数对象
-     */
-    public static <T> T getValByMap(String key, Map<String, Object> map, Class<T> clazz) {
-        return getValByMap(key, map, clazz, false);
-    }
-
-    /**
-     * 从 map 中获取指定类型的参数
-     *
-     * @param key         参数 key
-     * @param map         参数集合
-     * @param clazz       参数期望类型
-     * @param isCheckNull 为 null 是否报错：true-报错；false-返回null。默认false
-     * @param <T>         参数期望类型
-     * @return 参数对象
-     */
-    public static <T> T getValByMap(String key, Map<String, Object> map, Class<T> clazz, boolean isCheckNull) {
-        Object o = map.get(key);
-        if (o == null) {
-            if (isCheckNull) {
-                throw new StepFlowException(String.format("key【%s】对应的参数为null", key));
-            }
-            return null;
-        }
-        if (clazz.isInstance(o)) {
-            return clazz.cast(o);
-        } else {
-            throw new StepFlowException(
-                    String.format(
-                            "类型错误，key=%s; 期待类型=%s; 实际类型=%s",
-                            key,
-                            clazz.getName(),
-                            o.getClass().getName()
-                    )
-            );
-        }
     }
 
     /**

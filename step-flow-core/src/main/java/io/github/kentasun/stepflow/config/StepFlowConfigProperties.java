@@ -1,6 +1,6 @@
 package io.github.kentasun.stepflow.config;
 
-import io.github.kentasun.stepflow.exception.StepFlowException;
+import io.github.kentasun.stepflow.api.exception.StepFlowException;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;

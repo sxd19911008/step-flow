@@ -1,6 +1,6 @@
 package io.github.kentasun.stepflow.utils;
 
-import io.github.kentasun.stepflow.exception.StepFlowException;
+import io.github.kentasun.stepflow.api.exception.StepFlowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
