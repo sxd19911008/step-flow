@@ -8,7 +8,7 @@ import io.github.kentasun.stepflow.javaMethod.ChooseRes;
 import io.github.kentasun.stepflow.step.constants.StepContentType;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.jexl.handler.JexlStepHandler;
-import io.github.kentasun.stepflow.api.step.JavaStep;
+import io.github.kentasun.stepflow.api.step.AbstractJavaStep;
 import io.github.kentasun.stepflow.api.step.StepDataProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -92,7 +92,7 @@ public class JexlExpressionTest {
                         .build()
         );
 
-        Map<String, JavaStep> javaStepMap = new HashMap<>();
+        Map<String, AbstractJavaStep> javaStepMap = new HashMap<>();
         javaStepMap.put("chooseRes", new ChooseRes());
         StepFlowExecutor stepFlowExecutor = StepFlowExecutor.builder(stepDataProvider, flowProvider)
                 .javaStepMap(javaStepMap)

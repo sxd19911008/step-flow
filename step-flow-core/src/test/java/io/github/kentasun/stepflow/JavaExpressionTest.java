@@ -2,7 +2,7 @@ package io.github.kentasun.stepflow;
 
 import io.github.kentasun.stepflow.api.flow.FlowProvider;
 import io.github.kentasun.stepflow.api.flow.dto.InputFlow;
-import io.github.kentasun.stepflow.api.step.JavaStep;
+import io.github.kentasun.stepflow.api.step.AbstractJavaStep;
 import io.github.kentasun.stepflow.api.step.StepDataProvider;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.dto.CalcDTO;
@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 从 {@code AviatorExpressionTest} 迁移的流程执行集成测试。
- * <p>core 模块仅支持 {@link StepContentType#JAVA}，原 Aviator 表达式步骤均改为 {@link JavaStep} 实现。</p>
+ * <p>core 模块仅支持 {@link StepContentType#JAVA}，原 Aviator 表达式步骤均改为 {@link AbstractJavaStep} 实现。</p>
  */
 public class JavaExpressionTest {
 
@@ -102,7 +102,7 @@ public class JavaExpressionTest {
                         .build()
         );
 
-        Map<String, JavaStep> javaStepMap = new HashMap<>();
+        Map<String, AbstractJavaStep> javaStepMap = new HashMap<>();
         javaStepMap.put("add", new Add());
         javaStepMap.put("subtract", new Subtract());
         javaStepMap.put("multiply", new Multiply());

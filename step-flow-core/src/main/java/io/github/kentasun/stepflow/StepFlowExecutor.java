@@ -8,7 +8,7 @@ import io.github.kentasun.stepflow.api.flow.FlowProvider;
 import io.github.kentasun.stepflow.step.StepExecutor;
 import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.step.handler.JavaStepHandler;
-import io.github.kentasun.stepflow.api.step.JavaStep;
+import io.github.kentasun.stepflow.api.step.AbstractJavaStep;
 import io.github.kentasun.stepflow.api.step.StepDataProvider;
 import io.github.kentasun.stepflow.threadpool.StepFlowThreadPoolFactory;
 import io.github.kentasun.stepflow.utils.StepFlowUtils;
@@ -67,7 +67,7 @@ public class StepFlowExecutor {
 
         private StepFlowConfigProperties configProperties;
 
-        private Map<String, JavaStep> javaStepMap;
+        private Map<String, AbstractJavaStep> javaStepMap;
 
         private List<StepHandler> stepHandlerList;
 
@@ -78,7 +78,7 @@ public class StepFlowExecutor {
             this.flowProvider = flowProvider;
         }
 
-        public Builder javaStepMap(Map<String, JavaStep> javaStepMap) {
+        public Builder javaStepMap(Map<String, AbstractJavaStep> javaStepMap) {
             this.javaStepMap = javaStepMap;
             return this;
         }

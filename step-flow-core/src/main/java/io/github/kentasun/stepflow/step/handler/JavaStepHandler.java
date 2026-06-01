@@ -1,7 +1,7 @@
 package io.github.kentasun.stepflow.step.handler;
 
 import io.github.kentasun.stepflow.api.dto.OneOffParams;
-import io.github.kentasun.stepflow.api.step.JavaStep;
+import io.github.kentasun.stepflow.api.step.AbstractJavaStep;
 import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.api.step.dto.StepData;
 import io.github.kentasun.stepflow.api.exception.StepFlowException;
@@ -15,11 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * Java 步骤处理器
  * <P>执行 Java 方法
  */
-public class JavaStepHandler implements StepHandler {
+public class JavaStepHandler extends StepHandler {
 
-    private final Map<String, JavaStep> methodMap;
+    private final Map<String, AbstractJavaStep> methodMap;
 
-    public JavaStepHandler(Map<String, JavaStep> javaStepMap) {
+    public JavaStepHandler(Map<String, AbstractJavaStep> javaStepMap) {
         this.methodMap = new ConcurrentHashMap<>();
         if (StepFlowUtils.isNotEmpty(javaStepMap)) {
             this.methodMap.putAll(javaStepMap);
@@ -34,7 +34,7 @@ public class JavaStepHandler implements StepHandler {
     @Override
     public Object execute(StepData stepData, OneOffParams oneOffParams) {
         String beanName = stepData.getContent();
-        JavaStep javaStep = this.methodMap.get(beanName);
+        AbstractJavaStep javaStep = this.methodMap.get(beanName);
         if (javaStep == null) {
             throw new StepFlowException(String.format("【%s】不存在", beanName));
         }

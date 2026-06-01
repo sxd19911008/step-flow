@@ -12,7 +12,7 @@ import io.github.kentasun.stepflow.aviatororacle.dto.AviatorOracleStepHandlerPro
 /**
  * aviator-oracle 表达式引擎 步骤处理器
  */
-public class AviatorOracleStepHandler implements StepHandler {
+public class AviatorOracleStepHandler extends StepHandler {
 
     // 表达式引擎
     private final AviatorEvaluatorInstance aviatorOra;

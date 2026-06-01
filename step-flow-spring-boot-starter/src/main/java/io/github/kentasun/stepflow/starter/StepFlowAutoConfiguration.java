@@ -3,7 +3,7 @@ package io.github.kentasun.stepflow.starter;
 import io.github.kentasun.stepflow.StepFlowExecutor;
 import io.github.kentasun.stepflow.config.StepFlowConfigProperties;
 import io.github.kentasun.stepflow.api.flow.FlowProvider;
-import io.github.kentasun.stepflow.api.step.JavaStep;
+import io.github.kentasun.stepflow.api.step.AbstractJavaStep;
 import io.github.kentasun.stepflow.api.step.StepDataProvider;
 import io.github.kentasun.stepflow.api.step.StepHandler;
 import io.github.kentasun.stepflow.threadpool.StepFlowThreadPoolFactory;
@@ -43,7 +43,7 @@ public class StepFlowAutoConfiguration {
     public StepFlowExecutor stepFlowExecutor(StepDataProvider stepDataProvider,
                                              FlowProvider flowProvider,
                                              StepFlowConfigProperties stepFlowConfigProperties,
-                                             @Nullable Map<String, JavaStep> javaStepMap,
+                                             @Nullable Map<String, AbstractJavaStep> javaStepMap,
                                              @Nullable List<StepHandler> stepHandlerList,
                                              @Qualifier("stepFlowParallelThreadPool") ExecutorService stepFlowParallelThreadPool) {
         return StepFlowExecutor.builder(stepDataProvider, flowProvider)

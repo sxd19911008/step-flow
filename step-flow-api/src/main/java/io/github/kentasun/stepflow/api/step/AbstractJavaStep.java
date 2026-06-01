@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * Java 步骤使用的 Java 方法
  */
-public abstract class JavaStep {
+public abstract class AbstractJavaStep {
 
     private final List<String> paramNameList;
 
@@ -20,7 +20,7 @@ public abstract class JavaStep {
      */
     private boolean isInit;
 
-    public JavaStep() {
+    public AbstractJavaStep() {
         this.isInit = true; // 关闭抛异常功能，才能正常获取key
         Set<String> keys = new HashSet<>();
         Map<String, Object> vars = new HashMap<String, Object>() {

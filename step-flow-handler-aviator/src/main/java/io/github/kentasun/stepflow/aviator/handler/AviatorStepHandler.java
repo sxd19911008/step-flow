@@ -12,7 +12,7 @@ import io.github.kentasun.stepflow.aviator.dto.AviatorStepHandlerProperties;
 /**
  * Aviator 表达式引擎 步骤处理器
  */
-public class AviatorStepHandler implements StepHandler {
+public class AviatorStepHandler extends StepHandler {
 
     // 表达式引擎
     private final AviatorEvaluatorInstance aviator;

@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * JEXL 表达式引擎 步骤处理器
  */
-public class JexlStepHandler implements StepHandler {
+public class JexlStepHandler extends StepHandler {
 
     // 表达式引擎
     private final JexlEngine jexl;

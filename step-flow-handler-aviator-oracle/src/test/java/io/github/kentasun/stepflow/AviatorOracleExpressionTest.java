@@ -166,7 +166,7 @@ public class AviatorOracleExpressionTest {
                         .build()
         );
 
-        // ---- 构建执行器（无需 JavaStep，纯表达式引擎即可）----
+        // ---- 构建执行器（无需 AbstractJavaStep，纯表达式引擎即可）----
         StepFlowExecutor stepFlowExecutor = StepFlowExecutor.builder(stepDataProvider, flowProvider)
                 .stepHandlerList(new ArrayList<>(Collections.singletonList(new AviatorOracleStepHandler())))
                 .build();
